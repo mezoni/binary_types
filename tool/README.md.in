@@ -7,6 +7,8 @@ Version: {{VERSION}}
 
 Initial release. Use at your own risk!
 
+**For proper work `binary_types` requires that the package `unsafe_extension` has been setup after it installation.**
+
 **Limitations**
 
 - Long double type not supported (and never be) 

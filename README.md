@@ -1,11 +1,13 @@
 binary_types
 =====
 
-Binary type are set of classes that allows access the binary data in "C" language way.
+Binary types are set of classes that allows access the binary data in "C" language way.
 
 Version: 0.0.2
 
 Initial release. Use at your own risk!
+
+**For proper work `binary_types` requires that the package `unsafe_extension` has been setup after it installation.**
 
 **Limitations**
 
