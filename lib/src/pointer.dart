@@ -26,6 +26,8 @@ class PointerType extends BinaryType {
     if (nextType is FunctionType) {
       var nameParts = nextType._nameParts;
       _name = "${nameParts[0]}${stars.join("")}${nameParts[1]}";
+    } else if (nextType is ArrayType) {
+      _name = "($type)*";
     } else {
       _name = "$type*";
     }

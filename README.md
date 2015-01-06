@@ -3,7 +3,7 @@ binary_types
 
 Binary types are set of classes that allows access the binary data in "C" language way.
 
-Version: 0.0.2
+Version: 0.0.3
 
 Initial release. Use at your own risk!
 
