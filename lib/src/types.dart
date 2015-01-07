@@ -67,7 +67,6 @@ class BinaryTypes {
    * Clones the binary type and register it under a different name (typedef).
    */
   void operator []=(String name, type) {
-    _checkTypeName(name);
     BinaryType binaryType;
     if (type is String) {
       binaryType = this[type];
@@ -78,13 +77,35 @@ class BinaryTypes {
       throw new ArgumentError("name: $type");
     }
 
-    if (_types.containsKey(name)) {
-      BinaryTypeError.unableRedeclareType(name);
+    _typeDef(name, binaryType);
+  }
+
+  /**
+   * Declares the types specified in textual format.
+   *
+   * Parameters:
+   *   [String] text
+   *   Declarations in textual format.
+   *
+   *   [Map]<[String], [String]> environment
+   *   Environment values for preprocessing declarations.
+   */
+  void declare(String text, {Map<String, String> environment}) {
+    if (text == null) {
+      throw new ArgumentError.notNull("text");
     }
 
-    var copy = binaryType.clone();
-    copy._name = name;
-    _types[name] = copy;
+    var declarations = new BinaryDeclarations(text);
+    for (var declaration in declarations) {
+      if (declaration is TypedefDeclaration) {
+        var align = declaration.align;
+        var name = declaration.name;
+        var type = this[declaration.type.toString()];
+        typeDef(name, type, align: align);
+      }
+
+      // TODO: Add support structure type declarations
+    }
   }
 
   /**
@@ -107,6 +128,27 @@ class BinaryTypes {
 
     _types[name] = type;
     return type;
+  }
+
+  /**
+   * Clones the binary type and register it under a different name (typedef).
+   *
+   * Parameters:
+   *   [String] name
+   *   New name for cloned type.
+   *
+   *   [BinaryType|String] type
+   *   Type (or name) to clone.
+   *
+   *   [int] align
+   *   Data alignment for this type.
+   */
+  BinaryType typeDef(String name, type, {int align}) {
+    if (type == null) {
+      throw new ArgumentError.notNull("type");
+    }
+
+    return _typeDef(name, type, align: align);
   }
 
   void _checkDataModel(BinaryType type, String subject) {
@@ -190,5 +232,29 @@ class BinaryTypes {
 
     // Variable arguments
     _types["..."] = new VaListType(_dataModel);
+  }
+
+
+  BinaryType _typeDef(String name, type, {int align}) {
+    _checkTypeName(name);
+    BinaryType binaryType;
+    if (type is String) {
+      binaryType = this[type];
+    } else if (type is BinaryType) {
+      binaryType = type;
+      _checkDataModel(binaryType, "type $type");
+    } else {
+      throw new ArgumentError("name: $type");
+    }
+
+    var previous = _types[name];
+    if (previous != null && previous != type) {
+      BinaryTypeError.unableRedeclareType(name);
+    }
+
+    var copy = binaryType.clone(align: align);
+    copy._name = name;
+    _types[name] = copy;
+    return copy;
   }
 }

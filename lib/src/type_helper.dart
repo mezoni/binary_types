@@ -219,34 +219,6 @@ class BinaryTypeHelper {
     return new String.fromCharCodes(characters);
   }
 
-  /**
-   *  Creates an alias of the specified binary type.
-   *
-   * Paramaters:
-   *   [String] name
-   *   Name of new type.
-   *
-   *   [dynamic] type
-   *   Type (or type name).
-   *
-   *   [int] align
-   *   Data alignment for this type.
-   */
-  BinaryType typeDef(String name, type, {int align}) {
-    if (name == null) {
-      throw new ArgumentError.notNull("name");
-    }
-
-    if (type == null) {
-      throw new ArgumentError.notNull("type");
-    }
-
-    var binaryType = _getType(type);
-    var copy = binaryType.clone(align: align);
-    types.registerType(binaryType);
-    return copy;
-  }
-
   void _addMembers(StructureType type, Map<String, dynamic> members, int pack) {
     var normalizedMembers = <String, BinaryType>{};
     for (var name in members.keys) {

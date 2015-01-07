@@ -2,6 +2,7 @@ library binary_types;
 
 import 'dart:collection';
 
+import "package:binary_declarations/binary_declarations.dart";
 import "package:unsafe_extension/unsafe_extension.dart";
 
 part 'src/arrays.dart';
