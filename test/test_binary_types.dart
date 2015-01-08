@@ -92,18 +92,21 @@ class Test {
         // int* ip = &int32;
         final ip = types['int*'].alloc(int32.location);
 
-        // struct {
-        //   int8_t int8;
-        //   int16_t int16;
-        //   int32_t int32;
-        //   int64_t int64;
-        //   uint8_t uint8;
-        //   uint16_t uint16;
-        //   uint32_t uint32;
-        //   uint64_t uint64;
-        //   int* ip;
-        //   void* vp;
-        // };
+        var header = '''struct struct_t {
+          int8_t int8;
+          int16_t int16;
+          int32_t int32;
+          int64_t int64;
+          uint8_t uint8;
+          uint16_t uint16;
+          uint32_t uint32;
+          uint64_t uint64;
+          int* ip;
+          void* vp;
+         };''';
+
+        types.declare(header);
+
         var struct_t = helper.declareStruct(null, {
           'int8': types['int8_t'],
           'int16': types['int16_t'],

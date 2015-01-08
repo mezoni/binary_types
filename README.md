@@ -5,6 +5,8 @@ Binary types are set of classes that allows access the binary data in "C" langua
 
 Version: 0.0.4
 
+[Donate to binary types for dart](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=binary.dart@gmail.com&item_name=binary.types.for.dart&currency_code=USD)
+
 Initial release. Use at your own risk!
 
 **For proper work `binary_types` requires that the package `unsafe_extension` has been setup after it installation.**

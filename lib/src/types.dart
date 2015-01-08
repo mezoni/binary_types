@@ -95,6 +95,7 @@ class BinaryTypes {
       throw new ArgumentError.notNull("text");
     }
 
+    var helper = new BinaryTypeHelper(this);
     var declarations = new BinaryDeclarations(text);
     for (var declaration in declarations) {
       if (declaration is TypedefDeclaration) {
@@ -102,9 +103,36 @@ class BinaryTypes {
         var name = declaration.name;
         var type = this[declaration.type.toString()];
         typeDef(name, type, align: align);
-      }
+      } else if (declaration is StructDeclaration) {
+        StructureTypeSpecification type = declaration.type;
+        var align = type.align;
+        var pack = type.pack;
+        var tag = type.tag;
+        var members = {};
+        for (var member in type.members) {
+          var name = member.name;
+          var type = this[member.type.toString()];
+          members[name] = type;
+        }
 
-      // TODO: Add support structure type declarations
+        // TODO: Think about the inner structures
+        // Recognize declarations inside this structure
+        // These struct types should be created but not registered.
+        StructureType structureType;
+        switch (type.kind) {
+          case "struct":
+            structureType = helper.declareStruct(tag, members, align: align, pack: pack);
+            break;
+          case "union":
+            structureType = helper.declareUnion(tag, members, align: align, pack: pack);
+            break;
+        }
+
+        // There is no possibility to register a nameless structure
+        if (tag != null) {
+          registerType(structureType);
+        }
+      }
     }
   }
 
