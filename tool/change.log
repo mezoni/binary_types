@@ -4,3 +4,4 @@
 0.0.4 Removed `BinaryTypeHelper.typeDef()`
 0.0.4 Added `BinaryTypes.typeDef()`
 0.0.4 Added `BinaryTypes.declare()`
+0.0.5 Initial support of `binary declartions`. Declarations through the special header files from now supports the `typedef` types, `struct` and `union` declarations 

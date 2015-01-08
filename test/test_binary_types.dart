@@ -1,6 +1,57 @@
 import 'package:binary_types/binary_types.dart';
 import 'package:unittest/unittest.dart';
 
+var _header = '''
+struct struct_t {
+  struct { int i; } s;          
+  int8_t int8;
+  int16_t int16;
+  int32_t int32;
+  int64_t int64;
+  uint8_t uint8;
+  uint16_t uint16;
+  uint32_t uint32;
+  uint64_t uint64;
+  int* ip;
+  void* vp;           
+};
+
+// Should be also declared
+struct _Point {
+  int x;
+  int y;
+} unusedVar;
+
+typedef struct _Point POINT;
+
+typedef struct {
+  int i;
+} struct1_t;
+
+typedef struct {
+  int i;
+} struct2_t;
+
+typedef struct {
+  int i;
+} struct4_t;
+
+typedef struct {
+  POINT a;
+  POINT b;
+} RECT;
+
+typedef struct { int i;
+  int* ip;
+  int ia[10];
+  POINT pt;
+} struct6_t;
+
+struct struct8_t {
+  struct struct8_t *s;
+};
+''';
+
 void main() {
   var test = new Test();
   test.testAlloc();
@@ -22,6 +73,7 @@ class Test {
 
   Test() {
     types = new BinaryTypes();
+    types.declare(_header);
     helper = new BinaryTypeHelper(types);
   }
 
@@ -92,46 +144,7 @@ class Test {
         // int* ip = &int32;
         final ip = types['int*'].alloc(int32.location);
 
-        var header = '''struct struct_t {
-          int8_t int8;
-          int16_t int16;
-          int32_t int32;
-          int64_t int64;
-          uint8_t uint8;
-          uint16_t uint16;
-          uint32_t uint32;
-          uint64_t uint64;
-          int* ip;
-          void* vp;
-         };''';
-
-        types.declare(header);
-
-        var struct_t = helper.declareStruct(null, {
-          'int8': types['int8_t'],
-          'int16': types['int16_t'],
-          'int32': types['int32_t'],
-          'int64': types['int64_t'],
-          'uint8': types['uint8_t'],
-          'uint16': types['uint16_t'],
-          'uint32': types['uint32_t'],
-          'uint64': types['uint64_t'],
-          'ip': types['int*'],
-          'vp': types['void*']
-        });
-
-        // struct {
-        //   int8_t int8;
-        //   int16_t int16;
-        //   int32_t int32;
-        //   int64_t int64;
-        //   uint8_t uint8;
-        //   uint16_t uint16;
-        //   uint32_t uint32;
-        //   uint64_t uint64;
-        //   int* ip;
-        //   void* vp;
-        // } s1;
+        var struct_t = types["struct struct_t"];
         final s1 = struct_t.alloc();
         // Set content
         // s1.int8 = int8;
@@ -445,54 +458,28 @@ class Test {
     // TODO: Add test for union type
     group("Structure binary types.", () {
       test("Access data through binary struct and union types.", () {
-        // struct _Point {int x; int y;};
-        helper.declareStruct('_Point', {
-          'x': types['int'],
-          'y': types['int']
-        });
         Expect.equals('struct _Point', types['struct _Point'].name, '(struct _Point).name == "struct _Point"');
 
         // typedef struct _Point POINT;
         types['POINT'] = types['struct _Point'];
         Expect.isTrue(types['POINT'] == types['struct _Point'], 'POINT == struct _Point');
 
-        // typedef struct {int i;} struct1_t;
-        types['struct1_t'] = helper.declareStruct(null, {
+        // typedef struct {int i;} structX2_t;
+        types['struct2X_t'] = helper.declareStruct(null, {
           'i': types['int']
         });
-        // typedef struct {int i;} struct2_t;
-        types['struct2_t'] = helper.declareStruct(null, {
-          'i': types['int']
-        });
+
         // struct1_t
         var struct1_t = types['struct1_t'];
         // struct2_t
         var struct2_t = types['struct2_t'];
         Expect.isTrue(struct1_t != struct2_t, '${struct1_t} != ${struct2_t}');
 
-        // struct {int i;};
-        var struct3_t = helper.declareStruct(null, {
-          'i': types['int']
-        });
-        // typedef struct {int i;} struct4_t;
-        types['struct4_t'] = struct3_t;
-        // typedef struct {int i;} struct4_t;
-        types['struct5_t'] = struct3_t;
-        // struct4_t
-        var struct4_t = types['struct4_t'];
-        // struct5_t
-        var struct5_t = types['struct5_t'];
-        Expect.isTrue(struct4_t == struct5_t, '${struct4_t} == ${struct5_t}');
-
-        // typedef struct {POINT a; POINT b;} RECT;
-        types['RECT'] = helper.declareStruct(null, {
-          'a': types['POINT'],
-          'b': types['struct _Point']
-        });
         // RECT rect1 = {.b = {5, 6}};
         final rect1 = types['RECT'].alloc({
           'b': [5, 6]
         });
+
         Expect.isTrue(rect1['a']['x'].value == 0, '"rect1.b.x.value == 0');
         Expect.isTrue(rect1['b']['y'].value == 6, '"rect1.b.y.value == 6');
 
@@ -500,14 +487,6 @@ class Test {
         var rect1_val = rect1.value;
         Expect.isTrue(rect1_val['a']['x'] == 0, '"(by val) rect1.b.y == 0');
         Expect.isTrue(rect1_val['b']['y'] == 6, '"(by val) rect1.b.y == 6');
-
-        // typedef struct {int i; int* ip; int ia[10]; POINT pt;} struct6_t;
-        types['struct6_t'] = helper.declareStruct(null, {
-          'i': types['int'],
-          'ip': types['int*'],
-          'ia': types['int'].array(10),
-          'pt': types['POINT']
-        });
 
         // int i = 55555;
         final i = types['int'].alloc(55555);
@@ -571,12 +550,6 @@ class Test {
         Expect.isTrue(struct7_t.size == 0, "sizeof(struct7_t) == 0");
         struct7_t.addMembers(members);
         Expect.isTrue(struct7_t.size != 0, "sizeof(struct7_t) != 0");
-
-        // Forward reference himself
-        var struct8_t = helper.declareStruct("struct8_t", {
-          "sp": "struct struct8_t*"
-        });
-        Expect.isTrue(struct8_t.size != 0, "sizeof(struct8_t) != 0");
       });
 
       // TODO: Add test of struct packing

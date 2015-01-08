@@ -99,38 +99,23 @@ class BinaryTypes {
     var declarations = new BinaryDeclarations(text);
     for (var declaration in declarations) {
       if (declaration is TypedefDeclaration) {
-        var align = declaration.align;
+        var attributes = _getAttributes(declaration.attributes);
+        var align = _getAttributeAligned(attributes);
         var name = declaration.name;
-        var type = this[declaration.type.toString()];
-        typeDef(name, type, align: align);
-      } else if (declaration is StructDeclaration) {
-        StructureTypeSpecification type = declaration.type;
-        var align = type.align;
-        var pack = type.pack;
-        var tag = type.tag;
-        var members = {};
-        for (var member in type.members) {
-          var name = member.name;
-          var type = this[member.type.toString()];
-          members[name] = type;
+        var type = declaration.type;
+        BinaryType binaryType;
+        if (type is StructureDefTypeSpecification) {
+          binaryType = _declareStructure(type);
+        } else {
+          binaryType = this[type.toString()];
         }
 
-        // TODO: Think about the inner structures
-        // Recognize declarations inside this structure
-        // These struct types should be created but not registered.
-        StructureType structureType;
-        switch (type.kind) {
-          case "struct":
-            structureType = helper.declareStruct(tag, members, align: align, pack: pack);
-            break;
-          case "union":
-            structureType = helper.declareUnion(tag, members, align: align, pack: pack);
-            break;
-        }
-
-        // There is no possibility to register a nameless structure
-        if (tag != null) {
-          registerType(structureType);
+        typeDef(name, binaryType, align: align);
+      } else if (declaration is StructureDeclaration) {
+        _declareStructure(declaration.type);
+      } else if (declaration is VariableDeclaration) {
+        if (declaration.type is StructureDefTypeSpecification) {
+          _declareStructure(declaration.type);
         }
       }
     }
@@ -201,6 +186,80 @@ class BinaryTypes {
     for (var name in names) {
       _types[name] = type.clone().._name = name;
     }
+  }
+
+  BinaryType _declareStructure(StructureDefTypeSpecification type) {
+    // TODO: Use attributes
+    var align = null;
+    var kind = type.kind;
+    var pack = null;
+    var tag = type.tag;
+
+    StructureType structureType;
+    var key = "$kind $tag";
+    if (tag != null) {
+      structureType = _types[key];
+      if (structureType != null) {
+        BinaryTypeError.unableRedeclareType(key);
+      }
+    }
+
+    if (structureType == null) {
+      switch (type.kind) {
+        case "struct":
+          structureType = new StructType(tag, null, _dataModel, align: align, pack: pack);
+          break;
+        case "union":
+          structureType = new UnionType(tag, null, _dataModel, align: align, pack: pack);
+          break;
+      }
+
+      if (tag != null) {
+        _types[key] = structureType;
+      }
+    }
+
+    var members = {};
+    for (var member in type.members) {
+      var memberType = member.type;
+      var name = member.name;
+      BinaryType binaryType;
+      if (memberType is StructureDefTypeSpecification) {
+        binaryType = _declareStructure(memberType);
+      } else {
+        binaryType = this[memberType.toString()];
+      }
+
+      members[name] = binaryType;
+    }
+
+    if (!members.isEmpty) {
+      structureType.addMembers(members, pack: pack);
+    }
+
+    return structureType;
+  }
+
+  int _getAttributeAligned(Map attributes) {
+    var value = attributes["aligned"];
+    if (value == null) {
+      return null;
+    }
+
+    return int.parse(value, onError: (e) => null);
+  }
+
+  Map<String, String> _getAttributes(BinaryAttributes attributes) {
+    var result = {};
+    if (attributes == null) {
+      return result;
+    }
+
+    for (var value in attributes.values) {
+      result[value.name] = value.parameters;
+    }
+
+    return result;
   }
 
   BinaryType _getType(type, [BinaryType defaultType]) {

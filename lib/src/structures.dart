@@ -12,9 +12,9 @@ class StructType extends StructureType {
 
   List<BinaryType> _types;
 
-  StructType(String name, Map<String, BinaryType> members, DataModel dataModel, {int align, int pack}) : this._internal(name, members, dataModel, null, align: align, pack: pack);
+  StructType(String tag, Map<String, BinaryType> members, DataModel dataModel, {int align, int pack}) : this._internal(tag, members, dataModel, null, align: align, pack: pack);
 
-  StructType._internal(String name, Map<String, BinaryType> members, DataModel dataModel, StructureType original, {int align, int pack}) : super("struct", name, dataModel, original, align: align) {
+  StructType._internal(String tag, Map<String, BinaryType> members, DataModel dataModel, StructureType original, {int align, int pack}) : super("struct", tag, dataModel, original, align: align) {
     _offsets = new List<int>();
     _ordinals = new LinkedHashMap<String, int>();
     _types = new List<BinaryType>();
@@ -209,15 +209,17 @@ abstract class StructureType extends BinaryType {
 
   int _pack;
 
-  StructureType(String kind, String name, DataModel dataModel, StructureType original, {int align}) : super(dataModel, align: align) {
-    if (name != null && name.isEmpty) {
+  String _tag;
+
+  StructureType(String kind, String tag, DataModel dataModel, StructureType original, {int align}) : super(dataModel, align: align) {
+    if (tag != null && tag.isEmpty) {
       throw new ArgumentError("Name should be not empty string or unspecified.");
     }
 
-    if (name != null) {
-      name = "$kind $name";
+    if (tag != null) {
+      _name = "$kind $tag";
     } else {
-      name = "$kind <unnamed>";
+      _name = "$kind <unnamed>";
     }
 
     if (original == null) {
@@ -225,8 +227,8 @@ abstract class StructureType extends BinaryType {
     }
 
     _members = new LinkedHashMap<String, BinaryType>();
-    _name = name;
     _original = original;
+    _tag = tag;
   }
 
   dynamic get defaultValue {
@@ -253,6 +255,11 @@ abstract class StructureType extends BinaryType {
    * Returns the data structure padding.
    */
   int get pack => _pack;
+
+  /**
+   * Returns the tag.
+   */
+  String get tag => _tag;
 
   bool operator ==(other) => other is StructureType && identical(_original, other._original);
 
@@ -339,9 +346,9 @@ class UnionType extends StructureType {
 
   int _size = 0;
 
-  UnionType(String name, Map<String, BinaryType> members, DataModel dataModel, {int align, int pack}) : this._internal(name, members, dataModel, null, align: align, pack: pack);
+  UnionType(String tag, Map<String, BinaryType> members, DataModel dataModel, {int align, int pack}) : this._internal(tag, members, dataModel, null, align: align, pack: pack);
 
-  UnionType._internal(String name, Map<String, BinaryType> members, DataModel dataModel, StructureType original, {int align, int pack}) : super("union", name, dataModel, original, align: align) {
+  UnionType._internal(String tag, Map<String, BinaryType> members, DataModel dataModel, StructureType original, {int align, int pack}) : super("union", tag, dataModel, original, align: align) {
     if (members != null) {
       addMembers(members, pack: pack);
     }
