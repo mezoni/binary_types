@@ -31,26 +31,6 @@ class BinaryTypeHelper {
   DataModel get dataModel => _dataModel;
 
   /**
-   * Allocates the memory for binary data and returns the binary object.
-   *
-   * Parameters:
-   *   [dynamic] type
-   *   Type (or type name).
-   *
-   *   [dynamic] value
-   *   Initial value to filling.
-   */
-  BinaryObject alloc(type, [dynamic value]) {
-    if (type == null) {
-      throw new ArgumentError.notNull("type");
-    }
-
-    var binaryType = _getType(type);
-    return binaryType.alloc(value);
-  }
-
-
-  /**
    * Allocates the memory for null-terminated string and returns the binary
    * array object.
    *
@@ -191,18 +171,22 @@ class BinaryTypeHelper {
    *   [Reference] reference
    *   Reference to the null-terminated string.
    */
-  String readString(Reference reference) {
-    if (reference == null) {
+  String readString(BinaryData data) {
+    if (data == null) {
       throw new ArgumentError.notNull("reference");
     }
 
-    var type = reference.type;
+    var type = data.type;
+    if (type is ArrayType) {
+      type = type.type;
+    }
+
     if (type is! IntType) {
       throw new ArgumentError("Referenced type '$type' should be integer type");
     }
 
-    var base = reference.base;
-    var offset = reference.offset;
+    var base = data.base;
+    var offset = data.offset;
     var size = type.size;
     var characters = <int>[];
     var index = 0;

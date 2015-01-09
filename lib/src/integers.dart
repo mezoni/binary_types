@@ -51,7 +51,7 @@ class Int16Type extends IntType {
 
       value &= (MAX << 1) + 1;
       return value <= MAX ? value : value - ((MAX << 1) + 2);
-    } else if (value is Reference) {
+    } else if (value is BinaryData) {
       if (value.offset == 0) {
         return value.base;
       }
@@ -134,7 +134,7 @@ class Int32Type extends IntType {
 
       value &= (MAX << 1) + 1;
       return value <= MAX ? value : value - ((MAX << 1) + 2);
-    } else if (value is Reference) {
+    } else if (value is BinaryData) {
       if (value.offset == 0) {
         return value.base;
       }
@@ -217,7 +217,7 @@ class Int64Type extends IntType {
 
       value &= (MAX << 1) + 1;
       return value <= MAX ? value : value - ((MAX << 1) + 2);
-    } else if (value is Reference) {
+    } else if (value is BinaryData) {
       if (value.offset == 0) {
         return value.base;
       }
@@ -300,7 +300,7 @@ class Int8Type extends IntType {
 
       value &= (MAX << 1) + 1;
       return value <= MAX ? value : value - ((MAX << 1) + 2);
-    } else if (value is Reference) {
+    } else if (value is BinaryData) {
       if (value.offset == 0) {
         return value.base;
       }
@@ -451,7 +451,7 @@ class Uint16Type extends IntType {
       }
 
       return value;
-    } else if (value is Reference) {
+    } else if (value is BinaryData) {
       if (value.offset == 0) {
         return value.base;
       }
@@ -533,7 +533,7 @@ class Uint32Type extends IntType {
       }
 
       return value;
-    } else if (value is Reference) {
+    } else if (value is BinaryData) {
       if (value.offset == 0) {
         return value.base;
       }
@@ -615,7 +615,7 @@ class Uint64Type extends IntType {
       }
 
       return value;
-    } else if (value is Reference) {
+    } else if (value is BinaryData) {
       if (value.offset == 0) {
         return value.base;
       }
@@ -697,7 +697,7 @@ class Uint8Type extends IntType {
       }
 
       return value;
-    } else if (value is Reference) {
+    } else if (value is BinaryData) {
       if (value.offset == 0) {
         return value.base;
       }

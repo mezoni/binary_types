@@ -11,7 +11,7 @@ void testSpeed() {
   // int ia[1000000] = {0};
   final ia = types['int'].array(size).alloc([]);
   // int* ip = &ia;
-  final ip = types['int*'].alloc(ia.location);
+  final ip = types['int*'].alloc(ia);
   final i1 = types['int'].alloc();
   var list1 = new List(size);
   var ia_val;

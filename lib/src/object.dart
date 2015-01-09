@@ -13,7 +13,7 @@ class BinaryObject extends BinaryData {
     var object = new BinaryObject._internal(type, address, 0);
     Unsafe.memoryPeer(object, address, size);
     if (value != null) {
-      type._initialize(object._base, object._offset, value);
+      type._initialize(object.base, object.offset, value);
     }
 
     return object;

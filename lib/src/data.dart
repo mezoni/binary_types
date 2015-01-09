@@ -4,35 +4,23 @@ part of binary_types;
  * Binary data of the specified binary type.
  */
 class BinaryData {
+  final int base;
+
+  final int offset;
+
   final BinaryType type;
 
-  final int _base;
-
-  final int _offset;
-
-  BinaryData._internal(this.type, this._base, this._offset);
+  BinaryData._internal(this.type, this.base, this.offset);
 
   /**
    * Returns the memory address of this binary data.
    */
   int get address {
-    if (_offset == 0) {
-      return _base;
+    if (offset == 0) {
+      return base;
     }
 
-    return _base + _offset;
-  }
-
-  /**
-   * Returns the location of this binary data as a reference.
-   */
-  Reference get location {
-    if (type is ArrayType) {
-      var arrayType = type;
-      return new Reference._internal(arrayType.type, _base, _offset);
-    }
-
-    return new Reference._internal(type, _base, _offset);
+    return base + offset;
   }
 
   /**
@@ -40,7 +28,7 @@ class BinaryData {
    */
   // TODO: Provide the alternative accessor with shorter name
   dynamic get value {
-    return type._getValue(_base, _offset);
+    return type._getValue(base, offset);
   }
 
   /**
@@ -48,23 +36,19 @@ class BinaryData {
    */
   // TODO: Provide the alternative accessor with shorter name
   void set value(value) {
-    type._setValue(_base, _offset, value);
+    type._setValue(base, offset, value);
   }
 
   bool operator ==(other) {
-    return type._compareContent(_base, _offset, other);
+    return type._compareContent(base, offset, other);
   }
 
   BinaryData operator [](index) {
-    return type._getElement(_base, _offset, index);
-  }
-
-  Reference operator ~() {
-    return location;
+    return type._getElement(base, offset, index);
   }
 
   void operator []=(index, value) {
-    type._setElement(_base, _offset, index, value);
+    type._setElement(base, offset, index, value);
   }
 
   /**
@@ -76,7 +60,7 @@ class BinaryData {
    *   Index of the element.
    */
   dynamic getElementValue(index) {
-    return type._getElementValue(_base, _offset, index);
+    return type._getElementValue(base, offset, index);
   }
 
   /**
@@ -90,8 +74,8 @@ class BinaryData {
    *   Value to set.
    */
   void setElementValue(index, value) {
-    type._setElementValue(_base, _offset, index, value);
+    type._setElementValue(base, offset, index, value);
   }
 
-  String toString() => "$type:${_Utils.toHex(_base + _offset)}";
+  String toString() => "$type:${_Utils.toHex(base + offset)}";
 }

@@ -1,6 +1,11 @@
 ## 0.0.5
 
-- Initial support of `binary declartions`. Declarations through the special header files from now supports the `typedef` types, `struct` and `union` declarations 
+- Added field `BinaryData.base`
+- Added field `BinaryData.offset`  
+- Initial support of `binary declartions`. Declarations through the special header files from now supports the `typedef` types, `struct` and `union` declarations
+- Removed class `Reference` in favor of the "all-sufficient" implementation of the `Binary Data` 
+- Removed getter `BinaryData.location`
+- Removed operator `BinaryData.operator~)`
 
 ## 0.0.4
 

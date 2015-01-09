@@ -53,4 +53,8 @@ Initial release. Use at your own risk!
 - Struct declarations
 - Union declarations
 
+**Small example**
+
+```dart
 {{example/example.dart}}
+```

@@ -4,7 +4,7 @@ part of binary_types;
  * The reference is a right-hand side value which are composed from the memory
  * address (base and offset) and the binary type of the referenced value.
  */
-class Reference {
+class Reference2 {
   final int base;
 
   final int offset;
@@ -13,7 +13,7 @@ class Reference {
 
   BinaryType _type;
 
-  Reference(BinaryType type, this.base, this.offset) {
+  Reference2(BinaryType type, this.base, this.offset) {
     if (type == null) {
       throw new ArgumentError.notNull("type");
     }
@@ -34,7 +34,7 @@ class Reference {
     _type = type;
   }
 
-  Reference._internal(this._type, this.base, this.offset);
+  Reference2._internal(this._type, this.base, this.offset);
 
   int get address {
     if (_address == null) {

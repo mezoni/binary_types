@@ -44,7 +44,7 @@ class PointerType extends BinaryType {
   }
 
   dynamic get defaultValue {
-    return new Reference._internal(type, 0, 0);
+    return new BinaryData._internal(type, 0, 0);
   }
 
   BinaryKinds get kind => BinaryKinds.POINTER;
@@ -57,9 +57,9 @@ class PointerType extends BinaryType {
 
   dynamic _cast(value) {
     if (value is int) {
-      return new Reference._internal(type, value, 0);
-    } else if (value is Reference) {
-      return new Reference._internal(type, value.base, value.offset);
+      return new BinaryData._internal(type, value, 0);
+    } else if (value is BinaryData) {
+      return new BinaryData._internal(type, value.base, value.offset);
     } else {
       return super._cast(value);
     }
@@ -85,8 +85,8 @@ class PointerType extends BinaryType {
     }
   }
 
-  Reference _getValue(int base, int offset) {
-    return new Reference._internal(type, Unsafe.readIntPtr(base, offset), 0);
+  BinaryData _getValue(int base, int offset) {
+    return new BinaryData._internal(type, Unsafe.readIntPtr(base, offset), 0);
   }
 
   void _initialize(int base, int offset, value) {
@@ -125,7 +125,7 @@ class PointerType extends BinaryType {
   }
 
   void _setValue(int base, int offset, value) {
-    if (value is Reference) {
+    if (value is BinaryData) {
       var valueType = value.type;
       if (type is VoidType || valueType == type || (valueType is ArrayType && valueType.type == type)) {
         Unsafe.writeIntPtr(base, offset, value.address);

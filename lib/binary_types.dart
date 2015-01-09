@@ -22,3 +22,4 @@ part 'src/types.dart';
 part 'src/utils.dart';
 part 'src/va_list.dart';
 part 'src/void.dart';
+part 'src/wrapper.dart';

@@ -321,12 +321,12 @@ abstract class StructureType extends BinaryType {
   void _setContent(int base, int offset, value) {
     if (value is BinaryData && value.type == this) {
       var dest = base;
-      var src = value._base;
+      var src = value.base;
       if (offset != 0) {
         dest += offset;
       }
 
-      offset = value._offset;
+      offset = value.offset;
       if (offset != 0) {
         src += offset;
       }

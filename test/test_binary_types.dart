@@ -69,19 +69,21 @@ void main() {
 class Test {
   BinaryTypeHelper helper;
 
-  BinaryTypes types;
+  BinaryTypes t;
 
   Test() {
-    types = new BinaryTypes();
-    types.declare(_header);
-    helper = new BinaryTypeHelper(types);
+    t = new BinaryTypes();
+    t.declare(_header);
+    helper = new BinaryTypeHelper(t);
   }
+
+  BinaryObject alloc(String type, [value]) => t[type].alloc(value);
 
   void testAlloc() {
     group("Memory allocation.", () {
       test("Memory allocation through binary array.", () {
         var size = 10;
-        var ia = helper.alloc("int[$size]", []);
+        var ia = alloc("int[$size]", []);
         Expect.isTrue(ia.value.length == size, 'ia.value.length == $size');
       });
     });
@@ -92,7 +94,7 @@ class Test {
       test("Access binary data through binary arrays.", () {
         var size = 1000;
         // int ia[1000] = {0};
-        var ia = types['int'].array(size).alloc([]);
+        var ia = alloc("int[$size]");
         for (int index = 0; index < size; index++) {
           // ia[index] = index;
           ia[index].value = index;
@@ -126,25 +128,25 @@ class Test {
     group("Common operations.", () {
       test("Access data through binary integer and struct types.", () {
         // int8_t int8 = -8;
-        final int8 = types['int8_t'].alloc(-8);
+        final int8 = t['int8_t'].alloc(-8);
         // int16_t int16 = -16;
-        final int16 = types['int16_t'].alloc(-16);
+        final int16 = t['int16_t'].alloc(-16);
         // int32_t int32 = -32;
-        final int32 = types['int32_t'].alloc(-32);
+        final int32 = t['int32_t'].alloc(-32);
         // int64_t int64 = -64;
-        final int64 = types['int64_t'].alloc(-64);
+        final int64 = t['int64_t'].alloc(-64);
         // uint8_t uint8 = 8;
-        final uint8 = types['uint8_t'].alloc(8);
+        final uint8 = t['uint8_t'].alloc(8);
         // uint16_t uint16 = 16;
-        final uint16 = types['uint16_t'].alloc(16);
+        final uint16 = t['uint16_t'].alloc(16);
         // uint32_t uint32 = 32;
-        final uint32 = types['uint32_t'].alloc(32);
+        final uint32 = t['uint32_t'].alloc(32);
         // uint64_t uint64 = 64;
-        final uint64 = types['uint64_t'].alloc(64);
+        final uint64 = t['uint64_t'].alloc(64);
         // int* ip = &int32;
-        final ip = types['int*'].alloc(int32.location);
+        final ip = t['int*'].alloc(int32);
 
-        var struct_t = types["struct struct_t"];
+        var struct_t = t["struct struct_t"];
         final s1 = struct_t.alloc();
         // Set content
         // s1.int8 = int8;
@@ -181,7 +183,7 @@ class Test {
         // TODO: comparing
         //Expect.equals(s1['ip'], ip, 's1.ip == ip');
         //Expect.equals(s1['vp'], ip, 's1.vp == ip');
-        //Expect.equals(s1['ip'], int32.location, 's1.ip = int32');
+        //Expect.equals(s1['ip'], int32, 's1.ip = int32');
       });
     });
   }
@@ -202,7 +204,7 @@ class Test {
         Expect.isTrue(ca[length].value == 0, "*ca[length] == 0;");
 
         //
-        var strFromMemory = helper.readString(ca.location);
+        var strFromMemory = helper.readString(ca);
         Expect.isTrue(strFromMemory == testString, "testString == strFromMemory;");
       });
     });
@@ -212,9 +214,9 @@ class Test {
     group("Floating point binary types.", () {
       test("Access data through binary float and double types.", () {
         // float float1 = 0;
-        final float1 = types['float'].alloc(0);
+        final float1 = alloc("float", 0);
         // double double1 = 0;
-        final double1 = types['double'].alloc(0);
+        final double1 = alloc("double", 0);
         double zero = 0.0;
 
         Expect.equals(float1.value, zero, 'float1 = 0');
@@ -246,7 +248,7 @@ class Test {
         Expect.equals(555, float1.value, 'float1 == 555');
         Expect.equals(555, double1.value, 'double1 == 555');
 
-        final uint64 = types['uint64_t'].alloc(18446744073709551615);
+        final uint64 = t['uint64_t'].alloc(18446744073709551615);
         double1.value = uint64.value;
         double1.value += 10000;
         uint64.value = double1.value;
@@ -259,9 +261,9 @@ class Test {
     group("Function declarations.", () {
       test("Arity of declared functions.", () {
         // char* ()(char*)
-        var func_t = helper.declareFunc(types['char*'], [types['char*']]);
+        var func_t = helper.declareFunc(t['char*'], [t['char*']]);
         // char* ()(...)
-        var func_va_args_t = helper.declareFunc(types['char*'], [types['int'], types['...']]);
+        var func_va_args_t = helper.declareFunc(t['char*'], [t['int'], t['...']]);
 
         Expect.equals(func_t.arity, 1, 'func_t.arity == 1');
         Expect.equals(func_va_args_t.arity, 1, 'func_va_args_t.arity == 1');
@@ -276,35 +278,35 @@ class Test {
     group("Integer binary types.", () {
       test("Access data through different binary integer types.", () {
         // uint64_t uint64 = -1;
-        final uint64 = types['uint64_t'].alloc(-1);
+        final uint64 = alloc("uint64_t", -1);
         Expect.equals(18446744073709551615, uint64.value, 'uint64_t i = -1; must be 18446744073709551615');
 
         // int64_t int64 = uint64;
-        final int64 = types['int64_t'].alloc(uint64.value);
+        final int64 = alloc("int64_t", uint64.value);
         Expect.equals(-1, int64.value, 'int64_t i = 18446744073709551615; must be -1');
 
         // uint32_t uint32 = -1;
-        final uint32 = types['uint32_t'].alloc(-1);
+        final uint32 = alloc("uint32_t", -1);
         Expect.equals(4294967295, uint32.value, 'uint32_t i = -1; must be 4294967295');
 
         // int32_t int32 = uint32;
-        final int32 = types['int32_t'].alloc(uint32.value);
+        final int32 = alloc("int32_t", uint32.value);
         Expect.equals(-1, int32.value, 'int32_t i = 4294967295; must be -1');
 
         // uint16_t uint16 = -1;
-        final uint16 = types['uint16_t'].alloc(-1);
+        final uint16 = alloc("uint16_t", -1);
         Expect.equals(65535, uint16.value, 'uint16_t i = -1; must be 65535');
 
         // int16_t int16 = uint16;
-        final int16 = types['int16_t'].alloc(uint16.value);
+        final int16 = alloc("int16_t", uint16.value);
         Expect.equals(-1, int16.value, 'int16_t i = 65535; must be -1');
 
         // uint8_t uint8 = -1;
-        final uint8 = types['uint8_t'].alloc(-1);
+        final uint8 = alloc("uint8_t", -1);
         Expect.equals(255, uint8.value, 'uint8_t i = -1; must be 255');
 
         // int8_t int8 = uint8;
-        final int8 = types['int8_t'].alloc(uint8.value);
+        final int8 = alloc("int8_t", uint8.value);
         Expect.equals(-1, int8.value, 'int8_t i = 255; must be -1');
 
         var val = 1311768467294899695; // 0x1234567890ABCDEF;
@@ -344,14 +346,14 @@ class Test {
 
       test("Casting data values of different binary integer types.", () {
         // Casting values
-        Expect.equals(-1, types['int8_t'].cast(0xff), '-1 == (int8_t)0xff');
-        Expect.equals(-1, types['int16_t'].cast(0xffff), '-1 == (int16_t)0xffff');
-        Expect.equals(-1, types['int32_t'].cast(0xffffffff), '-1 == (int32_t)0xffffffff');
-        Expect.equals(-1, types['int64_t'].cast(0xffffffffffffffff), '-1 == (int64_t)0xffffffffffffffff');
-        Expect.equals(0xff, types['uint8_t'].cast(-1), '0xff == (uint8_t)-1');
-        Expect.equals(0xffff, types['uint16_t'].cast(-1), '0xffff == (uint16_t)-1');
-        Expect.equals(0xffffffff, types['uint32_t'].cast(-1), '0xffffffff == (uint32_t)-1');
-        Expect.equals(0xffffffffffffffff, types['uint64_t'].cast(-1), '0xffffffffffffffff == (uint64_t)-1');
+        Expect.equals(-1, t['int8_t'].cast(0xff), '-1 == (int8_t)0xff');
+        Expect.equals(-1, t['int16_t'].cast(0xffff), '-1 == (int16_t)0xffff');
+        Expect.equals(-1, t['int32_t'].cast(0xffffffff), '-1 == (int32_t)0xffffffff');
+        Expect.equals(-1, t['int64_t'].cast(0xffffffffffffffff), '-1 == (int64_t)0xffffffffffffffff');
+        Expect.equals(0xff, t['uint8_t'].cast(-1), '0xff == (uint8_t)-1');
+        Expect.equals(0xffff, t['uint16_t'].cast(-1), '0xffff == (uint16_t)-1');
+        Expect.equals(0xffffffff, t['uint32_t'].cast(-1), '0xffffffff == (uint32_t)-1');
+        Expect.equals(0xffffffffffffffff, t['uint64_t'].cast(-1), '0xffffffffffffffff == (uint64_t)-1');
       });
     });
   }
@@ -360,15 +362,15 @@ class Test {
     group("Pointer binary types.", () {
       test("Access data through binary pointer types.", () {
         // int i = 0;
-        final i = types['int'].alloc(0);
+        final i = alloc("int", 0);
         // int* ip = &i;
-        final ip = types['int'].ptr().alloc(i.location);
+        final ip = alloc("int*", i);
         // ip = ip;
         ip.value = ip.value;
         // i = 0;
         i.value = 0;
         // ip = &i;
-        ip.value = i.location;
+        ip.value = i;
 
         // ip = (int*)10000000;
         ip.value = ip.type.cast(10000000);
@@ -380,9 +382,9 @@ class Test {
 
         var size = 1000;
         // int ia[1000];
-        final ia = types['int'].array(1000).alloc();
+        final ia = alloc("int[$size]");
         // ip = &ia;
-        ip.value = ia.location;
+        ip.value = ia;
         for (var index = 0; index < size; index++) {
           var value = index;
           // ia[index] = value;
@@ -404,7 +406,7 @@ class Test {
         }
 
         // ip = &ia;
-        ip.value = ia.location;
+        ip.value = ia;
         for (var index = 0; index < size; index++) {
           Expect.isTrue(ia[index].value == ip[index].value, 'ia[index] == ip[index]');
           Expect.isTrue(ip[index].value == ia[index].value, 'ip[index] == ia[index]');
@@ -413,9 +415,9 @@ class Test {
         // i = 99;
         i.value = 99;
         // ip = &i;
-        ip.value = i.location;
+        ip.value = i;
         // int* ipa[size];
-        final ipa = types['int'].ptr().array(size).alloc();
+        final ipa = alloc("int*[$size]");
         for (var index = 0; index < size; index++) {
           // ipa[index] = ip;
           ipa[index] = ip;
@@ -425,23 +427,23 @@ class Test {
         }
 
         //
-        var fp = types["float*"].alloc();
-        var f = types["float"].alloc(42.0);
+        var fp = t["float*"].alloc();
+        var f = t["float"].alloc(42.0);
         fp[0] = f;
 
         // i = 0;
         i.value = 0;
         // ip = &i;
-        ip.value = i.location;
+        ip.value = i;
         // *ip = 3333;
         ip[0].value = 3333;
         Expect.isTrue(ip[0].value == i.value, '*ip[0] = i;');
         Expect.isTrue(ip[0].value == 3333, '*ip[0] = 3333;');
 
         // void* vp = &i;
-        final vp = types['void*'].alloc(i.location);
+        final vp = alloc("void*", i);
         // vp = &i;
-        vp.value = i.location;
+        vp.value = i;
         // vp = ip;
         vp.value = ip.value;
         // ip = (int*)vp;
@@ -458,25 +460,25 @@ class Test {
     // TODO: Add test for union type
     group("Structure binary types.", () {
       test("Access data through binary struct and union types.", () {
-        Expect.equals('struct _Point', types['struct _Point'].name, '(struct _Point).name == "struct _Point"');
+        Expect.equals('struct _Point', t['struct _Point'].name, '(struct _Point).name == "struct _Point"');
 
         // typedef struct _Point POINT;
-        types['POINT'] = types['struct _Point'];
-        Expect.isTrue(types['POINT'] == types['struct _Point'], 'POINT == struct _Point');
+        t['POINT'] = t['struct _Point'];
+        Expect.isTrue(t['POINT'] == t['struct _Point'], 'POINT == struct _Point');
 
         // typedef struct {int i;} structX2_t;
-        types['struct2X_t'] = helper.declareStruct(null, {
-          'i': types['int']
+        t['struct2X_t'] = helper.declareStruct(null, {
+          'i': t['int']
         });
 
         // struct1_t
-        var struct1_t = types['struct1_t'];
+        var struct1_t = t['struct1_t'];
         // struct2_t
-        var struct2_t = types['struct2_t'];
+        var struct2_t = t['struct2_t'];
         Expect.isTrue(struct1_t != struct2_t, '${struct1_t} != ${struct2_t}');
 
         // RECT rect1 = {.b = {5, 6}};
-        final rect1 = types['RECT'].alloc({
+        final rect1 = t['RECT'].alloc({
           'b': [5, 6]
         });
 
@@ -489,15 +491,15 @@ class Test {
         Expect.isTrue(rect1_val['b']['y'] == 6, '"(by val) rect1.b.y == 6');
 
         // int i = 55555;
-        final i = types['int'].alloc(55555);
+        final i = t['int'].alloc(55555);
         // struct6_t struct6 = {
         //    .i = 12345,
         //    .ip = &.i;
         //    .ia = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}},
         //    .pt = {.x = 1, .y = 2}};
-        final struct6 = types['struct6_t'].alloc({
+        final struct6 = t['struct6_t'].alloc({
           'i': 12345,
-          'ip': i.location,
+          'ip': i,
           'ia': [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
           'pt': {
             'x': 1,
@@ -519,7 +521,7 @@ class Test {
         Expect.equals(2, map_struct6['pt']['y'], 'struct6.pt.y == 2');
 
         // RECT rect2 = {.a = {.x = 1, .y = 2}, .b = {.x = 3, .y = 4}};
-        final rect2 = types['RECT'].alloc({
+        final rect2 = t['RECT'].alloc({
           'a': {
             'x': 1,
             'y': 2
@@ -534,18 +536,18 @@ class Test {
         Expect.equals(3, rect2['a']['x'].value, 'rect.a.x == 3');
         Expect.equals(4, rect2['a']['y'].value, 'rect.a.x == 4');
 
-        types['struct_inner_t'] = helper.declareStruct(null, {
-          'ip': types['int*']
+        t['struct_inner_t'] = helper.declareStruct(null, {
+          'ip': t['int*']
         });
-        types['struct_outer_t'] = helper.declareStruct(null, {
-          'inner': types['struct_inner_t']
+        t['struct_outer_t'] = helper.declareStruct(null, {
+          'inner': t['struct_inner_t']
         });
-        var outer = types['struct_outer_t'].alloc();
+        var outer = t['struct_outer_t'].alloc();
         var outerValue = outer.value;
         var ip = outerValue["inner"]["ip"];
 
         var members = {};
-        members["ia"] = types["int"].array(10);
+        members["ia"] = t["int"].array(10);
         var struct7_t = helper.declareStruct(null, null);
         Expect.isTrue(struct7_t.size == 0, "sizeof(struct7_t) == 0");
         struct7_t.addMembers(members);
