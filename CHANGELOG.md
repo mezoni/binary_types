@@ -1,3 +1,7 @@
+## 0.0.7
+
+- Completely re-implemented the mechanic of naming of the binary types. Now types displayed correctly
+
 ## 0.0.6
 
 - Made adaptations to the new version of package `binary_declarations`
