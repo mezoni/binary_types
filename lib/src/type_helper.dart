@@ -50,6 +50,8 @@ class BinaryTypeHelper {
   }
 
   /**
+   * DEPRECATED! Use "binary declarations" instead
+   *
    * Declares the "function" binary type.
    *
    * Parameters:
@@ -65,6 +67,8 @@ class BinaryTypeHelper {
   }
 
   /**
+   * DEPRECATED! Use "binary declarations" instead
+   *
    * Declares the "struct" binary type.
    *
    * Parameters:
@@ -106,6 +110,8 @@ class BinaryTypeHelper {
   }
 
   /**
+   * DEPRECATED! Use "binary declarations" instead
+   *
    * Declares the "union" binary type.
    *
    * Parameters:

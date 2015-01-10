@@ -64,6 +64,8 @@ class BinaryTypes {
   }
 
   /**
+   * DEPRECATED! Use "binary declarations" instead
+   *
    * Clones the binary type and register it under a different name (typedef).
    */
   @deprecated
@@ -123,6 +125,8 @@ class BinaryTypes {
   }
 
   /**
+   * DEPRECATED! Use "binary declarations" instead
+   *
    * Registers the binary type in the type system.
    *
    * Parameters:
@@ -146,6 +150,8 @@ class BinaryTypes {
   }
 
   /**
+   * DEPRECATED! Use "binary declarations" instead
+   *
    * Clones the binary type and register it under a different name (typedef).
    *
    * Parameters:
@@ -184,10 +190,13 @@ class BinaryTypes {
     }
   }
 
-  void _cloneInt(int size, bool signed, List<String> names) {
+  void _cloneInt(int size, bool signed, List<String> names, String name) {
     var type = IntType.create(size, signed, _dataModel);
-    for (var name in names) {
-      _types[name] = type.clone().._name = name;
+    for (var fullname in names) {
+      var copy = type.clone(name);
+      copy._namePrefix = "$name ";
+      copy._typedefName = "";
+      _types[fullname] = copy;
     }
   }
 
@@ -282,37 +291,40 @@ class BinaryTypes {
 
   void _init() {
     // char
-    _cloneInt(_dataModel.sizeOfChar, _dataModel.isCharSigned, const ["char"]);
+    _cloneInt(_dataModel.sizeOfChar, _dataModel.isCharSigned, const ["char"], "char");
 
     // Signed integers
-    _cloneInt(_dataModel.sizeOfChar, true, const ["signed char"]);
-    _cloneInt(_dataModel.sizeOfShort, true, const ["short", "short int", "signed short", "signed short int"]);
-    _cloneInt(_dataModel.sizeOfInt, true, const ["int", "signed", "signed int"]);
-    _cloneInt(_dataModel.sizeOfLong, true, const ["long", "long int", "signed long", "signed long int"]);
-    _cloneInt(_dataModel.sizeOfLongLong, true, const ["long long", "long long int", "signed long long", "signed long long int"]);
+    _cloneInt(_dataModel.sizeOfChar, true, const ["signed char"], "signed char");
+    _cloneInt(_dataModel.sizeOfShort, true, const ["short", "short int", "signed short", "signed short int"], "short");
+    _cloneInt(_dataModel.sizeOfInt, true, const ["int", "signed", "signed int"], "int");
+    _cloneInt(_dataModel.sizeOfLong, true, const ["long", "long int", "signed long", "signed long int"], "long");
+    _cloneInt(_dataModel.sizeOfLongLong, true, const ["long long", "long long int", "signed long long", "signed long long int"], "long long");
 
     // Unsigned integers
-    _cloneInt(_dataModel.sizeOfChar, false, const ["unsigned char"]);
-    _cloneInt(_dataModel.sizeOfShort, false, const ["unsigned short", "unsigned short int"]);
-    _cloneInt(_dataModel.sizeOfInt, false, const ["unsigned", "unsigned int"]);
-    _cloneInt(_dataModel.sizeOfLong, false, const ["unsigned long", "unsigned long int"]);
-    _cloneInt(_dataModel.sizeOfLongLong, false, const ["unsigned long long", "unsigned long long int"]);
+    _cloneInt(_dataModel.sizeOfChar, false, const ["unsigned char"], "unsigned char");
+    _cloneInt(_dataModel.sizeOfShort, false, const ["unsigned short", "unsigned short int"], "unsigned short");
+    _cloneInt(_dataModel.sizeOfInt, false, const ["unsigned", "unsigned int"], "unsigned int");
+    _cloneInt(_dataModel.sizeOfLong, false, const ["unsigned long", "unsigned long int"], "unsigned long");
+    _cloneInt(_dataModel.sizeOfLongLong, false, const ["unsigned long long", "unsigned long long int"], "unsigned long long");
 
     // Fixed size integers
-    _cloneInt(1, true, const ["int8_t"]);
-    _cloneInt(2, true, const ["int16_t"]);
-    _cloneInt(4, true, const ["int32_t"]);
-    _cloneInt(8, true, const ["int64_t"]);
-    _cloneInt(1, false, const ["uint8_t"]);
-    _cloneInt(2, false, const ["uint16_t"]);
-    _cloneInt(4, false, const ["uint32_t"]);
-    _cloneInt(8, false, const ["uint64_t"]);
+    // TODO: See in Visual Studio how they displayed in hints
+    _cloneInt(1, true, const ["int8_t"], "int8_t");
+    _cloneInt(2, true, const ["int16_t"], "int16_t");
+    _cloneInt(4, true, const ["int32_t"], "int32_t");
+    _cloneInt(8, true, const ["int64_t"], "int64_t");
+    _cloneInt(1, false, const ["uint8_t"], "uint8_t");
+    _cloneInt(2, false, const ["uint16_t"], "uint16_t");
+    _cloneInt(4, false, const ["uint32_t"], "uint32_t");
+    _cloneInt(8, false, const ["uint64_t"], "uint64_t");
 
     // Pointer size
-    _cloneInt(_dataModel.sizeOfPointer, true, const ["intptr_t"]);
+    // TODO: See in Visual Studio how they displayed in hints
+    _cloneInt(_dataModel.sizeOfPointer, true, const ["intptr_t"], "intptr_t");
 
     // Array size
-    _cloneInt(_dataModel.sizeOfPointer, false, const ["size_t"]);
+    // TODO: See in Visual Studio how they displayed in hints
+    _cloneInt(_dataModel.sizeOfPointer, false, const ["size_t"], "size_t");
 
     // Floating points
     _types["float"] = new FloatType(_dataModel);
@@ -343,8 +355,7 @@ class BinaryTypes {
       BinaryTypeError.unableRedeclareType(name);
     }
 
-    var copy = binaryType.clone(align: align);
-    copy._name = name;
+    var copy = binaryType.clone(name, align: align);
     _types[name] = copy;
     return copy;
   }

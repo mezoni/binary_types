@@ -1,8 +1,11 @@
 part of binary_types;
 
 class VaListType extends BinaryType {
-  VaListType(DataModel dataModel) : super(dataModel) {
-    _name = "...";
+  VaListType(DataModel dataModel, {String name}) : super(dataModel, name: name) {
+    if (name == null) {
+      _name = "...";
+      _namePrefix = "... ";
+    }
   }
 
   int get align {
@@ -21,7 +24,7 @@ class VaListType extends BinaryType {
 
   bool operator ==(other) => other is VaListType;
 
-  VaListType _clone({int align}) {
-    return new VaListType(_dataModel);
+  VaListType _clone(String name, {int align}) {
+    return new VaListType(_dataModel, name: name);
   }
 }

@@ -14,7 +14,6 @@ part 'src/function.dart';
 part 'src/integers.dart';
 part 'src/object.dart';
 part 'src/pointer.dart';
-part 'src/reference.dart';
 part 'src/structures.dart';
 part 'src/type.dart';
 part 'src/type_helper.dart';

@@ -4,32 +4,32 @@ part of binary_types;
  * Pointer binary type.
  */
 class PointerType extends BinaryType {
-  /**
-   * Type of the referred data.
-   */
-  final BinaryType type;
+  int _level;
+
+  BinaryType _targetType;
+
+  BinaryType _type;
 
   int _typeSize;
 
-  PointerType(this.type, DataModel dataModel, {int align}) : super(dataModel, align: align) {
+  PointerType(BinaryType type, DataModel dataModel, {int align, String name}) : super(dataModel, align: align, name: name) {
     if (type == null) {
       throw new ArgumentError("type: $type");
     }
 
-    var stars = [];
-    var nextType = this;
-    while (nextType is PointerType) {
-      stars.add("*");
-      nextType = nextType.type;
+    _level = 0;
+    _targetType = type;
+    _type = type;
+    if (type is PointerType) {
+      PointerType pointerType = type;
+      _level = pointerType.level + 1;
+      _targetType = pointerType.targetType;
     }
 
-    if (nextType is FunctionType) {
-      var nameParts = nextType._nameParts;
-      _name = "${nameParts[0]}${stars.join("")}${nameParts[1]}";
-    } else if (nextType is ArrayType) {
-      _name = "($type)*";
-    } else {
-      _name = "$type*";
+    if (name == null) {
+      _namePrefix = "${type._namePrefix}*";
+      _nameSuffix = type._nameSuffix;
+      _name = "$_namePrefix$_nameSuffix";
     }
 
     if (type.dataModel != dataModel) {
@@ -49,7 +49,30 @@ class PointerType extends BinaryType {
 
   BinaryKinds get kind => BinaryKinds.POINTER;
 
+  /**
+   * Returns the level of this pointer in a chain of pointers.
+   *
+   * Eg.
+   *     int*** ippp; // level is 2
+   */
+  int get level => _level;
+
   int get size => _dataModel.sizeOfPointer;
+
+  /**
+   * Returns the target type in a chain of pointers.
+   *
+   * Eg.
+   *     int** ipp; // `int` is a target type
+   */
+  BinaryType get targetType {
+    return _targetType;
+  }
+
+  /**
+   * Type of the referred data.
+   */
+  BinaryType get type => _type;
 
   bool operator ==(other) {
     return other is PointerType && (other as PointerType).type == type;
@@ -65,8 +88,8 @@ class PointerType extends BinaryType {
     }
   }
 
-  PointerType _clone({int align}) {
-    return new PointerType(type, _dataModel, align: align);
+  PointerType _clone(String name, {int align}) {
+    return new PointerType(type, _dataModel, align: align, name: name);
   }
 
   BinaryData _getElement(int base, int offset, index) {

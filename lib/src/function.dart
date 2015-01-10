@@ -11,19 +11,17 @@ class FunctionType extends BinaryType {
 
   int _arity = 0;
 
-  List<String> _nameParts;
-
   List<BinaryType> _parameters;
 
   bool _variadic = false;
 
-  FunctionType(this.returnType, List<BinaryType> parameters, DataModel dataModel) : super(dataModel) {
+  FunctionType(this.returnType, List<BinaryType> parameters, DataModel dataModel, {String name}) : super(dataModel, name: name) {
     if (returnType == null) {
-      throw new ArgumentError("returnType: $returnType");
+      throw new ArgumentError.notNull("returnType");
     }
 
     if (parameters == null) {
-      throw new ArgumentError("parameters: $parameters");
+      throw new ArgumentError.notNull("parameters");
     }
 
     if (returnType.dataModel != dataModel) {
@@ -46,6 +44,10 @@ class FunctionType extends BinaryType {
         parameter = new PointerType(parameter.type, dataModel);
       }
 
+      if (parameter.size == 0) {
+        BinaryTypeError.incompleteFunctionParameterType(i, parameter);
+      }
+
       _parameters[i] = parameter;
       if (parameter is VaListType) {
         if (_variadic) {
@@ -62,8 +64,11 @@ class FunctionType extends BinaryType {
       BinaryTypeError.variadicFunctionMustHaveAtLeastOneNamedParameter();
     }
 
-    _name = "$returnType()(${parameters.map((e) => e.name).join(", ")})";
-    _nameParts = ["$returnType(", ")(${parameters.map((e) => e.name).join(", ")})"];
+    _namePrefix = "$returnType (";
+    _nameSuffix = ")(${parameters.map((e) => e.name).join(", ")})";
+    if (name == null) {
+      _name = "$_namePrefix$_nameSuffix";
+    }
   }
 
   int get align {
@@ -92,7 +97,20 @@ class FunctionType extends BinaryType {
    */
   bool get variadic => _variadic;
 
-  FunctionType _clone({int align}) {
-    return new FunctionType(returnType, _parameters, _dataModel);
+  FunctionType _clone(String name, {int align}) {
+    return new FunctionType(returnType, _parameters, _dataModel, name: name);
+  }
+
+  // TODO:
+  String _refString(int level, [String identifier]) {
+    var sb = new StringBuffer();
+    sb.write(_namePrefix);
+    sb.write("".padRight(level + 1, "*"));
+    if (identifier != null) {
+      sb.write(identifier);
+    }
+
+    sb.write(_nameSuffix);
+    return sb.toString();
   }
 }

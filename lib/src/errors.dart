@@ -19,8 +19,12 @@ class BinaryTypeError implements Exception {
     throw new BinaryTypeError("Illegal member name '$name' for the type '$type'");
   }
 
-  static void incompleteMemberType(BinaryType type, String name, value) {
-    throw new BinaryTypeError("Illegal use of incomplete type '$value' as the member '$name' for the type '$type'");
+  static void incompleteMemberType(BinaryType type, String name, BinaryType member) {
+    throw new BinaryTypeError("Illegal use of incomplete type '$member' as the member '$name' for the type '$type'");
+  }
+
+  static void incompleteFunctionParameterType(int index, BinaryType parameter) {
+    throw new BinaryTypeError("Illegal use of incomplete type '$parameter' as the function parameter #'$index'");
   }
 
   static void indexOutOfArange(BinaryType type, int index, int range) {

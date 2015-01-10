@@ -8,12 +8,15 @@ class DoubleType extends FloatingPointType {
 
   static final double _max = 1.7976931348623157e+308;
 
-  DoubleType(DataModel dataModel, {int align}) : super(dataModel, align: align) {
+  DoubleType(DataModel dataModel, {int align, String name}) : super(dataModel, align: align, name: name) {
     if (align == null) {
       _align = _dataModel.alignOfDouble;
     }
 
-    _name = "double";
+    if (name == null) {
+      _name = "double";
+      _namePrefix = "double ";
+    }
   }
 
   int get align => _dataModel.alignOfDouble;
@@ -22,8 +25,8 @@ class DoubleType extends FloatingPointType {
 
   int get size => _dataModel.sizeOfDouble;
 
-  DoubleType _clone({int align}) {
-    return new DoubleType(_dataModel, align: align);
+  DoubleType _clone(String name, {int align}) {
+    return new DoubleType(_dataModel, align: align, name: name);
   }
 
   double _getValue(int base, int offset) {
@@ -51,12 +54,15 @@ class FloatType extends FloatingPointType {
 
   static const double _max = 3.40282347e+38;
 
-  FloatType(DataModel dataModel, {int align}) : super(dataModel, align: align) {
+  FloatType(DataModel dataModel, {int align, String name}) : super(dataModel, align: align, name: name) {
     if (align == null) {
       _align = dataModel.alignOfFloat;
     }
 
-    _name = "float";
+    if (name == null) {
+      _name = "float";
+      _namePrefix = "float ";
+    }
   }
 
   int get align => _dataModel.alignOfFloat;
@@ -65,8 +71,8 @@ class FloatType extends FloatingPointType {
 
   int get size => _dataModel.sizeOfFloat;
 
-  FloatType _clone({int align}) {
-    return new FloatType(_dataModel, align: align);
+  FloatType _clone(String name, {int align}) {
+    return new FloatType(_dataModel, align: align, name: name);
   }
 
   double _getValue(int base, int offset) {
@@ -94,7 +100,7 @@ abstract class FloatingPointType extends BinaryType {
 
   static const double _max = 0.0;
 
-  FloatingPointType(DataModel dataModel, {int align}) : super(dataModel, align: align);
+  FloatingPointType(DataModel dataModel, {int align, String name}) : super(dataModel, align: align, name: name);
 
   dynamic get defaultValue {
     return 0.0;

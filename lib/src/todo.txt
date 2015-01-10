@@ -1,0 +1,9 @@
+32 bit
+__int8 = char
+__int16 = short
+__int32 = int
+__int64 = long long
+long != int
+
+int ia[4][2]
+&ia = int(*)[4][2]

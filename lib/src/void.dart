@@ -1,8 +1,11 @@
 part of binary_types;
 
 class VoidType extends BinaryType {
-  VoidType(DataModel dataModel) : super(dataModel) {
-    _name = "void";
+  VoidType(DataModel dataModel, {String name}) : super(dataModel, name: name) {
+    if (name == null) {
+      _name = "void";
+      _namePrefix = "void ";
+    }
   }
 
   int get align {
@@ -21,7 +24,7 @@ class VoidType extends BinaryType {
 
   bool operator ==(other) => other is VoidType;
 
-  VoidType _clone({int align}) {
-    return new VoidType(_dataModel);
+  VoidType _clone(String name, {int align}) {
+    return new VoidType(_dataModel, name: name);
   }
 }

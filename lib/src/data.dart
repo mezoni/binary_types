@@ -77,5 +77,5 @@ class BinaryData {
     type._setElementValue(base, offset, index, value);
   }
 
-  String toString() => "$type:${_Utils.toHex(base + offset)}";
+  String toString() => type.refString(0);
 }

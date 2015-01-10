@@ -5,31 +5,31 @@ class BinaryKinds {
 
   static const BinaryKinds DOUBLE = const BinaryKinds("DOUBLE");
 
-  static const BinaryKinds FLOAT = const BinaryKinds(" FLOAT");
+  static const BinaryKinds FLOAT = const BinaryKinds("FLOAT");
 
-  static const BinaryKinds FUNCTION = const BinaryKinds(" FUNCTION");
+  static const BinaryKinds FUNCTION = const BinaryKinds("FUNCTION");
 
-  static const BinaryKinds POINTER = const BinaryKinds(" POINTER");
+  static const BinaryKinds POINTER = const BinaryKinds("POINTER");
 
-  static const BinaryKinds SINT16 = const BinaryKinds(" SINT16");
+  static const BinaryKinds SINT16 = const BinaryKinds("SINT16");
 
-  static const BinaryKinds SINT32 = const BinaryKinds(" SINT32");
+  static const BinaryKinds SINT32 = const BinaryKinds("SINT32");
 
-  static const BinaryKinds SINT64 = const BinaryKinds(" SINT64");
+  static const BinaryKinds SINT64 = const BinaryKinds("SINT64");
 
-  static const BinaryKinds SINT8 = const BinaryKinds(" SINT8");
+  static const BinaryKinds SINT8 = const BinaryKinds("SINT8");
 
-  static const BinaryKinds STRUCT = const BinaryKinds(" STRUCT");
+  static const BinaryKinds STRUCT = const BinaryKinds("STRUCT");
 
   static const BinaryKinds UINT16 = const BinaryKinds("UINT16");
 
-  static const BinaryKinds UINT32 = const BinaryKinds(" UINT32");
+  static const BinaryKinds UINT32 = const BinaryKinds("UINT32");
 
   static const BinaryKinds UINT64 = const BinaryKinds("UINT64");
 
-  static const BinaryKinds UINT8 = const BinaryKinds(" UINT8");
+  static const BinaryKinds UINT8 = const BinaryKinds("UINT8");
 
-  static const BinaryKinds VA_LIST = const BinaryKinds(" VA_LIST");
+  static const BinaryKinds VA_LIST = const BinaryKinds("VA_LIST");
 
   static const BinaryKinds VOID = const BinaryKinds("VOID");
 
@@ -49,9 +49,15 @@ abstract class BinaryType {
 
   DataModel _dataModel;
 
-  String _name;
+  String _name = "";
 
-  BinaryType(DataModel dataModel, {int align}) {
+  String _namePrefix = "";
+
+  String _nameSuffix = "";
+
+  String _typedefName = "";
+
+  BinaryType(DataModel dataModel, {int align, String name}) {
     if (dataModel == null) {
       throw new ArgumentError.notNull("dataModel");
     }
@@ -63,7 +69,12 @@ abstract class BinaryType {
       }
     }
 
+    if (name != null) {
+      _namePrefix = "$name ";
+    }
+
     _align = align;
+    _name = name;
     _dataModel = dataModel;
   }
 
@@ -91,6 +102,11 @@ abstract class BinaryType {
    * Returns the name of binary type.
    */
   String get name => _name;
+
+  /**
+   * Returns the typedef name of binary type.
+   */
+  String get typedefName => _typedefName;
 
   /**
    * Returns the amount of storage, in bytes, required to store any instance of
@@ -140,12 +156,28 @@ abstract class BinaryType {
    *   [int] align
    *   Data alignment for this type.
    */
-  BinaryType clone({int align}) {
-    if (align == null) {
+  BinaryType clone(String name, {int align}) {
+    if (name == null) {
+      throw new ArgumentError.notNull("null");
+    }
+
+    if (align == null && size > 0) {
       align = this.align;
     }
 
-    return _clone(align: align);
+    var copy = _clone(name, align: align);
+    if (copy._typedefName.length == 0) {
+      copy._typedefName = "typedef ${this.name} $name";
+    }
+
+    return copy;
+  }
+
+  /**
+   * TODO: Undocumented
+   */
+  bool compatible(BinaryType otherType) {
+    throw new UnimplementedError("compatible");
   }
 
   /**
@@ -287,6 +319,24 @@ abstract class BinaryType {
   }
 
   /**
+   * Returns the string representation of reference.
+   *
+   * Parameters:
+   *   [int] level
+   *   Reference level.
+   *
+   *   [String] identifiier
+   *   Identifier.
+   */
+  String refString(int level, [String identifier]) {
+    if (level == null || level < 0) {
+      throw new ArgumentError.value(level, "level");
+    }
+
+    return _refString(level, identifier);
+  }
+
+  /**
    * Sets the content of this type to specified value, at the specified memory
    * base and offset.
    *
@@ -408,7 +458,7 @@ abstract class BinaryType {
     return null;
   }
 
-  BinaryType _clone({int align});
+  BinaryType _clone(String name, {int align});
 
   bool _compareContent(int base, int offset, value) {
     BinaryTypeError.unablePerformingOperation(this, "compare content", {
@@ -474,5 +524,18 @@ abstract class BinaryType {
     BinaryTypeError.unablePerformingOperation(this, "set value", {
       "value": value
     });
+  }
+
+  String _refString(int level, [String identifier]) {
+    var sb = new StringBuffer();
+    sb.write(_namePrefix);
+    sb.write("".padRight(level + 1, "*"));
+    if (identifier != null) {
+      sb.write(" ");
+      sb.write(identifier);
+    }
+
+    sb.write(_nameSuffix);
+    return sb.toString();
   }
 }

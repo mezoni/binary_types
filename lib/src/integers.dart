@@ -19,12 +19,15 @@ class Int16Type extends IntType {
    */
   static const int SIZE = 2;
 
-  Int16Type(DataModel dataModel, {int align}) : super(dataModel, align: align) {
+  Int16Type(DataModel dataModel, {int align, String name}) : super(dataModel, align: align, name: name) {
     if (align == null) {
       _align = _dataModel.alignOfInt16;
     }
 
-    _name = "int16_t";
+    if (name == null) {
+      _name = "__int16";
+      _namePrefix = "__int16 ";
+    }
   }
 
   BinaryKinds get kind => BinaryKinds.SINT16;
@@ -62,8 +65,8 @@ class Int16Type extends IntType {
     }
   }
 
-  Int16Type _clone({int align}) {
-    return new Int16Type(_dataModel, align: align);
+  Int16Type _clone(String name, {int align}) {
+    return new Int16Type(_dataModel, align: align, name: name);
   }
 
   int _getValue(int base, int offset) {
@@ -102,12 +105,15 @@ class Int32Type extends IntType {
    */
   static const int SIZE = 4;
 
-  Int32Type(DataModel dataModel, {int align}) : super(dataModel, align: align) {
+  Int32Type(DataModel dataModel, {int align, String name}) : super(dataModel, align: align, name: name) {
     if (align == null) {
       _align = _dataModel.alignOfInt32;
     }
 
-    _name = "int32_t";
+    if (name == null) {
+      _name = "__int32";
+      _namePrefix = "__int32 ";
+    }
   }
 
   BinaryKinds get kind => BinaryKinds.SINT32;
@@ -145,8 +151,8 @@ class Int32Type extends IntType {
     }
   }
 
-  Int32Type _clone({int align}) {
-    return new Int32Type(_dataModel, align: align);
+  Int32Type _clone(String name, {int align}) {
+    return new Int32Type(_dataModel, align: align, name: name);
   }
 
   int _getValue(int base, int offset) {
@@ -185,12 +191,15 @@ class Int64Type extends IntType {
    */
   static const int SIZE = 8;
 
-  Int64Type(DataModel dataModel, {int align}) : super(dataModel, align: align) {
+  Int64Type(DataModel dataModel, {int align, String name}) : super(dataModel, align: align, name: name) {
     if (align == null) {
       _align = _dataModel.alignOfInt64;
     }
 
-    _name = "int64_t";
+    if (name == null) {
+      _name = "__int64";
+      _namePrefix = "__int64 ";
+    }
   }
 
   BinaryKinds get kind => BinaryKinds.SINT64;
@@ -228,8 +237,8 @@ class Int64Type extends IntType {
     }
   }
 
-  Int64Type _clone({int align}) {
-    return new Int64Type(_dataModel, align: align);
+  Int64Type _clone(String name, {int align}) {
+    return new Int64Type(_dataModel, align: align, name: name);
   }
 
   int _getValue(int base, int offset) {
@@ -268,12 +277,15 @@ class Int8Type extends IntType {
    */
   static const int SIZE = 1;
 
-  Int8Type(DataModel dataModel, {int align}) : super(dataModel, align: align) {
+  Int8Type(DataModel dataModel, {int align, String name}) : super(dataModel, align: align, name: name) {
     if (align == null) {
       _align = _dataModel.alignOfInt8;
     }
 
-    _name = "int8_t";
+    if (name == null) {
+      _name = "__int8";
+      _namePrefix = "__int8 ";
+    }
   }
 
   BinaryKinds get kind => BinaryKinds.SINT8;
@@ -311,8 +323,8 @@ class Int8Type extends IntType {
     }
   }
 
-  Int8Type _clone({int align}) {
-    return new Int8Type(_dataModel, align: align);
+  Int8Type _clone(String name, {int align}) {
+    return new Int8Type(_dataModel, align: align, name: name);
   }
 
   int _getValue(int base, int offset) {
@@ -333,7 +345,7 @@ class Int8Type extends IntType {
 }
 
 abstract class IntType extends BinaryType {
-  IntType(DataModel dataModel, {int align}) : super(dataModel, align: align);
+  IntType(DataModel dataModel, {int align, String name}) : super(dataModel, align: align, name: name);
 
   dynamic get defaultValue {
     return 0;
@@ -420,12 +432,15 @@ class Uint16Type extends IntType {
    */
   static const int SIZE = 2;
 
-  Uint16Type(DataModel dataModel, {int align}) : super(dataModel, align: align) {
+  Uint16Type(DataModel dataModel, {int align, String name}) : super(dataModel, align: align, name: name) {
     if (align == null) {
       _align = _dataModel.alignOfInt16;
     }
 
-    _name = "uint16_t";
+    if (name == null) {
+      _name = "unsigned __int16";
+      _namePrefix = "unsigned __int16 ";
+    }
   }
 
   BinaryKinds get kind => BinaryKinds.UINT16;
@@ -462,8 +477,8 @@ class Uint16Type extends IntType {
     }
   }
 
-  Uint16Type _clone({int align}) {
-    return new Uint16Type(_dataModel, align: align);
+  Uint16Type _clone(String name, {int align}) {
+    return new Uint16Type(_dataModel, align: align, name: name);
   }
 
   int _getValue(int base, int offset) {
@@ -502,12 +517,15 @@ class Uint32Type extends IntType {
    */
   static const int SIZE = 4;
 
-  Uint32Type(DataModel dataModel, {int align}) : super(dataModel, align: align) {
+  Uint32Type(DataModel dataModel, {int align, String name}) : super(dataModel, align: align, name: name) {
     if (align == null) {
       _align = _dataModel.alignOfInt32;
     }
 
-    _name = "uint32_t";
+    if (name == null) {
+      _name = "unsigned __int32";
+      _namePrefix = "unsigned __int32 ";
+    }
   }
 
   BinaryKinds get kind => BinaryKinds.UINT32;
@@ -544,8 +562,8 @@ class Uint32Type extends IntType {
     }
   }
 
-  Uint32Type _clone({int align}) {
-    return new Uint32Type(_dataModel, align: align);
+  Uint32Type _clone(String name, {int align}) {
+    return new Uint32Type(_dataModel, align: align, name: name);
   }
 
   int _getValue(int base, int offset) {
@@ -584,12 +602,15 @@ class Uint64Type extends IntType {
    */
   static const int SIZE = 8;
 
-  Uint64Type(DataModel dataModel, {int align}) : super(dataModel, align: align) {
+  Uint64Type(DataModel dataModel, {int align, String name}) : super(dataModel, align: align, name: name) {
     if (align == null) {
       _align = _dataModel.alignOfInt64;
     }
 
-    _name = "uint64_t";
+    if (name == null) {
+      _name = "unsigned __int64";
+      _namePrefix = "unsigned __int64 ";
+    }
   }
 
   BinaryKinds get kind => BinaryKinds.UINT64;
@@ -626,8 +647,8 @@ class Uint64Type extends IntType {
     }
   }
 
-  Uint64Type _clone({int align}) {
-    return new Uint64Type(_dataModel, align: align);
+  Uint64Type _clone(String name, {int align}) {
+    return new Uint64Type(_dataModel, align: align, name: name);
   }
 
   int _getValue(int base, int offset) {
@@ -666,12 +687,15 @@ class Uint8Type extends IntType {
    */
   static const int SIZE = 1;
 
-  Uint8Type(DataModel dataModel, {int align}) : super(dataModel, align: align) {
+  Uint8Type(DataModel dataModel, {int align, String name}) : super(dataModel, align: align, name: name) {
     if (align == null) {
       _align = _dataModel.alignOfInt8;
     }
 
-    _name = "uint8_t";
+    if (name == null) {
+      _name = "unsigned __int8";
+      _namePrefix = "unsigned __int8 ";
+    }
   }
 
   BinaryKinds get kind => BinaryKinds.UINT8;
@@ -708,8 +732,8 @@ class Uint8Type extends IntType {
     }
   }
 
-  Uint8Type _clone({int align}) {
-    return new Uint8Type(_dataModel, align: align);
+  Uint8Type _clone(String name, {int align}) {
+    return new Uint8Type(_dataModel, align: align, name: name);
   }
 
   int _getValue(int base, int offset) {
