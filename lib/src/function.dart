@@ -44,9 +44,12 @@ class FunctionType extends BinaryType {
         parameter = new PointerType(parameter.type, dataModel);
       }
 
+      // TODO: Implement
+      /*
       if (parameter.size == 0) {
         BinaryTypeError.incompleteFunctionParameterType(i, parameter);
       }
+      */
 
       _parameters[i] = parameter;
       if (parameter is VaListType) {
