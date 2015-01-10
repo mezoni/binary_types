@@ -66,6 +66,7 @@ class BinaryTypes {
   /**
    * Clones the binary type and register it under a different name (typedef).
    */
+  @deprecated
   void operator []=(String name, type) {
     BinaryType binaryType;
     if (type is String) {
@@ -104,7 +105,7 @@ class BinaryTypes {
         var name = declaration.name;
         var type = declaration.type;
         BinaryType binaryType;
-        if (type is StructureDefTypeSpecification) {
+        if (type is StructureTypeSpecification) {
           binaryType = _declareStructure(type);
         } else {
           binaryType = this[type.toString()];
@@ -114,7 +115,7 @@ class BinaryTypes {
       } else if (declaration is StructureDeclaration) {
         _declareStructure(declaration.type);
       } else if (declaration is VariableDeclaration) {
-        if (declaration.type is StructureDefTypeSpecification) {
+        if (declaration.type is StructureTypeSpecification) {
           _declareStructure(declaration.type);
         }
       }
@@ -128,6 +129,7 @@ class BinaryTypes {
    *   [BinaryType] type
    *   Type to register
    */
+  @deprecated
   BinaryType registerType(BinaryType type) {
     if (type == null) {
       throw new ArgumentError.notNull("type");
@@ -156,6 +158,7 @@ class BinaryTypes {
    *   [int] align
    *   Data alignment for this type.
    */
+  @deprecated
   BinaryType typeDef(String name, type, {int align}) {
     if (type == null) {
       throw new ArgumentError.notNull("type");
@@ -188,12 +191,13 @@ class BinaryTypes {
     }
   }
 
-  BinaryType _declareStructure(StructureDefTypeSpecification type) {
+  BinaryType _declareStructure(StructureTypeSpecification type) {
     // TODO: Use attributes
     var align = null;
-    var kind = type.kind;
+    var taggedType = type.taggedType;
+    var kind = taggedType.kind;
     var pack = null;
-    var tag = type.tag;
+    var tag = taggedType.tag;
 
     StructureType structureType;
     var key = "$kind $tag";
@@ -205,11 +209,11 @@ class BinaryTypes {
     }
 
     if (structureType == null) {
-      switch (type.kind) {
-        case "struct":
+      switch (taggedType.kind) {
+        case TaggedTypeKinds.STRUCT:
           structureType = new StructType(tag, null, _dataModel, align: align, pack: pack);
           break;
-        case "union":
+        case TaggedTypeKinds.UNION:
           structureType = new UnionType(tag, null, _dataModel, align: align, pack: pack);
           break;
       }
@@ -224,7 +228,7 @@ class BinaryTypes {
       var memberType = member.type;
       var name = member.name;
       BinaryType binaryType;
-      if (memberType is StructureDefTypeSpecification) {
+      if (memberType is StructureTypeSpecification) {
         binaryType = _declareStructure(memberType);
       } else {
         binaryType = this[memberType.toString()];

@@ -3,7 +3,7 @@ binary_types
 
 Binary types are set of classes that allows access the binary data in "C" language way.
 
-Version: 0.0.5
+Version: 0.0.6
 
 [Donate to binary types for dart](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=binary.dart@gmail.com&item_name=binary.types.for.dart&currency_code=USD)
 
@@ -88,21 +88,17 @@ void examinePointerElementValue() {
   // int i;
   // int ia[10];
   // int ip;
-  final i = alloc("int");
+  final i = alloc("int", 41);
   final ia = alloc("int[10]", [0, 10, 20]);
   final ip = alloc("int*");
 
-  // ip = &i;
-  // *ip = 41;
-  // ip = &ia[2];
-  ip.value = i;
-  ip.value.value = ia[2].value;
-  ip.value = ia[1];
-  ip.value.value = 41;
+  // ip = &ia
+  // i = ip[2] // *(ip + 2)
+  ip.value = ia;
+  i.value = ip[2].value;
 
   // Test it
   print(i.value); // 20
-  print(ia[1].value); // 41
 }
 
 void examinePointerValue() {

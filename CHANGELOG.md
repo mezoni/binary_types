@@ -1,3 +1,7 @@
+## 0.0.6
+
+- Made adaptations to the new version of package `binary_declarations`
+
 ## 0.0.5
 
 - Added field `BinaryData.base`

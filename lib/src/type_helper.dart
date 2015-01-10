@@ -59,6 +59,7 @@ class BinaryTypeHelper {
    *   [List]<[BinaryType]> parameters
    *   Function parameters.
    */
+  @deprecated
   FunctionType declareFunc(BinaryType returnType, List<BinaryType> parameters) {
     return new FunctionType(returnType, parameters, dataModel);
   }
@@ -79,6 +80,7 @@ class BinaryTypeHelper {
    *   [int] pack
    *   Data structure padding.
    */
+  @deprecated
   StructType declareStruct(String name, Map<String, dynamic> members, {int align, int pack}) {
     if (pack == null) {
       pack = this.pack;
@@ -119,6 +121,7 @@ class BinaryTypeHelper {
    *   [int] pack
    *   Data structure padding.
    */
+  @deprecated
   UnionType declareUnion(String name, Map<String, dynamic> members, {int align, int pack}) {
     if (pack == null) {
       pack = this.pack;
@@ -150,6 +153,7 @@ class BinaryTypeHelper {
    *   [String] name
    *   Name of the binary type.
    */
+  @deprecated
   bool isTypeDeclared(String name) {
     if (name == null) {
       throw new ArgumentError.notNull("name");
