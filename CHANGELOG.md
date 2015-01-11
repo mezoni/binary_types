@@ -1,6 +1,6 @@
 ## 0.0.8
 
-- Completely reimplemented the compatibility type checking mechanics. Now it faster and more accurate.
+- Completely reimplemented the compatibility type checking mechanics. Now it faster and more accurate and compromise between C and C++ languages
 - Completely reimplemented the integer type system fully compatible with the basic C language types.
 
 ## 0.0.7
