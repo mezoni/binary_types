@@ -23,11 +23,6 @@ class Int16Type extends IntType {
     if (align == null) {
       _align = _dataModel.alignOfInt16;
     }
-
-    if (name == null) {
-      _name = "__int16";
-      _namePrefix = "__int16 ";
-    }
   }
 
   BinaryKinds get kind => BinaryKinds.SINT16;
@@ -39,8 +34,6 @@ class Int16Type extends IntType {
   bool get signed => true;
 
   int get size => SIZE;
-
-  bool operator ==(other) => other is Int16Type;
 
   dynamic _cast(value) {
     if (value is double) {
@@ -63,10 +56,6 @@ class Int16Type extends IntType {
     } else {
       return super._cast(value);
     }
-  }
-
-  Int16Type _clone(String name, {int align}) {
-    return new Int16Type(_dataModel, align: align, name: name);
   }
 
   int _getValue(int base, int offset) {
@@ -109,11 +98,6 @@ class Int32Type extends IntType {
     if (align == null) {
       _align = _dataModel.alignOfInt32;
     }
-
-    if (name == null) {
-      _name = "__int32";
-      _namePrefix = "__int32 ";
-    }
   }
 
   BinaryKinds get kind => BinaryKinds.SINT32;
@@ -125,8 +109,6 @@ class Int32Type extends IntType {
   bool get signed => true;
 
   int get size => SIZE;
-
-  bool operator ==(other) => other is Int32Type;
 
   dynamic _cast(value) {
     if (value is double) {
@@ -149,10 +131,6 @@ class Int32Type extends IntType {
     } else {
       return super._cast(value);
     }
-  }
-
-  Int32Type _clone(String name, {int align}) {
-    return new Int32Type(_dataModel, align: align, name: name);
   }
 
   int _getValue(int base, int offset) {
@@ -195,11 +173,6 @@ class Int64Type extends IntType {
     if (align == null) {
       _align = _dataModel.alignOfInt64;
     }
-
-    if (name == null) {
-      _name = "__int64";
-      _namePrefix = "__int64 ";
-    }
   }
 
   BinaryKinds get kind => BinaryKinds.SINT64;
@@ -211,8 +184,6 @@ class Int64Type extends IntType {
   bool get signed => true;
 
   int get size => SIZE;
-
-  bool operator ==(other) => other is Int64Type;
 
   dynamic _cast(value) {
     if (value is double) {
@@ -235,10 +206,6 @@ class Int64Type extends IntType {
     } else {
       return super._cast(value);
     }
-  }
-
-  Int64Type _clone(String name, {int align}) {
-    return new Int64Type(_dataModel, align: align, name: name);
   }
 
   int _getValue(int base, int offset) {
@@ -281,12 +248,8 @@ class Int8Type extends IntType {
     if (align == null) {
       _align = _dataModel.alignOfInt8;
     }
-
-    if (name == null) {
-      _name = "__int8";
-      _namePrefix = "__int8 ";
-    }
   }
+
 
   BinaryKinds get kind => BinaryKinds.SINT8;
 
@@ -297,8 +260,6 @@ class Int8Type extends IntType {
   bool get signed => true;
 
   int get size => SIZE;
-
-  bool operator ==(other) => other is Int8Type;
 
   dynamic _cast(value) {
     if (value is double) {
@@ -323,10 +284,6 @@ class Int8Type extends IntType {
     }
   }
 
-  Int8Type _clone(String name, {int align}) {
-    return new Int8Type(_dataModel, align: align, name: name);
-  }
-
   int _getValue(int base, int offset) {
     return Unsafe.readInt8(base, offset);
   }
@@ -345,7 +302,65 @@ class Int8Type extends IntType {
 }
 
 abstract class IntType extends BinaryType {
-  IntType(DataModel dataModel, {int align, String name}) : super(dataModel, align: align, name: name);
+  static const int BASIC_TYPE_SIGNED_BY_MODEL = 1;
+
+  static const int BASIC_TYPE_SIGNED = 2;
+
+  static const int BASIC_TYPE_CHAR = 4;
+
+  static const int BASIC_TYPE_INT = 8;
+
+  static const int BASIC_TYPE_SHORT = 16;
+
+  static const int BASIC_TYPE_LONG = 32;
+
+  static const int BASIC_TYPE_LONG_LONG = 64;
+
+  static const int BASIC_TYPE_ALL = BASIC_TYPE_LONG_LONG - 1;
+
+  int _basicType = 0;
+
+  IntType(DataModel dataModel, {int align, String name}) : super(dataModel, align: align, name: name) {
+    if (size == dataModel.sizeOfChar) {
+      _basicType = BASIC_TYPE_CHAR;
+    } else if (size == dataModel.sizeOfShort) {
+      _basicType = BASIC_TYPE_SHORT;
+    } else if (size == dataModel.sizeOfInt) {
+      _basicType = BASIC_TYPE_INT;
+    } else if (size == dataModel.sizeOfInt) {
+      _basicType = BASIC_TYPE_INT;
+    } else if (size == dataModel.sizeOfLongLong) {
+      _basicType = BASIC_TYPE_LONG_LONG;
+    } else {
+      BinaryTypeError.integerSizeNotSupported(size);
+    }
+
+    if (name == null) {
+      switch (_basicType) {
+        case BASIC_TYPE_CHAR:
+          _name = signed ? "signed char" : "unsigned char";
+          break;
+        case BASIC_TYPE_SHORT:
+          _name = signed ? "short" : "unsigned short";
+          break;
+        case BASIC_TYPE_INT:
+          _name = signed ? "int" : "unsigned int";
+          break;
+        case BASIC_TYPE_LONG:
+          _name = signed ? "long" : "unsigned long";
+          break;
+        case BASIC_TYPE_LONG_LONG:
+          _name = signed ? "long long" : "unsigned long long";
+          break;
+      }
+
+      if (signed) {
+        _basicType |= BASIC_TYPE_SIGNED;
+      }
+
+      _namePrefix = "$_name ";
+    }
+  }
 
   dynamic get defaultValue {
     return 0;
@@ -366,6 +381,22 @@ abstract class IntType extends BinaryType {
    */
   bool get signed;
 
+  IntType _clone(String name, {int align}) {
+    var copy = create(size, signed, dataModel, align: align, name: name);
+    copy._basicType = _basicType;
+    return copy;
+  }
+
+  bool _compatible(BinaryType other, bool strong) {
+    if (other is IntType) {
+      var intType = other;
+      var mask = strong ? BASIC_TYPE_ALL : BASIC_TYPE_ALL & ~(BASIC_TYPE_SIGNED_BY_MODEL | BASIC_TYPE_SIGNED);
+      return _basicType & mask == other._basicType & mask;
+    }
+
+    return false;
+  }
+
   void _initialize(int base, int offset, value) {
     _setValue(base, offset, value);
   }
@@ -378,40 +409,203 @@ abstract class IntType extends BinaryType {
     }
   }
 
-  static IntType create(int size, bool signed, DataModel dataModel) {
+  static IntType create(int size, bool signed, DataModel dataModel, {int align, String name}) {
+    if (size == null) {
+      throw new ArgumentError.notNull("size");
+    }
+
     if (signed == null) {
-      throw new ArgumentError("signed: $signed");
+      throw new ArgumentError.notNull("signed");
+    }
+
+    if (dataModel == null) {
+      throw new ArgumentError.notNull("dataModel");
     }
 
     if (signed) {
       switch (size) {
         case 1:
-          return new Int8Type(dataModel);
+          return new Int8Type(dataModel, align: align, name: name);
         case 2:
-          return new Int16Type(dataModel);
+          return new Int16Type(dataModel, align: align, name: name);
         case 4:
-          return new Int32Type(dataModel);
+          return new Int32Type(dataModel, align: align, name: name);
         case 8:
-          return new Int64Type(dataModel);
+          return new Int64Type(dataModel, align: align, name: name);
         default:
           throw new ArgumentError("size: $size");
       }
     } else {
       switch (size) {
         case 1:
-          return new Uint8Type(dataModel);
+          return new Uint8Type(dataModel, align: align, name: name);
         case 2:
-          return new Uint16Type(dataModel);
+          return new Uint16Type(dataModel, align: align, name: name);
         case 4:
-          return new Uint32Type(dataModel);
+          return new Uint32Type(dataModel, align: align, name: name);
         case 8:
-          return new Uint64Type(dataModel);
+          return new Uint64Type(dataModel, align: align, name: name);
         default:
           throw new ArgumentError("size: $size");
       }
     }
   }
+
+  static IntType createChar(DataModel dataModel, bool signed, {int align}) {
+    var sign = signed;
+    if (signed == null) {
+      sign = dataModel.isCharSigned;
+    }
+
+    var type = create(dataModel.sizeOfChar, sign, dataModel, align: align);
+    switch (signed) {
+      case true:
+        type._basicType = BASIC_TYPE_CHAR | BASIC_TYPE_SIGNED;
+        type._name = "signed char";
+        type._namePrefix = "signed char ";
+        break;
+      case false:
+        type._basicType = BASIC_TYPE_CHAR;
+        type._name = "unsigned char";
+        type._namePrefix = "unsigned char ";
+        break;
+    }
+
+    if (signed == null) {
+      type._basicType = BASIC_TYPE_CHAR | BASIC_TYPE_SIGNED_BY_MODEL;
+      type._name = "char";
+      type._namePrefix = "char ";
+    }
+
+    return type;
+  }
+
+  /**
+   * Creates basic "int" type.
+   *
+   * Parameters:
+   *   [DataModel] dataModel
+   *   Data model of binary type.
+   *
+   *   [bool] signed
+   *   Sign of integer type.
+   *
+   *   [int] align
+   *   Data alignment of binary type.
+   */
+  static IntType createInt(DataModel dataModel, bool signed, {int align}) {
+    var type = create(dataModel.sizeOfInt, signed, dataModel, align: align);
+    switch (signed) {
+      case true:
+        type._basicType = BASIC_TYPE_INT | BASIC_TYPE_SIGNED;
+        type._name = "int";
+        type._namePrefix = "int ";
+        break;
+      case false:
+        type._basicType = BASIC_TYPE_INT;
+        type._name = "unsigned int";
+        type._namePrefix = "unsigned int ";
+        break;
+    }
+
+    return type;
+  }
+
+  /**
+   * Creates basic "logn" type.
+   *
+   * Parameters:
+   *   [DataModel] dataModel
+   *   Data model of binary type.
+   *
+   *   [bool] signed
+   *   Sign of integer type.
+   *
+   *   [int] align
+   *   Data alignment of binary type.
+   */
+  static IntType createLong(DataModel dataModel, bool signed, {int align}) {
+    var type = create(dataModel.sizeOfLong, signed, dataModel, align: align);
+    switch (signed) {
+      case true:
+        type._basicType = BASIC_TYPE_LONG | BASIC_TYPE_SIGNED;
+        type._name = "long";
+        type._namePrefix = "long ";
+        break;
+      case false:
+        type._basicType = BASIC_TYPE_LONG;
+        type._name = "unsigned long";
+        type._namePrefix = "unsigned long ";
+        break;
+    }
+
+    return type;
+  }
+
+  /**
+   * Creates basic "logn long" type.
+   *
+   * Parameters:
+   *   [DataModel] dataModel
+   *   Data model of binary type.
+   *
+   *   [bool] signed
+   *   Sign of integer type.
+   *
+   *   [int] align
+   *   Data alignment of binary type.
+   */
+  static IntType createLongLong(DataModel dataModel, bool signed, {int align}) {
+    var type = create(dataModel.sizeOfLong, signed, dataModel, align: align);
+    switch (signed) {
+      case true:
+        type._basicType = BASIC_TYPE_LONG_LONG | BASIC_TYPE_SIGNED;
+        type._name = "logn long";
+        type._namePrefix = "logn long ";
+        break;
+      case false:
+        type._basicType = BASIC_TYPE_LONG_LONG;
+        type._name = "unsigned logn long";
+        type._namePrefix = "unsigned logn long ";
+        break;
+    }
+
+    return type;
+  }
+
+  /**
+   * Creates basic "short" type.
+   *
+   * Parameters:
+   *   [DataModel] dataModel
+   *   Data model of binary type.
+   *
+   *   [bool] signed
+   *   Sign of integer type.
+   *
+   *   [int] align
+   *   Data alignment of binary type.
+   */
+  static IntType createShort(DataModel dataModel, bool signed, {int align}) {
+    var type = create(dataModel.sizeOfShort, signed, dataModel, align: align);
+    switch (signed) {
+      case true:
+        type._basicType = BASIC_TYPE_SHORT | BASIC_TYPE_SIGNED;
+        type._name = "short";
+        type._namePrefix = "short ";
+        break;
+      case false:
+        type._basicType = BASIC_TYPE_SHORT;
+        type._name = "unsigned short";
+        type._namePrefix = "unsigned short ";
+        break;
+    }
+
+    return type;
+  }
 }
+
+
 
 /**
  * 16-bit unsigned integer binary type.
@@ -436,11 +630,6 @@ class Uint16Type extends IntType {
     if (align == null) {
       _align = _dataModel.alignOfInt16;
     }
-
-    if (name == null) {
-      _name = "unsigned __int16";
-      _namePrefix = "unsigned __int16 ";
-    }
   }
 
   BinaryKinds get kind => BinaryKinds.UINT16;
@@ -452,8 +641,6 @@ class Uint16Type extends IntType {
   bool get signed => false;
 
   int get size => SIZE;
-
-  bool operator ==(other) => other is Uint16Type;
 
   int _cast(value) {
     if (value is double) {
@@ -475,10 +662,6 @@ class Uint16Type extends IntType {
     } else {
       return super._cast(value);
     }
-  }
-
-  Uint16Type _clone(String name, {int align}) {
-    return new Uint16Type(_dataModel, align: align, name: name);
   }
 
   int _getValue(int base, int offset) {
@@ -521,11 +704,6 @@ class Uint32Type extends IntType {
     if (align == null) {
       _align = _dataModel.alignOfInt32;
     }
-
-    if (name == null) {
-      _name = "unsigned __int32";
-      _namePrefix = "unsigned __int32 ";
-    }
   }
 
   BinaryKinds get kind => BinaryKinds.UINT32;
@@ -537,8 +715,6 @@ class Uint32Type extends IntType {
   bool get signed => false;
 
   int get size => SIZE;
-
-  bool operator ==(other) => other is Uint32Type;
 
   int _cast(value) {
     if (value is double) {
@@ -560,10 +736,6 @@ class Uint32Type extends IntType {
     } else {
       return super._cast(value);
     }
-  }
-
-  Uint32Type _clone(String name, {int align}) {
-    return new Uint32Type(_dataModel, align: align, name: name);
   }
 
   int _getValue(int base, int offset) {
@@ -606,11 +778,6 @@ class Uint64Type extends IntType {
     if (align == null) {
       _align = _dataModel.alignOfInt64;
     }
-
-    if (name == null) {
-      _name = "unsigned __int64";
-      _namePrefix = "unsigned __int64 ";
-    }
   }
 
   BinaryKinds get kind => BinaryKinds.UINT64;
@@ -622,8 +789,6 @@ class Uint64Type extends IntType {
   bool get signed => false;
 
   int get size => SIZE;
-
-  bool operator ==(other) => other is Uint64Type;
 
   int _cast(value) {
     if (value is double) {
@@ -645,10 +810,6 @@ class Uint64Type extends IntType {
     } else {
       return super._cast(value);
     }
-  }
-
-  Uint64Type _clone(String name, {int align}) {
-    return new Uint64Type(_dataModel, align: align, name: name);
   }
 
   int _getValue(int base, int offset) {
@@ -691,11 +852,6 @@ class Uint8Type extends IntType {
     if (align == null) {
       _align = _dataModel.alignOfInt8;
     }
-
-    if (name == null) {
-      _name = "unsigned __int8";
-      _namePrefix = "unsigned __int8 ";
-    }
   }
 
   BinaryKinds get kind => BinaryKinds.UINT8;
@@ -707,8 +863,6 @@ class Uint8Type extends IntType {
   bool get signed => false;
 
   int get size => SIZE;
-
-  bool operator ==(other) => other is Uint8Type;
 
   int _cast(value) {
     if (value is double) {
@@ -730,10 +884,6 @@ class Uint8Type extends IntType {
     } else {
       return super._cast(value);
     }
-  }
-
-  Uint8Type _clone(String name, {int align}) {
-    return new Uint8Type(_dataModel, align: align, name: name);
   }
 
   int _getValue(int base, int offset) {

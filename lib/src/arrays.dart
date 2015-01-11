@@ -93,13 +93,7 @@ class ArrayType extends BinaryType {
 
   int get size => _size;
 
-  bool operator ==(other) {
-    if (other is ArrayType && other.type == type && other.length == length) {
-      return true;
-    }
-
-    return false;
-  }
+  bool operator ==(other) => _compatible(other, true);
 
   ArrayType _clone(String name, {int align}) {
     return new ArrayType(type, length, _dataModel, align: align, name: name);
@@ -210,5 +204,16 @@ class ArrayType extends BinaryType {
     } else {
       super._setValue(base, offset, value);
     }
+  }
+
+  bool _compatible(BinaryType other, bool strong) {
+    if (other is ArrayType) {
+      var arrayType = other;
+      if (length == arrayType.length) {
+        return type._compatible(arrayType.type, strong);
+      }
+    }
+
+    return false;
   }
 }

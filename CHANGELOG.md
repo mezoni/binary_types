@@ -1,6 +1,11 @@
+## 0.0.8
+
+- Completely reimplemented the compatibility type checking mechanics. Now it faster and more accurate.
+- Completely reimplemented the integer type system fully compatible with the basic C language types.
+
 ## 0.0.7
 
-- Completely re-implemented the mechanic of naming of the binary types. Now types displayed correctly
+- Completely reimplemented the mechanics of naming of the binary types. Now types displayed correctly
 
 ## 0.0.6
 

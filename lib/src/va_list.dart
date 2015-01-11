@@ -27,4 +27,8 @@ class VaListType extends BinaryType {
   VaListType _clone(String name, {int align}) {
     return new VaListType(_dataModel, name: name);
   }
+
+  bool _compatible(BinaryType other, bool strong) {
+    return other.kind == BinaryKinds.VA_LIST;
+  }
 }

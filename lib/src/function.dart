@@ -100,8 +100,38 @@ class FunctionType extends BinaryType {
    */
   bool get variadic => _variadic;
 
+  bool operator ==(other) {
+    if (other is FunctionType) {
+      return _compatible(other, true);
+    }
+
+    return false;
+  }
+
   FunctionType _clone(String name, {int align}) {
     return new FunctionType(returnType, _parameters, _dataModel, name: name);
+  }
+
+  bool _compatible(BinaryType other, bool strong) {
+    if (other is FunctionType) {
+      if (returnType._compatible(other.returnType, strong)) {
+        if (arity == other.arity) {
+          if (variadic == other.variadic) {
+            var otherParameters = other.parameters;
+            var length = parameters.length;
+            for (var i = 0; i < length; i++) {
+              if (!parameters[i]._compatible(otherParameters[i], strong)) {
+                return false;
+              }
+            }
+
+            return true;
+          }
+        }
+      }
+    }
+
+    return false;
   }
 
   // TODO:

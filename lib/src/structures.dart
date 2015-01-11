@@ -266,7 +266,13 @@ abstract class StructureType extends BinaryType {
    */
   String get tag => _tag;
 
-  bool operator ==(other) => other is StructureType && identical(_original, other._original);
+  bool operator ==(other) {
+    if (other is StructureType) {
+      return _compatible(other, true);
+    }
+
+    return false;
+  }
 
   /**
    * Adds the members to the incomplete structured binary type.
@@ -321,6 +327,10 @@ abstract class StructureType extends BinaryType {
     }
 
     _members.addAll(members);
+  }
+
+  bool _compatible(BinaryType other, bool strong) {
+    return other is StructureType && identical(_original, other._original);
   }
 
   void _setContent(int base, int offset, value) {

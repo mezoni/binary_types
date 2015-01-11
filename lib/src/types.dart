@@ -4,12 +4,36 @@ part of binary_types;
  * Binary types.
  */
 class BinaryTypes {
-  /**
-   * Data model of binary types.
-   */
+
+  BinaryType _char_t;
+
   DataModel _dataModel;
 
+  BinaryType _double_t;
+
+  BinaryType _float_t;
+
+  BinaryType _int_t;
+
+  BinaryType _long_t;
+
+  BinaryType _long_long_t;
+
+  BinaryType _short_t;
+
+  BinaryType _signed_char_t;
+
   Map<String, BinaryType> _types = new Map<String, BinaryType>();
+
+  BinaryType _unsigned_char_t;
+
+  BinaryType _unsigned_int_t;
+
+  BinaryType _unsigned_long_t;
+
+  BinaryType _unsigned_long_long_t;
+
+  BinaryType _unsigned_short_t;
 
   BinaryTypes({DataModel dataModel}) {
     if (dataModel == null) {
@@ -18,6 +42,110 @@ class BinaryTypes {
 
     _dataModel = dataModel;
     _init();
+  }
+
+  BinaryType get char_t {
+    if (_char_t == null) {
+      _char_t = this["char"];
+    }
+
+    return _char_t;
+  }
+
+  BinaryType get double_t {
+    if (_double_t == null) {
+      _double_t = this["double"];
+    }
+
+    return _double_t;
+  }
+
+  BinaryType get float_t {
+    if (_float_t == null) {
+      _float_t = this["float"];
+    }
+
+    return _float_t;
+  }
+
+  BinaryType get int_t {
+    if (_int_t == null) {
+      _int_t = this["int"];
+    }
+
+    return _int_t;
+  }
+
+  BinaryType get long_long_t {
+    if (_long_long_t == null) {
+      _long_long_t = this["long long"];
+    }
+
+    return _long_long_t;
+  }
+
+  BinaryType get long_t {
+    if (_long_t == null) {
+      _long_t = this["long"];
+    }
+
+    return _long_t;
+  }
+
+  BinaryType get short_t {
+    if (_short_t == null) {
+      _short_t = this["short"];
+    }
+
+    return _short_t;
+  }
+
+  BinaryType get signed_char_t {
+    if (_signed_char_t == null) {
+      _signed_char_t = this["signed char"];
+    }
+
+    return _signed_char_t;
+  }
+
+  BinaryType get unsigned_char_t {
+    if (_unsigned_char_t == null) {
+      _unsigned_char_t = this["unsigned char"];
+    }
+
+    return _unsigned_char_t;
+  }
+
+  BinaryType get unsigned_int_t {
+    if (_unsigned_int_t == null) {
+      _unsigned_int_t = this["unsigned int"];
+    }
+
+    return _unsigned_int_t;
+  }
+
+  BinaryType get unsigned_long_long_t {
+    if (_unsigned_long_long_t == null) {
+      _unsigned_long_long_t = this["unsigned long long"];
+    }
+
+    return _unsigned_long_long_t;
+  }
+
+  BinaryType get unsigned_long_t {
+    if (_unsigned_long_t == null) {
+      _unsigned_long_t = this["unsigned long"];
+    }
+
+    return _unsigned_long_t;
+  }
+
+  BinaryType get unsigned_short_t {
+    if (_unsigned_short_t == null) {
+      _unsigned_short_t = this["unsigned short"];
+    }
+
+    return _unsigned_short_t;
   }
 
   BinaryType operator [](String name) {
@@ -190,14 +318,26 @@ class BinaryTypes {
     }
   }
 
-  void _cloneInt(int size, bool signed, List<String> names, String name) {
-    var type = IntType.create(size, signed, _dataModel);
+  void _cloneBasicInt(IntType type, List<String> names, [bool typedef = false]) {
+    var name = type.name;
     for (var fullname in names) {
-      var copy = type.clone(name);
-      copy._namePrefix = "$name ";
-      copy._typedefName = "";
+      var alias = name;
+      if (typedef) {
+        alias = fullname;
+      }
+
+      var copy = type.clone(alias);
+      if (!typedef) {
+        copy._typedefName = "";
+      }
+
       _types[fullname] = copy;
     }
+  }
+
+  void _cloneInt(int size, bool signed, List<String> names, [bool typedef = false]) {
+    var type = IntType.create(size, signed, _dataModel);
+    return _cloneBasicInt(type, names, typedef);
   }
 
   BinaryType _declareStructure(StructureTypeSpecification type) {
@@ -291,40 +431,37 @@ class BinaryTypes {
 
   void _init() {
     // char
-    _cloneInt(_dataModel.sizeOfChar, _dataModel.isCharSigned, const ["char"], "char");
+    _types["char"] = IntType.createChar(_dataModel, null);
 
     // Signed integers
-    _cloneInt(_dataModel.sizeOfChar, true, const ["signed char"], "signed char");
-    _cloneInt(_dataModel.sizeOfShort, true, const ["short", "short int", "signed short", "signed short int"], "short");
-    _cloneInt(_dataModel.sizeOfInt, true, const ["int", "signed", "signed int"], "int");
-    _cloneInt(_dataModel.sizeOfLong, true, const ["long", "long int", "signed long", "signed long int"], "long");
-    _cloneInt(_dataModel.sizeOfLongLong, true, const ["long long", "long long int", "signed long long", "signed long long int"], "long long");
+    _cloneBasicInt(IntType.createChar(_dataModel, true), const ["signed char"]);
+    _cloneBasicInt(IntType.createShort(_dataModel, true), const ["short", "short int", "signed short", "signed short int"]);
+    _cloneBasicInt(IntType.createInt(_dataModel, true), const ["int", "signed", "signed int"]);
+    _cloneBasicInt(IntType.createLong(_dataModel, true), const ["long", "long int", "signed long", "signed long int"]);
+    _cloneBasicInt(IntType.createLongLong(_dataModel, true), const ["long long", "long long int", "signed long long", "signed long long int"]);
 
     // Unsigned integers
-    _cloneInt(_dataModel.sizeOfChar, false, const ["unsigned char"], "unsigned char");
-    _cloneInt(_dataModel.sizeOfShort, false, const ["unsigned short", "unsigned short int"], "unsigned short");
-    _cloneInt(_dataModel.sizeOfInt, false, const ["unsigned", "unsigned int"], "unsigned int");
-    _cloneInt(_dataModel.sizeOfLong, false, const ["unsigned long", "unsigned long int"], "unsigned long");
-    _cloneInt(_dataModel.sizeOfLongLong, false, const ["unsigned long long", "unsigned long long int"], "unsigned long long");
+    _cloneBasicInt(IntType.createChar(_dataModel, false), const ["unsigned char"]);
+    _cloneBasicInt(IntType.createShort(_dataModel, false), const ["unsigned short", "unsigned short int"]);
+    _cloneBasicInt(IntType.createInt(_dataModel, false), const ["unsigned", "unsigned int"]);
+    _cloneBasicInt(IntType.createLong(_dataModel, false), const ["unsigned long", "unsigned long int"]);
+    _cloneBasicInt(IntType.createLongLong(_dataModel, false), const ["unsigned long long", "unsigned long long int"]);
 
     // Fixed size integers
-    // TODO: See in Visual Studio how they displayed in hints
-    _cloneInt(1, true, const ["int8_t"], "int8_t");
-    _cloneInt(2, true, const ["int16_t"], "int16_t");
-    _cloneInt(4, true, const ["int32_t"], "int32_t");
-    _cloneInt(8, true, const ["int64_t"], "int64_t");
-    _cloneInt(1, false, const ["uint8_t"], "uint8_t");
-    _cloneInt(2, false, const ["uint16_t"], "uint16_t");
-    _cloneInt(4, false, const ["uint32_t"], "uint32_t");
-    _cloneInt(8, false, const ["uint64_t"], "uint64_t");
+    _cloneInt(1, true, const ["int8_t"], true);
+    _cloneInt(2, true, const ["int16_t"], true);
+    _cloneInt(4, true, const ["int32_t"], true);
+    _cloneInt(8, true, const ["int64_t"], true);
+    _cloneInt(1, false, const ["uint8_t"], true);
+    _cloneInt(2, false, const ["uint16_t"], true);
+    _cloneInt(4, false, const ["uint32_t"], true);
+    _cloneInt(8, false, const ["uint64_t"], true);
 
     // Pointer size
-    // TODO: See in Visual Studio how they displayed in hints
-    _cloneInt(_dataModel.sizeOfPointer, true, const ["intptr_t"], "intptr_t");
+    _cloneInt(_dataModel.sizeOfPointer, true, const ["intptr_t"], true);
 
     // Array size
-    // TODO: See in Visual Studio how they displayed in hints
-    _cloneInt(_dataModel.sizeOfPointer, false, const ["size_t"], "size_t");
+    _cloneInt(_dataModel.sizeOfPointer, false, const ["size_t"], true);
 
     // Floating points
     _types["float"] = new FloatType(_dataModel);
@@ -336,7 +473,6 @@ class BinaryTypes {
     // Variable arguments
     _types["..."] = new VaListType(_dataModel);
   }
-
 
   BinaryType _typeDef(String name, type, {int align}) {
     _checkTypeName(name);

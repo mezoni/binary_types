@@ -114,7 +114,7 @@ abstract class BinaryType {
    */
   int get size;
 
-  bool operator ==(other) => identical(this, other);
+  bool operator ==(other) => _compatible(other, true);
 
   /**
    * Allocates the memory for the instance of type and returns the data holder.
@@ -176,9 +176,22 @@ abstract class BinaryType {
   /**
    * TODO: Undocumented
    */
-  bool compatible(BinaryType otherType) {
-    throw new UnimplementedError("compatible");
+  bool compatible(BinaryType other, bool strong) {
+    if (other == null) {
+      throw new ArgumentError.notNull("other");
+    }
+
+    if (strong == null) {
+      throw new ArgumentError.notNull("strong");
+    }
+
+    return _compatible(other, strong);
   }
+
+  /**
+   * TODO: Undocumented
+   */
+  bool _compatible(BinaryType other, bool strong);
 
   /**
    * Compares the content of this type, at the specified base and offset, with

@@ -27,4 +27,8 @@ class VoidType extends BinaryType {
   VoidType _clone(String name, {int align}) {
     return new VoidType(_dataModel, name: name);
   }
+
+  bool _compatible(BinaryType other, bool strong) {
+    return other.kind == BinaryKinds.VOID;
+  }
 }

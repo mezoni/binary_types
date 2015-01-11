@@ -92,6 +92,17 @@ class PointerType extends BinaryType {
     return new PointerType(type, _dataModel, align: align, name: name);
   }
 
+  bool _compatible(BinaryType other, bool strong) {
+    if (other is PointerType) {
+      var pointerType = other;
+      if (level == pointerType.level) {
+        return targetType._compatible(pointerType.targetType, strong);
+      }
+    }
+
+    return false;
+  }
+
   BinaryData _getElement(int base, int offset, index) {
     if (index is int) {
       return new BinaryData._internal(type, Unsafe.readIntPtr(base, offset), _typeSize * index);
@@ -147,13 +158,42 @@ class PointerType extends BinaryType {
     }
   }
 
-  void _setValue(int base, int offset, value) {
+  void _setValue2(int base, int offset, value) {
     if (value is BinaryData) {
       var valueType = value.type;
       if (type is VoidType || valueType == type || (valueType is ArrayType && valueType.type == type)) {
         Unsafe.writeIntPtr(base, offset, value.address);
         return;
       }
+    }
+
+    super._setValue(base, offset, value);
+  }
+
+  void _setValue(int base, int offset, value) {
+    if (value is BinaryData) {
+      var valueType = value.type;
+      while (true) {
+        if (type._compatible(valueType, false)) {
+          break;
+        }
+
+        if (valueType is ArrayType) {
+          if (type._compatible(valueType.type, false)) {
+            break;
+          }
+        }
+
+        if (type is VoidType) {
+          break;
+        }
+
+        super._setValue(base, offset, value);
+        return;
+      }
+
+      Unsafe.writeIntPtr(base, offset, value.address);
+      return;
     }
 
     super._setValue(base, offset, value);

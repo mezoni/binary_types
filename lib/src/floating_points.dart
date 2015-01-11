@@ -29,6 +29,10 @@ class DoubleType extends FloatingPointType {
     return new DoubleType(_dataModel, align: align, name: name);
   }
 
+  bool _compatible(BinaryType other, bool strong) {
+    return other.kind == BinaryKinds.DOUBLE;
+  }
+
   double _getValue(int base, int offset) {
     return Unsafe.readFloat64(base, offset);
   }
@@ -73,6 +77,10 @@ class FloatType extends FloatingPointType {
 
   FloatType _clone(String name, {int align}) {
     return new FloatType(_dataModel, align: align, name: name);
+  }
+
+  bool _compatible(BinaryType other, bool strong) {
+    return other.kind == BinaryKinds.FLOAT;
   }
 
   double _getValue(int base, int offset) {

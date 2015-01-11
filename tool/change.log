@@ -11,4 +11,6 @@
 0.0.5 Removed operator `BinaryData.operator~)`
 0.0.5 Removed class `Reference` in favor of the "all-sufficient" implementation of the `Binary Data` 
 0.0.6 Made adaptations to the new version of package `binary_declarations`
-0.0.7 Completely re-implemented the mechanic of naming of the binary types. Now types displayed correctly
+0.0.7 Completely reimplemented the mechanics of naming of the binary types. Now types displayed correctly
+0.0.8 Completely reimplemented the integer type system fully compatible with the basic C language types.
+0.0.8 Completely reimplemented the compatibility type checking mechanics. Now it faster and more accurate.

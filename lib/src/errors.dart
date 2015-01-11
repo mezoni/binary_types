@@ -15,6 +15,10 @@ class BinaryTypeError implements Exception {
     throw new BinaryTypeError("Different data models not allowed: $subject");
   }
 
+  static void integerSizeNotSupported(int size) {
+    throw new BinaryTypeError("Integer type with a size $size is not supported by the specified data model");
+  }
+
   static void illegalMemberName(BinaryType type, String name) {
     throw new BinaryTypeError("Illegal member name '$name' for the type '$type'");
   }
