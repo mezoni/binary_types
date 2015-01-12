@@ -3,6 +3,7 @@ part of binary_types;
 /**
  * Data model of binary types.
  */
+// TODO: Add??? sizeOfEnum with default sizeOfInt
 class DataModel {
   int _alignOfPointer;
 

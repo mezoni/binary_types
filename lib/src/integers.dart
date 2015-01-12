@@ -449,7 +449,7 @@ abstract class IntType extends BinaryType {
     }
   }
 
-  static IntType createChar(DataModel dataModel, bool signed, {int align}) {
+  static IntType createChar(bool signed, DataModel dataModel, {int align}) {
     var sign = signed;
     if (signed == null) {
       sign = dataModel.isCharSigned;
@@ -488,7 +488,7 @@ abstract class IntType extends BinaryType {
    *   [int] align
    *   Data alignment of binary type.
    */
-  static IntType createInt(DataModel dataModel, bool signed, {int align}) {
+  static IntType createInt(bool signed, DataModel dataModel, {int align}) {
     var type = create(dataModel.sizeOfInt, signed, dataModel, align: align);
     switch (signed) {
       case true:
@@ -517,7 +517,7 @@ abstract class IntType extends BinaryType {
    *   [int] align
    *   Data alignment of binary type.
    */
-  static IntType createLong(DataModel dataModel, bool signed, {int align}) {
+  static IntType createLong(bool signed, DataModel dataModel, {int align}) {
     var type = create(dataModel.sizeOfLong, signed, dataModel, align: align);
     switch (signed) {
       case true:
@@ -546,7 +546,7 @@ abstract class IntType extends BinaryType {
    *   [int] align
    *   Data alignment of binary type.
    */
-  static IntType createLongLong(DataModel dataModel, bool signed, {int align}) {
+  static IntType createLongLong(bool signed, DataModel dataModel, {int align}) {
     var type = create(dataModel.sizeOfLong, signed, dataModel, align: align);
     switch (signed) {
       case true:
@@ -575,7 +575,7 @@ abstract class IntType extends BinaryType {
    *   [int] align
    *   Data alignment of binary type.
    */
-  static IntType createShort(DataModel dataModel, bool signed, {int align}) {
+  static IntType createShort(bool signed, DataModel dataModel, {int align}) {
     var type = create(dataModel.sizeOfShort, signed, dataModel, align: align);
     switch (signed) {
       case true:
@@ -591,8 +591,6 @@ abstract class IntType extends BinaryType {
     return type;
   }
 }
-
-
 
 /**
  * 16-bit unsigned integer binary type.

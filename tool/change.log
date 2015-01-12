@@ -12,7 +12,11 @@
 0.0.5 Removed class `Reference` in favor of the "all-sufficient" implementation of the `Binary Data` 
 0.0.6 Made adaptations to the new version of package `binary_declarations`
 0.0.7 Completely reimplemented the mechanics of naming of the binary types. Now types displayed correctly
-0.0.8 Completely reimplemented the integer type system fully compatible with the basic C language types.
+0.0.8 Completely reimplemented the integer type system fully compatible with the basic C language types
 0.0.8 Completely reimplemented the compatibility type checking mechanics. Now it faster and more accurate and compromise between C and C++ languages
 0.0.9 Fixed bugs in forming names of the binary types
 0.0.9 Breaking change: `FunctionType` now requires parameter `name`
+0.0.10 Added new concept: type members. Concept actual for `enum`, `struct` and `union` types
+0.0.10 Added experimental support of `enum` binary type
+0.0.10 Breaking change: Members of `StructureType` (`struct` and `enum`) now are `StructureMember` instead to be of just a `BinaryTypes`. They holds the information about `name`, `type` and `offset`
+0.0.11 Initial support of `enum` binary type

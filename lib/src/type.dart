@@ -5,6 +5,8 @@ class BinaryKinds {
 
   static const BinaryKinds DOUBLE = const BinaryKinds("DOUBLE");
 
+  static const BinaryKinds ENUM = const BinaryKinds("ENUM");
+
   static const BinaryKinds FLOAT = const BinaryKinds("FLOAT");
 
   static const BinaryKinds FUNCTION = const BinaryKinds("FUNCTION");
@@ -109,6 +111,13 @@ abstract class BinaryType {
   String get typedefName => _typedefName;
 
   bool operator ==(other) => _compatible(other, true);
+
+  /**
+   * Returns the member or value for tagged binary type (enum, struct, union).
+   */
+  dynamic operator [](String name) {
+    return getTypeElement(name);
+  }
 
   /**
    * Allocates the memory for the instance of type and returns the data holder.
@@ -372,6 +381,21 @@ abstract class BinaryType {
   }
 
   /**
+   * Returns the type element specific to a particular type.
+   *
+   * Parameters:
+   *   [String] name
+   *   Name of the member
+   */
+  dynamic getTypeElement(String name) {
+    if (name == null) {
+      throw new ArgumentError.notNull("name");
+    }
+
+    return _getTypeElement(name);
+  }
+
+  /**
    * Returns the value of this type, at the specified memory base and offset.
    *
    * Parameters:
@@ -570,6 +594,11 @@ abstract class BinaryType {
     BinaryTypeError.unablePerformingOperation(this, "get element value", {
       "index": index
     });
+    return null;
+  }
+
+  dynamic _getTypeElement(String name) {
+    BinaryTypeError.typeElementNotFound(this, name);
     return null;
   }
 

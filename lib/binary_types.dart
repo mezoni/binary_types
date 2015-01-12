@@ -8,6 +8,7 @@ import "package:unsafe_extension/unsafe_extension.dart";
 part 'src/arrays.dart';
 part 'src/data.dart';
 part 'src/data_model.dart';
+part 'src/enum.dart';
 part 'src/errors.dart';
 part 'src/floating_points.dart';
 part 'src/function.dart';

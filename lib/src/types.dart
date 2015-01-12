@@ -3,6 +3,7 @@ part of binary_types;
 /**
  * Binary types.
  */
+// TODO: check the uniqueness of tags (enum, struct, union)
 class BinaryTypes {
 
   BinaryType _char_t;
@@ -237,6 +238,8 @@ class BinaryTypes {
         BinaryType binaryType;
         if (type is StructureTypeSpecification) {
           binaryType = _declareStructure(type);
+        } else if (type is EnumTypeSpecification) {
+          binaryType = _declareEnum(type);
         } else {
           binaryType = this[type.toString()];
         }
@@ -244,6 +247,8 @@ class BinaryTypes {
         typeDef(name, binaryType, align: align);
       } else if (declaration is StructureDeclaration) {
         _declareStructure(declaration.type);
+      } else if (declaration is EnumDeclaration) {
+        _declareEnum(declaration.type);
       } else if (declaration is VariableDeclaration) {
         if (declaration.type is StructureTypeSpecification) {
           _declareStructure(declaration.type);
@@ -341,9 +346,27 @@ class BinaryTypes {
     return _cloneBasicInt(type, names, typedef);
   }
 
+  BinaryType _declareEnum(EnumTypeSpecification type) {
+    var attributes = _getAttributes(type.attributes);
+    var align = _getAttributeAligned(attributes);
+    var taggedType = type.taggedType;
+    var tag = taggedType.tag;
+    var values = <String, int>{};
+    for (var value in type.values) {
+      values[value.name] = value.value;
+    }
+
+    var enumType = new EnumType(tag, values, _dataModel, align: align);
+    if (tag != null) {
+      this["enum $tag"] = enumType;
+    }
+
+    return enumType;
+  }
+
   BinaryType _declareStructure(StructureTypeSpecification type) {
-    // TODO: Use attributes
-    var align = null;
+    var attributes = _getAttributes(type.attributes);
+    var align = _getAttributeAligned(attributes);
     var taggedType = type.taggedType;
     var kind = taggedType.kind;
     var pack = null;
@@ -369,6 +392,10 @@ class BinaryTypes {
       }
 
       if (tag != null) {
+        if (_types.containsKey(tag)) {
+          BinaryTypeError.unableRedeclareType(tag);
+        }
+
         _types[key] = structureType;
       }
     }
@@ -432,21 +459,21 @@ class BinaryTypes {
 
   void _init() {
     // char
-    _types["char"] = IntType.createChar(_dataModel, null);
+    _types["char"] = IntType.createChar(null, _dataModel);
 
     // Signed integers
-    _cloneBasicInt(IntType.createChar(_dataModel, true), const ["signed char"]);
-    _cloneBasicInt(IntType.createShort(_dataModel, true), const ["short", "short int", "signed short", "signed short int"]);
-    _cloneBasicInt(IntType.createInt(_dataModel, true), const ["int", "signed", "signed int"]);
-    _cloneBasicInt(IntType.createLong(_dataModel, true), const ["long", "long int", "signed long", "signed long int"]);
-    _cloneBasicInt(IntType.createLongLong(_dataModel, true), const ["long long", "long long int", "signed long long", "signed long long int"]);
+    _cloneBasicInt(IntType.createChar(true, _dataModel), const ["signed char"]);
+    _cloneBasicInt(IntType.createShort(true, _dataModel), const ["short", "short int", "signed short", "signed short int"]);
+    _cloneBasicInt(IntType.createInt(true, _dataModel), const ["int", "signed", "signed int"]);
+    _cloneBasicInt(IntType.createLong(true, _dataModel), const ["long", "long int", "signed long", "signed long int"]);
+    _cloneBasicInt(IntType.createLongLong(true, _dataModel), const ["long long", "long long int", "signed long long", "signed long long int"]);
 
     // Unsigned integers
-    _cloneBasicInt(IntType.createChar(_dataModel, false), const ["unsigned char"]);
-    _cloneBasicInt(IntType.createShort(_dataModel, false), const ["unsigned short", "unsigned short int"]);
-    _cloneBasicInt(IntType.createInt(_dataModel, false), const ["unsigned", "unsigned int"]);
-    _cloneBasicInt(IntType.createLong(_dataModel, false), const ["unsigned long", "unsigned long int"]);
-    _cloneBasicInt(IntType.createLongLong(_dataModel, false), const ["unsigned long long", "unsigned long long int"]);
+    _cloneBasicInt(IntType.createChar(false, _dataModel), const ["unsigned char"]);
+    _cloneBasicInt(IntType.createShort(false, _dataModel), const ["unsigned short", "unsigned short int"]);
+    _cloneBasicInt(IntType.createInt(false, _dataModel), const ["unsigned", "unsigned int"]);
+    _cloneBasicInt(IntType.createLong(false, _dataModel), const ["unsigned long", "unsigned long int"]);
+    _cloneBasicInt(IntType.createLongLong(false, _dataModel), const ["unsigned long long", "unsigned long long int"]);
 
     // Fixed size integers
     _cloneInt(1, true, const ["int8_t"], true);

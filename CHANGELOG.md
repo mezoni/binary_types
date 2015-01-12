@@ -1,3 +1,13 @@
+## 0.0.11
+
+- Initial support of `enum` binary type
+
+## 0.0.10
+
+- Added experimental support of `enum` binary type
+- Added new concept: type members. Concept actual for `enum`, `struct` and `union` types
+- Breaking change: Members of `StructureType` (`struct` and `enum`) now are `StructureMember` instead to be of just a `BinaryTypes`. They holds the information about `name`, `type` and `offset`
+
 ## 0.0.9
 
 - Breaking change: `FunctionType` now requires parameter `name`
@@ -6,7 +16,7 @@
 ## 0.0.8
 
 - Completely reimplemented the compatibility type checking mechanics. Now it faster and more accurate and compromise between C and C++ languages
-- Completely reimplemented the integer type system fully compatible with the basic C language types.
+- Completely reimplemented the integer type system fully compatible with the basic C language types
 
 ## 0.0.7
 

@@ -15,6 +15,10 @@ class BinaryTypeError implements Exception {
     throw new BinaryTypeError("Different data models not allowed: $subject");
   }
 
+  static void enumerationValueOutOfRange(EnumType type, String name, int value, BinaryType intType) {
+    throw new BinaryTypeError("Enumeration value '$name' ($value) is out of  '$intType' range for the type '$type'");
+  }
+
   static void illegalMemberName(BinaryType type, String name) {
     throw new BinaryTypeError("Illegal member name '$name' for the type '$type'");
   }
@@ -55,9 +59,13 @@ class BinaryTypeError implements Exception {
     throw new BinaryTypeError("Requires at least one member for the type '$type'");
   }
 
-  // TODO: Remove
   static void stringValueIsTooLarge(String str) {
     throw new BinaryTypeError("String value is too large '$str'");
+  }
+
+  // TODO: Remove
+  static void typeElementNotFound(BinaryType type, String name) {
+    throw new BinaryTypeError("Type element '$name' not found in the type '$type'");
   }
 
   static void typeNotDefined(String name) {

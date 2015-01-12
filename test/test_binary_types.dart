@@ -2,6 +2,12 @@ import 'package:binary_types/binary_types.dart';
 import 'package:unittest/unittest.dart';
 
 var _header = '''
+enum Color { RED, GREEN, BLUE };
+
+typedef enum _ENUM_ABC {
+  A, B, C = 0, D, E,
+} ENUM_ABC;
+
 struct struct_t {
   struct { int i; } s;          
   int8_t int8;
@@ -58,6 +64,7 @@ void main() {
   test.testArrays();
   test.testCommon();
   test.testCStrings();
+  test.testEnums();
   test.testFloats();
   test.testFunctions();
   test.testIntegers();
@@ -78,6 +85,45 @@ class Test {
   }
 
   BinaryObject alloc(String type, [value]) => t[type].alloc(value);
+
+  void testEnums() {
+    group("Enum types types", () {
+      test("Enum values.", () {
+        void testEnum(BinaryType enumType, Map<String, int> map) {
+          var name = enumType.name;
+          for (var key in map.keys) {
+            var actual = enumType[key];
+            var matcher = map[key];
+            expect(actual, matcher, reason: "$name.$key == $matcher");
+          }
+        }
+
+        // Color
+        var enum_t = t["enum Color"];
+        var map = {
+          "RED": 0,
+          "GREEN": 1,
+          "BLUE": 2
+        };
+        testEnum(enum_t, map);
+
+        // enum _ABC
+        enum_t = t["enum _ENUM_ABC"];
+        map = {
+          "A": 0,
+          "B": 1,
+          "C": 0,
+          "D": 1,
+          "E": 2
+        };
+        testEnum(enum_t, map);
+
+        // ABC
+        enum_t = t["ENUM_ABC"];
+        testEnum(enum_t, map);
+      });
+    });
+  }
 
   void testAlloc() {
     group("Memory allocation.", () {
