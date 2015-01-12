@@ -27,7 +27,7 @@ Initial release. Use at your own risk!
 
 - Array type
 - Double type
-- Enum type (comming soon)
+- Enum type
 - Float type
 - Integer types
 - Pointer type
@@ -42,8 +42,8 @@ Initial release. Use at your own risk!
 
 **Binary data**
 
-- Binary data (at any memory locations) 
-- Binary data objects (with type checking and automatic memory deallocation)
+- Binary data (at any memory locations and with binary type checking) 
+- Binary data objects (with automatic memory deallocation)
 
 **Binary type system**
 
