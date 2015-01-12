@@ -8,14 +8,9 @@ class DoubleType extends FloatingPointType {
 
   static final double _max = 1.7976931348623157e+308;
 
-  DoubleType(DataModel dataModel, {int align, String name}) : super(dataModel, align: align, name: name) {
+  DoubleType(DataModel dataModel, {int align}) : super(dataModel, align: align) {
     if (align == null) {
       _align = _dataModel.alignOfDouble;
-    }
-
-    if (name == null) {
-      _name = "double";
-      _namePrefix = "double ";
     }
   }
 
@@ -23,10 +18,18 @@ class DoubleType extends FloatingPointType {
 
   BinaryKinds get kind => BinaryKinds.DOUBLE;
 
+  String get name {
+    if (_name == null) {
+      _name = "double";
+    }
+
+    return _name;
+  }
+
   int get size => _dataModel.sizeOfDouble;
 
-  DoubleType _clone(String name, {int align}) {
-    return new DoubleType(_dataModel, align: align, name: name);
+  DoubleType _clone({int align}) {
+    return new DoubleType(_dataModel, align: align);
   }
 
   bool _compatible(BinaryType other, bool strong) {
@@ -58,14 +61,9 @@ class FloatType extends FloatingPointType {
 
   static const double _max = 3.40282347e+38;
 
-  FloatType(DataModel dataModel, {int align, String name}) : super(dataModel, align: align, name: name) {
+  FloatType(DataModel dataModel, {int align}) : super(dataModel, align: align) {
     if (align == null) {
       _align = dataModel.alignOfFloat;
-    }
-
-    if (name == null) {
-      _name = "float";
-      _namePrefix = "float ";
     }
   }
 
@@ -73,10 +71,18 @@ class FloatType extends FloatingPointType {
 
   BinaryKinds get kind => BinaryKinds.FLOAT;
 
+  String get name {
+    if (_name == null) {
+      _name = "float";
+    }
+
+    return _name;
+  }
+
   int get size => _dataModel.sizeOfFloat;
 
-  FloatType _clone(String name, {int align}) {
-    return new FloatType(_dataModel, align: align, name: name);
+  FloatType _clone({int align}) {
+    return new FloatType(_dataModel, align: align);
   }
 
   bool _compatible(BinaryType other, bool strong) {
@@ -108,7 +114,7 @@ abstract class FloatingPointType extends BinaryType {
 
   static const double _max = 0.0;
 
-  FloatingPointType(DataModel dataModel, {int align, String name}) : super(dataModel, align: align, name: name);
+  FloatingPointType(DataModel dataModel, {int align}) : super(dataModel, align: align);
 
   dynamic get defaultValue {
     return 0.0;

@@ -15,24 +15,24 @@ class BinaryTypeError implements Exception {
     throw new BinaryTypeError("Different data models not allowed: $subject");
   }
 
-  static void integerSizeNotSupported(int size) {
-    throw new BinaryTypeError("Integer type with a size $size is not supported by the specified data model");
-  }
-
   static void illegalMemberName(BinaryType type, String name) {
     throw new BinaryTypeError("Illegal member name '$name' for the type '$type'");
+  }
+
+  static void incompleteFunctionParameterType(String name, int index, BinaryType parameter) {
+    throw new BinaryTypeError("Illegal use of incomplete type '$parameter' as the parameter #'$index' of function '$name'");
   }
 
   static void incompleteMemberType(BinaryType type, String name, BinaryType member) {
     throw new BinaryTypeError("Illegal use of incomplete type '$member' as the member '$name' for the type '$type'");
   }
 
-  static void incompleteFunctionParameterType(int index, BinaryType parameter) {
-    throw new BinaryTypeError("Illegal use of incomplete type '$parameter' as the function parameter #'$index'");
-  }
-
   static void indexOutOfArange(BinaryType type, int index, int range) {
     throw new BinaryTypeError("Index '$index' out of range '$range' for the type '$type'");
+  }
+
+  static void integerSizeNotSupported(int size) {
+    throw new BinaryTypeError("Integer type with a size $size is not supported by the specified data model");
   }
 
   static void memberNotFound(BinaryType type, String member) {
@@ -108,11 +108,15 @@ class BinaryTypeError implements Exception {
     throw new BinaryTypeError("Value length '$length' must be the same as the number of members '$number' of the type '$type'");
   }
 
-  static void variableParameterMustBeLastParameter() {
-    throw new BinaryTypeError("Variable arguments parameter type must be the last parameter type");
+  static void variableParameterMustBeLastParameter(String name) {
+    throw new BinaryTypeError("Variable parameter type must be the last parameter type in function '$name'");
   }
 
   static void variadicFunctionMustHaveAtLeastOneNamedParameter() {
     throw new BinaryTypeError("Variadic function must have at least one named parameter");
+  }
+
+  static void wrongOrderOfVariadicFunctionParameters(String name) {
+    throw new BinaryTypeError("Wrong order of parameters in the variadic function '$name'");
   }
 }

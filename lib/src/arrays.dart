@@ -22,7 +22,7 @@ class ArrayType extends BinaryType {
 
   int _typeSize;
 
-  ArrayType(this.type, this.length, DataModel dataModel, {int align, String name}) : super(dataModel, align: align, name: name) {
+  ArrayType(this.type, this.length, DataModel dataModel, {int align}) : super(dataModel, align: align) {
     if (type == null) {
       throw new ArgumentError("type: $type");
     }
@@ -35,28 +35,11 @@ class ArrayType extends BinaryType {
       ArrayType arrayType = type;
       _targetType = arrayType._targetType;
       _dimensions = "${arrayType._dimensions}";
-      _namePrefix = "$_targetType (";
-      _nameSuffix = ")$_dimensions";
       _dimensions = "[$length]$_dimensions";
 
     } else {
       _targetType = type;
       _dimensions = "[$length]";
-      _namePrefix = "$type ";
-      _nameSuffix = "";
-      if (type is PointerType) {
-        _namePrefix = "$type";
-      } else {
-        _namePrefix = "$type ";
-      }
-    }
-
-    if (name == null) {
-      if (_targetType is PointerType) {
-        _name = "$_targetType$_dimensions";
-      } else {
-        _name = "$_targetType $_dimensions";
-      }
     }
 
     if (type.size == 0) {
@@ -89,14 +72,20 @@ class ArrayType extends BinaryType {
 
   BinaryKinds get kind => BinaryKinds.ARRAY;
 
-  String get name => _name;
+  String get name {
+    if (_name == null) {
+      _name = formatName();
+    }
+
+    return _name;
+  }
 
   int get size => _size;
 
   bool operator ==(other) => _compatible(other, true);
 
-  ArrayType _clone(String name, {int align}) {
-    return new ArrayType(type, length, _dataModel, align: align, name: name);
+  ArrayType _clone({int align}) {
+    return new ArrayType(type, length, _dataModel, align: align);
   }
 
   BinaryData _getElement(int base, int offset, index) {
@@ -154,18 +143,6 @@ class ArrayType extends BinaryType {
     } else {
       super._initialize(base, offset, value);
     }
-  }
-
-  String _refString(int level, [String identifier]) {
-    var sb = new StringBuffer();
-    sb.write(_namePrefix);
-    sb.write("".padRight(level + 1, "*"));
-    if (identifier != null) {
-      sb.write(identifier);
-    }
-
-    sb.write(_nameSuffix);
-    return sb.toString();
   }
 
   void _setElement(int base, int offset, index, value) {

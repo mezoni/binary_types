@@ -1,12 +1,7 @@
 part of binary_types;
 
 class VaListType extends BinaryType {
-  VaListType(DataModel dataModel, {String name}) : super(dataModel, name: name) {
-    if (name == null) {
-      _name = "...";
-      _namePrefix = "... ";
-    }
-  }
+  VaListType(DataModel dataModel, {String name}) : super(dataModel);
 
   int get align {
     BinaryTypeError.unableGetAlignmentIncompleteType(this);
@@ -20,12 +15,20 @@ class VaListType extends BinaryType {
 
   BinaryKinds get kind => BinaryKinds.VA_LIST;
 
+  String get name {
+    if (_name == null) {
+      _name = "...";
+    }
+
+    return _name;
+  }
+
   int get size => 0;
 
   bool operator ==(other) => other is VaListType;
 
-  VaListType _clone(String name, {int align}) {
-    return new VaListType(_dataModel, name: name);
+  VaListType _clone({int align}) {
+    return new VaListType(_dataModel);
   }
 
   bool _compatible(BinaryType other, bool strong) {

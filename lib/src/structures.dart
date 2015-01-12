@@ -12,9 +12,9 @@ class StructType extends StructureType {
 
   List<BinaryType> _types;
 
-  StructType(String tag, Map<String, BinaryType> members, DataModel dataModel, {int align, String name, int pack}) : this._internal(tag, members, dataModel, null, align: align, name: name, pack: pack);
+  StructType(String tag, Map<String, BinaryType> members, DataModel dataModel, {int align, int pack}) : this._internal(tag, members, dataModel, align: align, pack: pack);
 
-  StructType._internal(String tag, Map<String, BinaryType> members, DataModel dataModel, StructureType original, {int align, String name, int pack}) : super("struct", tag, dataModel, original, align: align, name: name) {
+  StructType._internal(String tag, Map<String, BinaryType> members, DataModel dataModel, {int align, int pack}) : super("struct", tag, dataModel, align: align) {
     _offsets = new List<int>();
     _ordinals = new LinkedHashMap<String, int>();
     _types = new List<BinaryType>();
@@ -72,13 +72,14 @@ class StructType extends StructureType {
     }
   }
 
-  StructType _clone(String name, {int align}) {
+  StructType _clone({int align}) {
     if (members.isEmpty) {
       BinaryTypeError.unableCloneIncompleteType(this);
     }
 
-    // TODO:
-    return new StructType._internal(tag, members, _dataModel, _original, align: align, name: name, pack: _pack);
+    var copy = new StructType._internal(tag, members, _dataModel, align: align, pack: _pack);
+    copy._id = this;
+    return copy;
   }
 
   BinaryData _getElement(int base, int offset, index) {
@@ -204,35 +205,21 @@ class StructType extends StructureType {
  * Structure binary type.
  */
 abstract class StructureType extends BinaryType {
-  Map<String, BinaryType> _members;
+  StructureType _id;
 
-  StructureType _original;
+  Map<String, BinaryType> _members;
 
   int _pack;
 
   String _tag;
 
-  StructureType(String kind, String tag, DataModel dataModel, StructureType original, {int align, String name}) : super(dataModel, align: align, name: name) {
+  StructureType(String kind, String tag, DataModel dataModel, {int align}) : super(dataModel, align: align) {
     if (tag != null && tag.isEmpty) {
       throw new ArgumentError("Name should be not empty string or unspecified.");
     }
 
-    if (name == null) {
-      if (tag != null) {
-        _name = "$kind $tag";
-      } else {
-        _name = "$kind <unnamed>";
-      }
-
-      _namePrefix = "$_name ";
-    }
-
-    if (original == null) {
-      original = this;
-    }
-
+    _id = this;
     _members = new LinkedHashMap<String, BinaryType>();
-    _original = original;
     _tag = tag;
   }
 
@@ -255,6 +242,28 @@ abstract class StructureType extends BinaryType {
    * Returns the members of the structural binary type.
    */
   Map<String, BinaryType> get members => new UnmodifiableMapView(_members);
+
+  String get name {
+    if (_name == null) {
+      var sb = new StringBuffer();
+      if (this is StructType) {
+        sb.write("struct");
+      } else {
+        sb.write("union");
+      }
+
+      sb.write(" ");
+      if (tag != null) {
+        sb.write(tag);
+      } else {
+        sb.write("tag");
+      }
+
+      _name = sb.toString();
+    }
+
+    return _name;
+  }
 
   /**
    * Returns the data structure padding.
@@ -330,7 +339,13 @@ abstract class StructureType extends BinaryType {
   }
 
   bool _compatible(BinaryType other, bool strong) {
-    return other is StructureType && identical(_original, other._original);
+    if (other is StructureType) {
+      if (identical(_id, other._id)) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   void _setContent(int base, int offset, value) {
@@ -361,9 +376,9 @@ class UnionType extends StructureType {
 
   int _size = 0;
 
-  UnionType(String tag, Map<String, BinaryType> members, DataModel dataModel, {int align, String name, int pack}) : this._internal(tag, members, dataModel, null, align: align, name: name, pack: pack);
+  UnionType(String tag, Map<String, BinaryType> members, DataModel dataModel, {int align, int pack}) : this._internal(tag, members, dataModel, align: align, pack: pack);
 
-  UnionType._internal(String tag, Map<String, BinaryType> members, DataModel dataModel, StructureType original, {int align, String name, int pack}) : super("union", tag, dataModel, original, align: align, name: name) {
+  UnionType._internal(String tag, Map<String, BinaryType> members, DataModel dataModel, {int align, int pack}) : super("union", tag, dataModel, align: align) {
     if (members != null) {
       addMembers(members, pack: pack);
     }
@@ -410,13 +425,14 @@ class UnionType extends StructureType {
     }
   }
 
-  UnionType _clone(String name, {int align}) {
+  UnionType _clone({int align}) {
     if (members.isEmpty) {
       BinaryTypeError.unableCloneIncompleteType(this);
     }
 
-    // TODO:
-    return new UnionType._internal(tag, _members, _dataModel, _original, align: align, name: name, pack: _pack);
+    var copy = new UnionType._internal(tag, _members, _dataModel, align: align, pack: _pack);
+    copy._id = this;
+    return copy;
   }
 
   BinaryData _getElement(int base, int offset, index) {

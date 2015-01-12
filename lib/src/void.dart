@@ -1,12 +1,7 @@
 part of binary_types;
 
 class VoidType extends BinaryType {
-  VoidType(DataModel dataModel, {String name}) : super(dataModel, name: name) {
-    if (name == null) {
-      _name = "void";
-      _namePrefix = "void ";
-    }
-  }
+  VoidType(DataModel dataModel) : super(dataModel);
 
   int get align {
     BinaryTypeError.unableGetAlignmentIncompleteType(this);
@@ -20,12 +15,20 @@ class VoidType extends BinaryType {
 
   BinaryKinds get kind => BinaryKinds.VOID;
 
+  String get name {
+    if (_name == null) {
+      _name = "void";
+    }
+
+    return _name;
+  }
+
   int get size => 0;
 
   bool operator ==(other) => other is VoidType;
 
-  VoidType _clone(String name, {int align}) {
-    return new VoidType(_dataModel, name: name);
+  VoidType _clone({int align}) {
+    return new VoidType(_dataModel);
   }
 
   bool _compatible(BinaryType other, bool strong) {

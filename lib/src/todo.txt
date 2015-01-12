@@ -1,7 +1,13 @@
-See in Visual Studio what is a int8_t
-32 bit
-__int8 = char
-__int16 = short
-__int32 = int
-__int64 = long long
-long != int
+#Change order of type checking
+
+void _setValue(int base, int offset, value) {
+    if (value is double) {
+      value = value.toInt();
+    }
+
+    if (value is int) {
+      Unsafe.writeInt32(base, offset, value);
+    } else {
+      super._setValue(base, offset, value);
+    }
+  }

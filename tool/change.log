@@ -14,3 +14,5 @@
 0.0.7 Completely reimplemented the mechanics of naming of the binary types. Now types displayed correctly
 0.0.8 Completely reimplemented the integer type system fully compatible with the basic C language types.
 0.0.8 Completely reimplemented the compatibility type checking mechanics. Now it faster and more accurate and compromise between C and C++ languages
+0.0.9 Fixed bugs in forming names of the binary types
+0.0.9 Breaking change: `FunctionType` now requires parameter `name`

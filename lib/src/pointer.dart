@@ -12,7 +12,7 @@ class PointerType extends BinaryType {
 
   int _typeSize;
 
-  PointerType(BinaryType type, DataModel dataModel, {int align, String name}) : super(dataModel, align: align, name: name) {
+  PointerType(BinaryType type, DataModel dataModel, {int align}) : super(dataModel, align: align) {
     if (type == null) {
       throw new ArgumentError("type: $type");
     }
@@ -24,12 +24,6 @@ class PointerType extends BinaryType {
       PointerType pointerType = type;
       _level = pointerType.level + 1;
       _targetType = pointerType.targetType;
-    }
-
-    if (name == null) {
-      _namePrefix = "${type._namePrefix}*";
-      _nameSuffix = type._nameSuffix;
-      _name = "$_namePrefix$_nameSuffix";
     }
 
     if (type.dataModel != dataModel) {
@@ -69,6 +63,14 @@ class PointerType extends BinaryType {
     return _targetType;
   }
 
+  String get name {
+    if (_name == null) {
+      _name = formatName();
+    }
+
+    return _name;
+  }
+
   /**
    * Type of the referred data.
    */
@@ -88,8 +90,8 @@ class PointerType extends BinaryType {
     }
   }
 
-  PointerType _clone(String name, {int align}) {
-    return new PointerType(type, _dataModel, align: align, name: name);
+  PointerType _clone({int align}) {
+    return new PointerType(type, _dataModel, align: align);
   }
 
   bool _compatible(BinaryType other, bool strong) {
@@ -158,44 +160,26 @@ class PointerType extends BinaryType {
     }
   }
 
-  void _setValue2(int base, int offset, value) {
-    if (value is BinaryData) {
-      var valueType = value.type;
-      if (type is VoidType || valueType == type || (valueType is ArrayType && valueType.type == type)) {
-        Unsafe.writeIntPtr(base, offset, value.address);
-        return;
-      }
-    }
-
-    super._setValue(base, offset, value);
-  }
-
   void _setValue(int base, int offset, value) {
+    var compatible = false;
     if (value is BinaryData) {
       var valueType = value.type;
-      while (true) {
-        if (type._compatible(valueType, false)) {
-          break;
+      if (type._compatible(valueType, false)) {
+        compatible = true;
+      } else if (valueType is ArrayType) {
+        if (type._compatible(valueType.type, false)) {
+          compatible = true;
         }
 
-        if (valueType is ArrayType) {
-          if (type._compatible(valueType.type, false)) {
-            break;
-          }
-        }
-
-        if (type is VoidType) {
-          break;
-        }
-
-        super._setValue(base, offset, value);
-        return;
+      } else if (type.kind == BinaryKinds.VOID) {
+        compatible = true;
       }
-
-      Unsafe.writeIntPtr(base, offset, value.address);
-      return;
     }
 
-    super._setValue(base, offset, value);
+    if (compatible) {
+      Unsafe.writeIntPtr(base, offset, value.address);
+    } else {
+      super._setValue(base, offset, value);
+    }
   }
 }

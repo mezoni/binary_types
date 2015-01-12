@@ -261,9 +261,9 @@ class Test {
     group("Function declarations.", () {
       test("Arity of declared functions.", () {
         // char* ()(char*)
-        var func_t = helper.declareFunc(t['char*'], [t['char*']]);
+        var func_t = helper.declareFunc("foo", t['char*'], [t['char*']]);
         // char* ()(...)
-        var func_va_args_t = helper.declareFunc(t['char*'], [t['int'], t['...']]);
+        var func_va_args_t = helper.declareFunc("baz", t['char*'], [t['int'], t['...']]);
 
         Expect.equals(func_t.arity, 1, 'func_t.arity == 1');
         Expect.equals(func_va_args_t.arity, 1, 'func_va_args_t.arity == 1');

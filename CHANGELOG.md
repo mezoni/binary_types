@@ -1,3 +1,8 @@
+## 0.0.9
+
+- Breaking change: `FunctionType` now requires parameter `name`
+- Fixed bugs in forming names of the binary types
+
 ## 0.0.8
 
 - Completely reimplemented the compatibility type checking mechanics. Now it faster and more accurate and compromise between C and C++ languages

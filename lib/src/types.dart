@@ -328,6 +328,7 @@ class BinaryTypes {
 
       var copy = type.clone(alias);
       if (!typedef) {
+        copy._original = null;
         copy._typedefName = "";
       }
 

@@ -50,20 +50,21 @@ class BinaryTypeHelper {
   }
 
   /**
-   * DEPRECATED! Use "binary declarations" instead
-   *
-   * Declares the "function" binary type.
-   *
-   * Parameters:
-   *   [BinaryType] returnType
-   *   Type of return value.
-   *
-   *   [List]<[BinaryType]> parameters
-   *   Function parameters.
-   */
+     * DEPRECATED! Use "binary declarations" instead
+     *
+     * Declares the "function" binary type.
+     *
+     * Parameters:
+     *   [BinaryType] returnType
+     *   Type of return value.
+     *
+     *   [List]<[BinaryType]> parameters
+     *   Function parameters.
+     */
   @deprecated
-  FunctionType declareFunc(BinaryType returnType, List<BinaryType> parameters) {
-    return new FunctionType(returnType, parameters, dataModel);
+  // TODO: Register function in types
+  FunctionType declareFunc(String name, BinaryType returnType, List<BinaryType> parameters) {
+    return new FunctionType(name, returnType, parameters, dataModel);
   }
 
   /**

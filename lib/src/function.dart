@@ -11,11 +11,17 @@ class FunctionType extends BinaryType {
 
   int _arity = 0;
 
+  String _identifier;
+
   List<BinaryType> _parameters;
 
   bool _variadic = false;
 
-  FunctionType(this.returnType, List<BinaryType> parameters, DataModel dataModel, {String name}) : super(dataModel, name: name) {
+  FunctionType(String name, this.returnType, List<BinaryType> parameters, DataModel dataModel, {int align}) : super(dataModel, align: align) {
+    if (name == null) {
+      throw new ArgumentError.notNull("name");
+    }
+
     if (returnType == null) {
       throw new ArgumentError.notNull("returnType");
     }
@@ -44,21 +50,22 @@ class FunctionType extends BinaryType {
         parameter = new PointerType(parameter.type, dataModel);
       }
 
-      // TODO: Implement
-      /*
-      if (parameter.size == 0) {
-        BinaryTypeError.incompleteFunctionParameterType(i, parameter);
-      }
-      */
-
       _parameters[i] = parameter;
       if (parameter is VaListType) {
-        if (_variadic) {
-          BinaryTypeError.variableParameterMustBeLastParameter();
+        if (i != length - 1) {
+          BinaryTypeError.variableParameterMustBeLastParameter(name);
         }
 
         _variadic = true;
       } else {
+        if (parameter.size == 0) {
+          BinaryTypeError.incompleteFunctionParameterType(name, i, parameter);
+        }
+
+        if (_variadic) {
+          BinaryTypeError.wrongOrderOfVariadicFunctionParameters(name);
+        }
+
         _arity++;
       }
     }
@@ -67,16 +74,11 @@ class FunctionType extends BinaryType {
       BinaryTypeError.variadicFunctionMustHaveAtLeastOneNamedParameter();
     }
 
-    _namePrefix = "$returnType (";
-    _nameSuffix = ")(${parameters.map((e) => e.name).join(", ")})";
-    if (name == null) {
-      _name = "$_namePrefix$_nameSuffix";
+    if (align == null) {
+      _align = _dataModel.alignOfPointer;
     }
-  }
 
-  int get align {
-    BinaryTypeError.unableGetAlignmentIncompleteType(this);
-    return null;
+    _identifier = name;
   }
 
   /**
@@ -91,9 +93,17 @@ class FunctionType extends BinaryType {
 
   BinaryKinds get kind => BinaryKinds.FUNCTION;
 
+  String get name {
+    if (_name == null) {
+      _name = formatName();
+    }
+
+    return _name;
+  }
+
   List<BinaryType> get parameters => new UnmodifiableListView(_parameters);
 
-  int get size => 0;
+  int get size => _dataModel.sizeOfPointer;
 
   /**
    * Indicates when the function is VARIADIC function.
@@ -108,8 +118,8 @@ class FunctionType extends BinaryType {
     return false;
   }
 
-  FunctionType _clone(String name, {int align}) {
-    return new FunctionType(returnType, _parameters, _dataModel, name: name);
+  FunctionType _clone({int align}) {
+    return new FunctionType(name, returnType, _parameters, _dataModel);
   }
 
   bool _compatible(BinaryType other, bool strong) {
@@ -132,18 +142,5 @@ class FunctionType extends BinaryType {
     }
 
     return false;
-  }
-
-  // TODO:
-  String _refString(int level, [String identifier]) {
-    var sb = new StringBuffer();
-    sb.write(_namePrefix);
-    sb.write("".padRight(level + 1, "*"));
-    if (identifier != null) {
-      sb.write(identifier);
-    }
-
-    sb.write(_nameSuffix);
-    return sb.toString();
   }
 }

@@ -5,14 +5,14 @@ void main() {
 }
 
 void testSpeed() {
-  var types = new BinaryTypes();
+  var t = new BinaryTypes();
   var sw = new Stopwatch();
   var size = 1000000;
   // int ia[1000000] = {0};
-  final ia = types['int'].array(size).alloc([]);
+  final ia = t['int'].array(size).alloc([]);
   // int* ip = &ia;
-  final ip = types['int*'].alloc(ia);
-  final i1 = types['int'].alloc();
+  final ip = t['int*'].alloc(ia);
+  final i1 = t['int'].alloc();
   var list1 = new List(size);
   var ia_val;
 

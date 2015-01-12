@@ -19,7 +19,7 @@ class Int16Type extends IntType {
    */
   static const int SIZE = 2;
 
-  Int16Type(DataModel dataModel, {int align, String name}) : super(dataModel, align: align, name: name) {
+  Int16Type(DataModel dataModel, {int align}) : super(dataModel, align: align) {
     if (align == null) {
       _align = _dataModel.alignOfInt16;
     }
@@ -94,7 +94,7 @@ class Int32Type extends IntType {
    */
   static const int SIZE = 4;
 
-  Int32Type(DataModel dataModel, {int align, String name}) : super(dataModel, align: align, name: name) {
+  Int32Type(DataModel dataModel, {int align}) : super(dataModel, align: align) {
     if (align == null) {
       _align = _dataModel.alignOfInt32;
     }
@@ -169,7 +169,7 @@ class Int64Type extends IntType {
    */
   static const int SIZE = 8;
 
-  Int64Type(DataModel dataModel, {int align, String name}) : super(dataModel, align: align, name: name) {
+  Int64Type(DataModel dataModel, {int align}) : super(dataModel, align: align) {
     if (align == null) {
       _align = _dataModel.alignOfInt64;
     }
@@ -244,7 +244,7 @@ class Int8Type extends IntType {
    */
   static const int SIZE = 1;
 
-  Int8Type(DataModel dataModel, {int align, String name}) : super(dataModel, align: align, name: name) {
+  Int8Type(DataModel dataModel, {int align}) : super(dataModel, align: align) {
     if (align == null) {
       _align = _dataModel.alignOfInt8;
     }
@@ -320,7 +320,7 @@ abstract class IntType extends BinaryType {
 
   int _basicType = 0;
 
-  IntType(DataModel dataModel, {int align, String name}) : super(dataModel, align: align, name: name) {
+  IntType(DataModel dataModel, {int align}) : super(dataModel, align: align) {
     if (size == dataModel.sizeOfChar) {
       _basicType = BASIC_TYPE_CHAR;
     } else if (size == dataModel.sizeOfShort) {
@@ -335,30 +335,26 @@ abstract class IntType extends BinaryType {
       BinaryTypeError.integerSizeNotSupported(size);
     }
 
-    if (name == null) {
-      switch (_basicType) {
-        case BASIC_TYPE_CHAR:
-          _name = signed ? "signed char" : "unsigned char";
-          break;
-        case BASIC_TYPE_SHORT:
-          _name = signed ? "short" : "unsigned short";
-          break;
-        case BASIC_TYPE_INT:
-          _name = signed ? "int" : "unsigned int";
-          break;
-        case BASIC_TYPE_LONG:
-          _name = signed ? "long" : "unsigned long";
-          break;
-        case BASIC_TYPE_LONG_LONG:
-          _name = signed ? "long long" : "unsigned long long";
-          break;
-      }
+    switch (_basicType) {
+      case BASIC_TYPE_CHAR:
+        _name = signed ? "signed char" : "unsigned char";
+        break;
+      case BASIC_TYPE_SHORT:
+        _name = signed ? "short" : "unsigned short";
+        break;
+      case BASIC_TYPE_INT:
+        _name = signed ? "int" : "unsigned int";
+        break;
+      case BASIC_TYPE_LONG:
+        _name = signed ? "long" : "unsigned long";
+        break;
+      case BASIC_TYPE_LONG_LONG:
+        _name = signed ? "long long" : "unsigned long long";
+        break;
+    }
 
-      if (signed) {
-        _basicType |= BASIC_TYPE_SIGNED;
-      }
-
-      _namePrefix = "$_name ";
+    if (signed) {
+      _basicType |= BASIC_TYPE_SIGNED;
     }
   }
 
@@ -376,13 +372,15 @@ abstract class IntType extends BinaryType {
    */
   int get min;
 
+  String get name => _name;
+
   /**
    * Indicates when type is signed.
    */
   bool get signed;
 
-  IntType _clone(String name, {int align}) {
-    var copy = create(size, signed, dataModel, align: align, name: name);
+  IntType _clone({int align}) {
+    var copy = create(size, signed, dataModel, align: align);
     copy._basicType = _basicType;
     return copy;
   }
@@ -409,7 +407,7 @@ abstract class IntType extends BinaryType {
     }
   }
 
-  static IntType create(int size, bool signed, DataModel dataModel, {int align, String name}) {
+  static IntType create(int size, bool signed, DataModel dataModel, {int align}) {
     if (size == null) {
       throw new ArgumentError.notNull("size");
     }
@@ -425,26 +423,26 @@ abstract class IntType extends BinaryType {
     if (signed) {
       switch (size) {
         case 1:
-          return new Int8Type(dataModel, align: align, name: name);
+          return new Int8Type(dataModel, align: align);
         case 2:
-          return new Int16Type(dataModel, align: align, name: name);
+          return new Int16Type(dataModel, align: align);
         case 4:
-          return new Int32Type(dataModel, align: align, name: name);
+          return new Int32Type(dataModel, align: align);
         case 8:
-          return new Int64Type(dataModel, align: align, name: name);
+          return new Int64Type(dataModel, align: align);
         default:
           throw new ArgumentError("size: $size");
       }
     } else {
       switch (size) {
         case 1:
-          return new Uint8Type(dataModel, align: align, name: name);
+          return new Uint8Type(dataModel, align: align);
         case 2:
-          return new Uint16Type(dataModel, align: align, name: name);
+          return new Uint16Type(dataModel, align: align);
         case 4:
-          return new Uint32Type(dataModel, align: align, name: name);
+          return new Uint32Type(dataModel, align: align);
         case 8:
-          return new Uint64Type(dataModel, align: align, name: name);
+          return new Uint64Type(dataModel, align: align);
         default:
           throw new ArgumentError("size: $size");
       }
@@ -462,19 +460,16 @@ abstract class IntType extends BinaryType {
       case true:
         type._basicType = BASIC_TYPE_CHAR | BASIC_TYPE_SIGNED;
         type._name = "signed char";
-        type._namePrefix = "signed char ";
         break;
       case false:
         type._basicType = BASIC_TYPE_CHAR;
         type._name = "unsigned char";
-        type._namePrefix = "unsigned char ";
         break;
     }
 
     if (signed == null) {
       type._basicType = BASIC_TYPE_CHAR | BASIC_TYPE_SIGNED_BY_MODEL;
       type._name = "char";
-      type._namePrefix = "char ";
     }
 
     return type;
@@ -499,12 +494,10 @@ abstract class IntType extends BinaryType {
       case true:
         type._basicType = BASIC_TYPE_INT | BASIC_TYPE_SIGNED;
         type._name = "int";
-        type._namePrefix = "int ";
         break;
       case false:
         type._basicType = BASIC_TYPE_INT;
         type._name = "unsigned int";
-        type._namePrefix = "unsigned int ";
         break;
     }
 
@@ -530,12 +523,10 @@ abstract class IntType extends BinaryType {
       case true:
         type._basicType = BASIC_TYPE_LONG | BASIC_TYPE_SIGNED;
         type._name = "long";
-        type._namePrefix = "long ";
         break;
       case false:
         type._basicType = BASIC_TYPE_LONG;
         type._name = "unsigned long";
-        type._namePrefix = "unsigned long ";
         break;
     }
 
@@ -561,12 +552,10 @@ abstract class IntType extends BinaryType {
       case true:
         type._basicType = BASIC_TYPE_LONG_LONG | BASIC_TYPE_SIGNED;
         type._name = "logn long";
-        type._namePrefix = "logn long ";
         break;
       case false:
         type._basicType = BASIC_TYPE_LONG_LONG;
         type._name = "unsigned logn long";
-        type._namePrefix = "unsigned logn long ";
         break;
     }
 
@@ -592,12 +581,10 @@ abstract class IntType extends BinaryType {
       case true:
         type._basicType = BASIC_TYPE_SHORT | BASIC_TYPE_SIGNED;
         type._name = "short";
-        type._namePrefix = "short ";
         break;
       case false:
         type._basicType = BASIC_TYPE_SHORT;
         type._name = "unsigned short";
-        type._namePrefix = "unsigned short ";
         break;
     }
 
@@ -626,7 +613,7 @@ class Uint16Type extends IntType {
    */
   static const int SIZE = 2;
 
-  Uint16Type(DataModel dataModel, {int align, String name}) : super(dataModel, align: align, name: name) {
+  Uint16Type(DataModel dataModel, {int align}) : super(dataModel, align: align) {
     if (align == null) {
       _align = _dataModel.alignOfInt16;
     }
@@ -700,7 +687,7 @@ class Uint32Type extends IntType {
    */
   static const int SIZE = 4;
 
-  Uint32Type(DataModel dataModel, {int align, String name}) : super(dataModel, align: align, name: name) {
+  Uint32Type(DataModel dataModel, {int align}) : super(dataModel, align: align) {
     if (align == null) {
       _align = _dataModel.alignOfInt32;
     }
@@ -774,7 +761,7 @@ class Uint64Type extends IntType {
    */
   static const int SIZE = 8;
 
-  Uint64Type(DataModel dataModel, {int align, String name}) : super(dataModel, align: align, name: name) {
+  Uint64Type(DataModel dataModel, {int align}) : super(dataModel, align: align) {
     if (align == null) {
       _align = _dataModel.alignOfInt64;
     }
@@ -848,7 +835,7 @@ class Uint8Type extends IntType {
    */
   static const int SIZE = 1;
 
-  Uint8Type(DataModel dataModel, {int align, String name}) : super(dataModel, align: align, name: name) {
+  Uint8Type(DataModel dataModel, {int align}) : super(dataModel, align: align) {
     if (align == null) {
       _align = _dataModel.alignOfInt8;
     }

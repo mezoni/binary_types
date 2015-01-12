@@ -49,15 +49,13 @@ abstract class BinaryType {
 
   DataModel _dataModel;
 
-  String _name = "";
+  String _name;
 
-  String _namePrefix = "";
-
-  String _nameSuffix = "";
+  BinaryType _original;
 
   String _typedefName = "";
 
-  BinaryType(DataModel dataModel, {int align, String name}) {
+  BinaryType(DataModel dataModel, {int align}) {
     if (dataModel == null) {
       throw new ArgumentError.notNull("dataModel");
     }
@@ -69,12 +67,7 @@ abstract class BinaryType {
       }
     }
 
-    if (name != null) {
-      _namePrefix = "$name ";
-    }
-
     _align = align;
-    _name = name;
     _dataModel = dataModel;
   }
 
@@ -101,18 +94,19 @@ abstract class BinaryType {
   /**
    * Returns the name of binary type.
    */
-  String get name => _name;
-
-  /**
-   * Returns the typedef name of binary type.
-   */
-  String get typedefName => _typedefName;
+  //String get name => _name;
+  String get name;
 
   /**
    * Returns the amount of storage, in bytes, required to store any instance of
    * the type.
    */
   int get size;
+
+  /**
+   * Returns the typedef name of binary type.
+   */
+  String get typedefName => _typedefName;
 
   bool operator ==(other) => _compatible(other, true);
 
@@ -165,33 +159,12 @@ abstract class BinaryType {
       align = this.align;
     }
 
-    var copy = _clone(name, align: align);
-    if (copy._typedefName.length == 0) {
-      copy._typedefName = "typedef ${this.name} $name";
-    }
-
+    var copy = _clone(align: align);
+    copy._name = name;
+    copy._original = this;
+    copy._typedefName = "typedef ${formatName(identifier: name)}";
     return copy;
   }
-
-  /**
-   * TODO: Undocumented
-   */
-  bool compatible(BinaryType other, bool strong) {
-    if (other == null) {
-      throw new ArgumentError.notNull("other");
-    }
-
-    if (strong == null) {
-      throw new ArgumentError.notNull("strong");
-    }
-
-    return _compatible(other, strong);
-  }
-
-  /**
-   * TODO: Undocumented
-   */
-  bool _compatible(BinaryType other, bool strong);
 
   /**
    * Compares the content of this type, at the specified base and offset, with
@@ -212,6 +185,21 @@ abstract class BinaryType {
   }
 
   /**
+   * TODO: Undocumented
+   */
+  bool compatible(BinaryType other, bool strong) {
+    if (other == null) {
+      throw new ArgumentError.notNull("other");
+    }
+
+    if (strong == null) {
+      throw new ArgumentError.notNull("strong");
+    }
+
+    return _compatible(other, strong);
+  }
+
+  /**
    * Creates and returns the binary data for this type at the specified memory
    * base and offset.
    * Does not allocates and does not frees memory.
@@ -225,6 +213,110 @@ abstract class BinaryType {
    */
   BinaryData extern(int base, [int offset = 0]) {
     return new BinaryData._internal(this, base, offset);
+  }
+
+  /**
+   * Returns the formed name of binary type.
+   *
+   * Parameters:
+   *
+   *   [String] identifiier
+   *   Identifier.
+   *
+   *   [int] references
+   *   Number of references.
+   */
+  String formatName({String identifier, int references: 0}) {
+    if (references == null || references < 0) {
+      throw new ArgumentError.value(references, "references");
+    }
+
+    var sb = new StringBuffer();
+    if (_original != null) {
+      sb.write(name);
+      sb.write(" ");
+      sb.write("".padRight(references, "*"));
+      if (identifier != null) {
+        sb.write(identifier);
+      }
+
+    } else {
+      switch (kind) {
+        case BinaryKinds.ARRAY:
+          ArrayType arrayType = this;
+          var targetType = arrayType._targetType;
+          var type = arrayType.type;
+          if (references == 0) {
+            sb.write(targetType);
+            if (targetType.kind != BinaryKinds.POINTER) {
+              sb.write(" ");
+            }
+
+            if (identifier != null) {
+              sb.write(identifier);
+            }
+
+            sb.write(arrayType._dimensions);
+          } else {
+            if (type is ArrayType) {
+              var string = targetType.formatName();
+              sb.write(string);
+              sb.write("(");
+              sb.write("".padRight(references, "*"));
+              if (identifier != null) {
+                sb.write(identifier);
+              }
+
+              sb.write(")");
+              sb.write(type._dimensions);
+            } else {
+              var string = targetType.formatName(references: references);
+              sb.write(string);
+              if (identifier != null) {
+                sb.write(identifier);
+              }
+            }
+          }
+
+          break;
+
+        case BinaryKinds.FUNCTION:
+          FunctionType functionType = this;
+          sb.write(functionType.returnType);
+          sb.write(" ");
+          sb.write("(");
+          sb.write("".padRight(references, "*"));
+          sb.write(functionType._identifier);
+          sb.write(")(");
+          var parameters = functionType.parameters;
+          if (!parameters.isEmpty) {
+            var string = parameters.map((type) => type.name).join(", ");
+            sb.write(string);
+          }
+
+          sb.write(")");
+          break;
+
+        case BinaryKinds.POINTER:
+          PointerType pointerType = this;
+          var targetType = pointerType._targetType;
+          var string = targetType.formatName(identifier: identifier, references: references + pointerType.level + 1);
+          sb.write(string);
+          break;
+
+        default:
+          sb.write(name);
+          sb.write(" ");
+          sb.write("".padRight(references, "*"));
+          if (identifier != null) {
+            sb.write(identifier);
+          }
+
+          break;
+      }
+    }
+
+    return sb.toString();
   }
 
   /**
@@ -329,24 +421,6 @@ abstract class BinaryType {
    */
   BinaryType ptr() {
     return new PointerType(this, _dataModel);
-  }
-
-  /**
-   * Returns the string representation of reference.
-   *
-   * Parameters:
-   *   [int] level
-   *   Reference level.
-   *
-   *   [String] identifiier
-   *   Identifier.
-   */
-  String refString(int level, [String identifier]) {
-    if (level == null || level < 0) {
-      throw new ArgumentError.value(level, "level");
-    }
-
-    return _refString(level, identifier);
   }
 
   /**
@@ -471,7 +545,7 @@ abstract class BinaryType {
     return null;
   }
 
-  BinaryType _clone(String name, {int align});
+  BinaryType _clone({int align});
 
   bool _compareContent(int base, int offset, value) {
     BinaryTypeError.unablePerformingOperation(this, "compare content", {
@@ -479,6 +553,11 @@ abstract class BinaryType {
     });
     return null;
   }
+
+  /**
+   * TODO: Undocumented
+   */
+  bool _compatible(BinaryType other, bool strong);
 
   BinaryData _getElement(int base, int offset, index) {
     BinaryTypeError.unablePerformingOperation(this, "get element", {
@@ -537,18 +616,5 @@ abstract class BinaryType {
     BinaryTypeError.unablePerformingOperation(this, "set value", {
       "value": value
     });
-  }
-
-  String _refString(int level, [String identifier]) {
-    var sb = new StringBuffer();
-    sb.write(_namePrefix);
-    sb.write("".padRight(level + 1, "*"));
-    if (identifier != null) {
-      sb.write(" ");
-      sb.write(identifier);
-    }
-
-    sb.write(_nameSuffix);
-    return sb.toString();
   }
 }
