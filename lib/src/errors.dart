@@ -11,6 +11,10 @@ class BinaryTypeError implements Exception {
     throw new BinaryTypeError("Creation an array of the type '$type' is not allowed");
   }
 
+  static void declarationError(BinaryDeclaration declaration, String message) {
+    throw new BinaryTypeError("Declaration '$declaration' has error: $message");
+  }
+
   static void differentDataModel(String subject) {
     throw new BinaryTypeError("Different data models not allowed: $subject");
   }

@@ -1,3 +1,7 @@
+## 0.0.14
+
+- Better error messages in `BinaryTypes.declare()` about problems in binary declarations 
+
 ## 0.0.12
 
 - Added field `BinaryType.original`

@@ -233,31 +233,36 @@ class BinaryTypes {
 
     var helper = new BinaryTypeHelper(this);
     var declarations = new BinaryDeclarations(text);
-    for (var declaration in declarations) {
-      if (declaration is TypedefDeclaration) {
-        var attributes = _getAttributes(declaration.attributes);
-        var align = _getAttributeAligned(attributes);
-        var name = declaration.name;
-        var type = declaration.type;
-        BinaryType binaryType;
-        if (type is StructureTypeSpecification) {
-          binaryType = _declareStructure(type);
-        } else if (type is EnumTypeSpecification) {
-          binaryType = _declareEnum(type);
-        } else {
-          binaryType = this[type.toString()];
-        }
+    BinaryDeclaration declaration;
+    try {
+      for (declaration in declarations) {
+        if (declaration is TypedefDeclaration) {
+          var attributes = _getAttributes(declaration.attributes);
+          var align = _getAttributeAligned(attributes);
+          var name = declaration.name;
+          var type = declaration.type;
+          BinaryType binaryType;
+          if (type is StructureTypeSpecification) {
+            binaryType = _declareStructure(type);
+          } else if (type is EnumTypeSpecification) {
+            binaryType = _declareEnum(type);
+          } else {
+            binaryType = this[type.toString()];
+          }
 
-        typeDef(name, binaryType, align: align);
-      } else if (declaration is StructureDeclaration) {
-        _declareStructure(declaration.type);
-      } else if (declaration is EnumDeclaration) {
-        _declareEnum(declaration.type);
-      } else if (declaration is VariableDeclaration) {
-        if (declaration.type is StructureTypeSpecification) {
+          typeDef(name, binaryType, align: align);
+        } else if (declaration is StructureDeclaration) {
           _declareStructure(declaration.type);
+        } else if (declaration is EnumDeclaration) {
+          _declareEnum(declaration.type);
+        } else if (declaration is VariableDeclaration) {
+          if (declaration.type is StructureTypeSpecification) {
+            _declareStructure(declaration.type);
+          }
         }
       }
+    } catch(e, s) {
+      BinaryTypeError.declarationError(declaration, e.message);
     }
   }
 
@@ -319,7 +324,7 @@ class BinaryTypes {
   // TODO: Improve _checkTypeName()
   void _checkTag(String tag) {
     var type = _types[tag];
-    if (tag != null) {
+    if (type != null) {
       BinaryTypeError.unableRedeclareTypeWithTag(type.name, tag);
     }
   }

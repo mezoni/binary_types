@@ -22,3 +22,4 @@
 0.0.11 Initial support of `enum` binary type
 0.0.12 Added field `BinaryType.original`
 0.0.12 Added field `BinaryTypes.types`
+0.0.14 Better error messages in `BinaryTypes.declare()` about problems in binary declarations 
