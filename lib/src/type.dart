@@ -100,6 +100,11 @@ abstract class BinaryType {
   String get name;
 
   /**
+   * Returns the original binary type for the typedef types.
+   */
+  BinaryType get original => _original;
+
+  /**
    * Returns the amount of storage, in bytes, required to store any instance of
    * the type.
    */

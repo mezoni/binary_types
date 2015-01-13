@@ -1,3 +1,8 @@
+## 0.0.12
+
+- Added field `BinaryType.original`
+- Added field `BinaryTypes.types`
+
 ## 0.0.11
 
 - Initial support of `enum` binary type

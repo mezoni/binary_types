@@ -24,6 +24,8 @@ class BinaryTypes {
 
   BinaryType _signed_char_t;
 
+  Map<String, BinaryType> _tags = new Map<String, BinaryType>();
+
   Map<String, BinaryType> _types = new Map<String, BinaryType>();
 
   BinaryType _unsigned_char_t;
@@ -108,6 +110,8 @@ class BinaryTypes {
 
     return _signed_char_t;
   }
+
+  Map<String, BinaryType> get types => new UnmodifiableMapView<String, BinaryType>(_types);
 
   BinaryType get unsigned_char_t {
     if (_unsigned_char_t == null) {
@@ -313,6 +317,13 @@ class BinaryTypes {
   }
 
   // TODO: Improve _checkTypeName()
+  void _checkTag(String tag) {
+    var type = _types[tag];
+    if (tag != null) {
+      BinaryTypeError.unableRedeclareTypeWithTag(type.name, tag);
+    }
+  }
+
   void _checkTypeName(String name) {
     if (name == null || name.isEmpty || name.trim() != name) {
       throw new ArgumentError("name: $name");
@@ -358,6 +369,7 @@ class BinaryTypes {
 
     var enumType = new EnumType(tag, values, _dataModel, align: align);
     if (tag != null) {
+      _checkTag(tag);
       this["enum $tag"] = enumType;
     }
 
@@ -392,10 +404,7 @@ class BinaryTypes {
       }
 
       if (tag != null) {
-        if (_types.containsKey(tag)) {
-          BinaryTypeError.unableRedeclareType(tag);
-        }
-
+        _checkTag(tag);
         _types[key] = structureType;
       }
     }

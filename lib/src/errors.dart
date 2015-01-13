@@ -100,6 +100,10 @@ class BinaryTypeError implements Exception {
     throw new BinaryTypeError("Unable to redeclare the type '$name'");
   }
 
+  static void unableRedeclareTypeWithTag(String name, String tag) {
+    throw new BinaryTypeError("Unable to redeclare the type '$name' with tag '$tag'");
+  }
+
   static void valueLengthExceedsArrayLength(ArrayType array, int length) {
     throw new BinaryTypeError("Value length '$length' exceeds the length '${array.length}' of the array '$array'");
   }
