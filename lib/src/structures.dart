@@ -288,14 +288,6 @@ abstract class StructureType extends BinaryType {
    */
   int get pack => _pack;
 
-  bool operator ==(other) {
-    if (other is StructureType) {
-      return _compatible(other, true);
-    }
-
-    return false;
-  }
-
   /**
    * Adds the members to the incomplete structured binary type.
    *
@@ -352,6 +344,7 @@ abstract class StructureType extends BinaryType {
   }
 
   bool _compatible(BinaryType other, bool strong) {
+    // TODO: Improve
     if (other is StructureType) {
       if (identical(_id, other._id)) {
         return true;

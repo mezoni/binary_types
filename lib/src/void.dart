@@ -25,13 +25,11 @@ class VoidType extends BinaryType {
 
   int get size => 0;
 
-  bool operator ==(other) => other is VoidType;
-
   VoidType _clone({int align}) {
     return new VoidType(_dataModel);
   }
 
   bool _compatible(BinaryType other, bool strong) {
-    return other.kind == BinaryKinds.VOID;
+    return other.kind == BinaryKinds.VOID && other.dataModel == dataModel;
   }
 }

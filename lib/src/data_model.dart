@@ -5,43 +5,44 @@ part of binary_types;
  */
 // TODO: Add??? sizeOfEnum with default sizeOfInt
 class DataModel {
-  int _alignOfPointer;
+  static final DataModel current = new DataModel();
 
-  int _hashCode;
-
-  int _sizeOfLong;
-
-  int _sizeOfPointer;
+  static Map<int, DataModel> _dataModels = <int, DataModel>{};
 
   /**
-   * Returns the alignment of data for the binary type "double".
+   * Alignment of data for the binary type "double".
    */
   final int alignOfDouble;
 
   /**
-   * Returns the alignment of data for the binary type "float".
+   * Alignment of data for the binary type "float".
    */
   final int alignOfFloat;
 
   /**
-   * Returns the alignment of data for the binary type "16-bit integer".
+   * Alignment of data for the binary type "16-bit integer".
    */
   final int alignOfInt16;
 
   /**
-   * Returns the alignment of data for the binary type "32-bit integer".
+   * Alignment of data for the binary type "32-bit integer".
    */
   final int alignOfInt32;
 
   /**
-   * Returns the alignment of data for the binary type "64-bit integer".
+   * Alignment of data for the binary type "64-bit integer".
    */
   final int alignOfInt64;
 
   /**
-   * Returns the alignment of data for the binary type "8-bit integer".
+   * Alignment of data for the binary type "8-bit integer".
    */
   final int alignOfInt8;
+
+  /**
+   * Alignment of data for the binary type "pointer".
+   */
+  final int alignOfPointer;
 
   /**
    * Indicates when the binary type "char" is a signed type.
@@ -49,84 +50,66 @@ class DataModel {
   final bool isCharSigned;
 
   /**
-   * Returns the size of the binary type "char".
+   * Size of the binary type "char".
    */
   final int sizeOfChar;
 
   /**
-   * Returns the size of the binary type "double".
+   * Size of the binary type "double".
    */
   final int sizeOfDouble;
 
   /**
-   * Returns the size of the binary type "float".
+   * Size of the binary type "float".
    */
   final int sizeOfFloat;
 
   /**
-   * Returns the size of the binary type "int".
+   * Size of the binary type "int".
    */
   final int sizeOfInt;
 
   /**
-   * Returns the size of the binary type "long long int".
+   * Size of the binary type "long long int".
    */
   final int sizeOfLongLong;
 
   /**
-   * Returns the size of the binary type "short int".
+   * Size of the binary type "short int".
    */
   final int sizeOfShort;
 
-  DataModel({this.alignOfDouble: 8, this.alignOfFloat: 4, this.alignOfInt16: 2, this.alignOfInt32: 4, this.alignOfInt64: 8, this.alignOfInt8: 1, this.isCharSigned: true, this.sizeOfChar: 1, this.sizeOfDouble: 8, this.sizeOfFloat: 4, this.sizeOfInt: 4, int sizeOfLong, this.sizeOfLongLong: 8, this.sizeOfShort: 2}) {
-    var sizeOfPointer = Unsafe.sizeOfPointer;
-    _alignOfPointer = sizeOfPointer;
-    _sizeOfPointer = sizeOfPointer;
+  /**
+   * Size of the binary type "long int".
+   */
+  final int sizeOfLong;
+
+  /**
+   * Size of the binary type "pointer".
+   */
+  final int sizeOfPointer;
+
+  factory DataModel({int alignOfDouble: 8, int alignOfFloat: 4, int alignOfInt16: 2, int alignOfInt32: 4, int alignOfInt64: 8, int alignOfInt8: 1, int alignOfPointer, bool isCharSigned: true, int sizeOfChar: 1, int sizeOfDouble: 8, int sizeOfFloat: 4, int sizeOfInt: 4, int sizeOfLong, int sizeOfLongLong: 8, int sizeOfPointer, int sizeOfShort: 2}) {
+    if (sizeOfPointer == null) {
+      sizeOfPointer = Unsafe.sizeOfPointer;
+    }
+
+    if (alignOfPointer == null) {
+      alignOfPointer = sizeOfPointer;
+    }
+
     switch (sizeOfPointer) {
       case 4:
-        _sizeOfLong = sizeOfLong == null ? 4 : sizeOfLong;
+        sizeOfLong = sizeOfLong == null ? 4 : sizeOfLong;
         break;
       case 8:
-        _sizeOfLong = sizeOfLong == null ? 8 : sizeOfLong;
+        sizeOfLong = sizeOfLong == null ? 8 : sizeOfLong;
         break;
       default:
         throw new UnsupportedError("Unsupported size of pointer: ${sizeOfPointer}");
     }
-  }
 
-  /**
-   * Returns the alignment of data for the binary type "pointer".
-   */
-  int get alignOfPointer => _alignOfPointer;
-
-  int get hashCode {
-    if (_hashCode == null) {
-      _hashCode = _calculateHashCode();
-    }
-
-    return _hashCode;
-  }
-
-  /**
-   * Returns the size of the binary type "long int".
-   */
-  int get sizeOfLong => _sizeOfLong;
-
-  /**
-   * Returns the size of the binary type "pointer".
-   */
-  int get sizeOfPointer => _sizeOfPointer;
-
-  bool operator ==(other) {
-    if (other is DataModel) {
-      return hashCode == other.hashCode;
-    }
-
-    return false;
-  }
-
-  int _calculateHashCode() {
-    var hashCode = 0;
+    var key = 0;
     var list = new List<int>(15);
     list[0] = alignOfInt8;
     list[1] = alignOfInt16;
@@ -146,14 +129,22 @@ class DataModel {
     for (var i = 0; i < 15; i++) {
       var value = list[i];
       while (value != 0) {
-        hashCode <<= 1;
-        hashCode |= value & 1;
+        key <<= 1;
+        key |= value & 1;
         value >>= 1;
       }
     }
 
-    hashCode <<= 1;
-    hashCode |= isCharSigned ? 0 : 1;
-    return hashCode;
+    key <<= 1;
+    key |= isCharSigned ? 0 : 1;
+    var dataModel = _dataModels[key];
+    if (dataModel == null) {
+      dataModel = new DataModel._internal(alignOfDouble: alignOfDouble, alignOfFloat: alignOfFloat, alignOfInt16: alignOfInt16, alignOfInt32: alignOfInt32, alignOfInt64: alignOfInt64, alignOfInt8: alignOfInt8, alignOfPointer: alignOfPointer, isCharSigned: isCharSigned, sizeOfChar: sizeOfChar, sizeOfDouble: sizeOfDouble, sizeOfFloat: sizeOfFloat, sizeOfInt: sizeOfInt, sizeOfLong: sizeOfLong, sizeOfLongLong: sizeOfLongLong, sizeOfPointer: sizeOfPointer, sizeOfShort: sizeOfShort);
+      _dataModels[key] = dataModel;
+    }
+
+    return dataModel;
   }
+
+  DataModel._internal({this.alignOfDouble, this.alignOfFloat, this.alignOfInt16, this.alignOfInt32, this.alignOfInt64, this.alignOfInt8, this.alignOfPointer, this.isCharSigned, this.sizeOfChar, this.sizeOfDouble, this.sizeOfFloat, this.sizeOfInt, this.sizeOfLong, this.sizeOfLongLong, this.sizeOfPointer, this.sizeOfShort});
 }

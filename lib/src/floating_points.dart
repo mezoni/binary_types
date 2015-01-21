@@ -32,10 +32,6 @@ class DoubleType extends FloatingPointType {
     return new DoubleType(_dataModel, align: align);
   }
 
-  bool _compatible(BinaryType other, bool strong) {
-    return other.kind == BinaryKinds.DOUBLE;
-  }
-
   double _getValue(int base, int offset) {
     return Unsafe.readFloat64(base, offset);
   }
@@ -85,10 +81,6 @@ class FloatType extends FloatingPointType {
     return new FloatType(_dataModel, align: align);
   }
 
-  bool _compatible(BinaryType other, bool strong) {
-    return other.kind == BinaryKinds.FLOAT;
-  }
-
   double _getValue(int base, int offset) {
     return Unsafe.readFloat32(base, offset);
   }
@@ -136,6 +128,10 @@ abstract class FloatingPointType extends BinaryType {
     } else {
       return super._cast(value);
     }
+  }
+
+  bool _compatible(BinaryType other, bool strong) {
+    return other.kind == kind && other.dataModel == dataModel;
   }
 
   void _initialize(int base, int offset, value) {

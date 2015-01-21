@@ -25,13 +25,11 @@ class VaListType extends BinaryType {
 
   int get size => 0;
 
-  bool operator ==(other) => other is VaListType;
-
   VaListType _clone({int align}) {
     return new VaListType(_dataModel);
   }
 
   bool _compatible(BinaryType other, bool strong) {
-    return other.kind == BinaryKinds.VA_LIST;
+    return other.kind == BinaryKinds.VA_LIST && other.dataModel == dataModel;
   }
 }

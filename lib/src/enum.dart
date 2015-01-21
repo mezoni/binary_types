@@ -92,6 +92,7 @@ class EnumType extends BinaryType {
   }
 
   bool _compatible(BinaryType other, bool strong) {
+    // TODO: Improve
     return identical(this, other);
   }
 

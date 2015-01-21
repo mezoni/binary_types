@@ -51,6 +51,14 @@ class PointerType extends BinaryType {
    */
   int get level => _level;
 
+  String get name {
+    if (_name == null) {
+      _name = formatName();
+    }
+
+    return _name;
+  }
+
   int get size => _dataModel.sizeOfPointer;
 
   /**
@@ -63,22 +71,10 @@ class PointerType extends BinaryType {
     return _targetType;
   }
 
-  String get name {
-    if (_name == null) {
-      _name = formatName();
-    }
-
-    return _name;
-  }
-
   /**
    * Type of the referred data.
    */
   BinaryType get type => _type;
-
-  bool operator ==(other) {
-    return other is PointerType && (other as PointerType).type == type;
-  }
 
   dynamic _cast(value) {
     if (value is int) {
@@ -98,7 +94,7 @@ class PointerType extends BinaryType {
     if (other is PointerType) {
       var pointerType = other;
       if (level == pointerType.level) {
-        return targetType._compatible(pointerType.targetType, strong);
+        return targetType._compatible(pointerType.targetType, strong) && other.dataModel == dataModel;
       }
     }
 

@@ -8,6 +8,10 @@ typedef enum _ENUM_ABC {
   A, B, C = 0, D, E,
 } ENUM_ABC;
 
+#define FOO
+#undef FOO
+
+#if !defined(FOO)
 struct struct_t {
   struct { int i; } s;          
   int8_t int8;
@@ -21,6 +25,7 @@ struct struct_t {
   int* ip;
   void* vp;           
 };
+#endif
 
 // Should be also declared
 struct _Point {

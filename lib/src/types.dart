@@ -232,7 +232,7 @@ class BinaryTypes {
     }
 
     var helper = new BinaryTypeHelper(this);
-    var declarations = new BinaryDeclarations(text);
+    var declarations = new BinaryDeclarations(text, environment: environment);
     BinaryDeclaration declaration;
     try {
       for (declaration in declarations) {

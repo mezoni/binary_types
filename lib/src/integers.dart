@@ -389,7 +389,7 @@ abstract class IntType extends BinaryType {
     if (other is IntType) {
       var intType = other;
       var mask = strong ? BASIC_TYPE_ALL : BASIC_TYPE_ALL & ~(BASIC_TYPE_SIGNED_BY_MODEL | BASIC_TYPE_SIGNED);
-      return _basicType & mask == other._basicType & mask;
+      return (_basicType & mask == other._basicType & mask) && other.dataModel == dataModel;
     }
 
     return false;

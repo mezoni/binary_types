@@ -82,10 +82,19 @@ class ArrayType extends BinaryType {
 
   int get size => _size;
 
-  bool operator ==(other) => _compatible(other, true);
-
   ArrayType _clone({int align}) {
     return new ArrayType(type, length, _dataModel, align: align);
+  }
+
+  bool _compatible(BinaryType other, bool strong) {
+    if (other is ArrayType) {
+      var arrayType = other;
+      if (length == arrayType.length) {
+        return type._compatible(arrayType.type, strong) && other.dataModel == dataModel;
+      }
+    }
+
+    return false;
   }
 
   BinaryData _getElement(int base, int offset, index) {
@@ -181,16 +190,5 @@ class ArrayType extends BinaryType {
     } else {
       super._setValue(base, offset, value);
     }
-  }
-
-  bool _compatible(BinaryType other, bool strong) {
-    if (other is ArrayType) {
-      var arrayType = other;
-      if (length == arrayType.length) {
-        return type._compatible(arrayType.type, strong);
-      }
-    }
-
-    return false;
   }
 }

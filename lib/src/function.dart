@@ -110,14 +110,6 @@ class FunctionType extends BinaryType {
    */
   bool get variadic => _variadic;
 
-  bool operator ==(other) {
-    if (other is FunctionType) {
-      return _compatible(other, true);
-    }
-
-    return false;
-  }
-
   FunctionType _clone({int align}) {
     return new FunctionType(name, returnType, _parameters, _dataModel);
   }
@@ -135,7 +127,7 @@ class FunctionType extends BinaryType {
               }
             }
 
-            return true;
+            return other.dataModel == dataModel;
           }
         }
       }
