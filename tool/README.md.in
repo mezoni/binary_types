@@ -21,7 +21,7 @@ Initial release. Use at your own risk!
 **Limitations**
 
 - Long double type not supported (and never be) 
-- Struct bit fields not supported (was started an initial implementation)
+- Bit fields not supported (was started an initial implementation)
 
 **Supported binary types**
 
@@ -49,7 +49,8 @@ Initial release. Use at your own risk!
 
 - Configurable data models
 - Configurable data types
-- Unlimited typedefs
+- Packed structural types
+- Unlimited typedefs and the redefinitions (only for the compatible types)
 
 **Binary type helper**
 
