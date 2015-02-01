@@ -293,7 +293,6 @@ abstract class BinaryType {
           }
 
           break;
-
         case BinaryKinds.FUNCTION:
           FunctionType functionType = this;
           sb.write(functionType.returnType);
@@ -310,14 +309,12 @@ abstract class BinaryType {
 
           sb.write(")");
           break;
-
         case BinaryKinds.POINTER:
           PointerType pointerType = this;
           var targetType = pointerType._targetType;
           var string = targetType.formatName(identifier: identifier, references: references + pointerType.level + 1);
           sb.write(string);
           break;
-
         default:
           sb.write(name);
           sb.write(" ");

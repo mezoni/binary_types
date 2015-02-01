@@ -33,7 +33,7 @@ class DoubleType extends FloatingPointType {
   }
 
   double _getValue(int base, int offset) {
-    return Unsafe.readFloat64(base, offset);
+    return new _PhysicalData(base, 0).getFloat64(offset);
   }
 
   void _setValue(int base, int offset, value) {
@@ -42,7 +42,7 @@ class DoubleType extends FloatingPointType {
     }
 
     if (value is double) {
-      Unsafe.writeFloat64(base, offset, value);
+      new _PhysicalData(base, 0).setFloat64(offset, value);
     } else {
       super._setValue(base, offset, value);
     }
@@ -82,7 +82,7 @@ class FloatType extends FloatingPointType {
   }
 
   double _getValue(int base, int offset) {
-    return Unsafe.readFloat32(base, offset);
+    return new _PhysicalData(base, 0).getFloat32(offset);
   }
 
   void _setValue(int base, int offset, value) {
@@ -91,7 +91,7 @@ class FloatType extends FloatingPointType {
     }
 
     if (value is double) {
-      Unsafe.writeFloat32(base, offset, value);
+      new _PhysicalData(base, 0).setFloat32(offset, value);
     } else {
       super._setValue(base, offset, value);
     }

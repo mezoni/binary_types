@@ -238,7 +238,7 @@ class BinaryTypes {
       for (declaration in declarations) {
         if (declaration is TypedefDeclaration) {
           var attributes = _getAttributes(declaration.attributes);
-          var align = _getAttributeAligned(attributes);
+          var align = _getAttributeAligned(attributes, null);
           var name = declaration.name;
           var type = declaration.type;
           BinaryType binaryType;
@@ -262,7 +262,7 @@ class BinaryTypes {
         }
       }
     } catch(e, s) {
-      BinaryTypeError.declarationError(declaration, e.message);
+      BinaryTypeError.declarationError(declaration, e.toString());
     }
   }
 
@@ -364,7 +364,7 @@ class BinaryTypes {
 
   BinaryType _declareEnum(EnumTypeSpecification type) {
     var attributes = _getAttributes(type.attributes);
-    var align = _getAttributeAligned(attributes);
+    var align = _getAttributeAligned(attributes, null);
     var taggedType = type.taggedType;
     var tag = taggedType.tag;
     var values = <String, int>{};
@@ -383,10 +383,10 @@ class BinaryTypes {
 
   BinaryType _declareStructure(StructureTypeSpecification type) {
     var attributes = _getAttributes(type.attributes);
-    var align = _getAttributeAligned(attributes);
+    var align = _getAttributeAligned(attributes, null);
     var taggedType = type.taggedType;
     var kind = taggedType.kind;
-    var pack = null;
+    var packed = _getAttributePacked(attributes, false);
     var tag = taggedType.tag;
 
     StructureType structureType;
@@ -401,10 +401,10 @@ class BinaryTypes {
     if (structureType == null) {
       switch (taggedType.kind) {
         case TaggedTypeKinds.STRUCT:
-          structureType = new StructType(tag, null, _dataModel, align: align, pack: pack);
+          structureType = new StructType(tag, null, _dataModel, align: align, packed: packed);
           break;
         case TaggedTypeKinds.UNION:
-          structureType = new UnionType(tag, null, _dataModel, align: align, pack: pack);
+          structureType = new UnionType(tag, null, _dataModel, align: align, packed: packed);
           break;
       }
 
@@ -429,19 +429,20 @@ class BinaryTypes {
     }
 
     if (!members.isEmpty) {
-      structureType.addMembers(members, pack: pack);
+      structureType.addMembers(members, packed: packed);
     }
 
     return structureType;
   }
 
-  int _getAttributeAligned(Map attributes) {
-    var value = attributes["aligned"];
-    if (value == null) {
-      return null;
-    }
+  int _getAttributeAligned(Map attributes, int defaultValue) {
+    // TODO: Implement _getAttributeAligned
+    return defaultValue;
+  }
 
-    return int.parse(value, onError: (e) => null);
+  bool _getAttributePacked(Map attributes, bool defaultValue) {
+    // TODO: Implement _getAttributePacked
+    return defaultValue;
   }
 
   Map<String, String> _getAttributes(BinaryAttributes attributes) {

@@ -1,24 +1,15 @@
 part of binary_types;
 
 class BinaryTypeHelper {
-  final int pack;
-
   final BinaryTypes types;
 
   BinaryType _char;
 
   DataModel _dataModel;
 
-  BinaryTypeHelper(this.types, {this.pack}) {
+  BinaryTypeHelper(this.types) {
     if (types == null) {
       throw new ArgumentError.notNull("types");
-    }
-
-    if (pack != null) {
-      var powerOf2 = (pack != 0) && ((pack & (pack - 1)) == 0);
-      if (!powerOf2) {
-        throw new ArgumentError("Pack '$pack' should be power of 2 value.");
-      }
     }
 
     _char = types["char"];
@@ -77,6 +68,8 @@ class BinaryTypeHelper {
    *   Name of the struct.
    *
    *   [Map]<[String], [BinaryType]> members
+   *   [Map]<[String], [String]> members
+   *   [List]<[StructureMember]> members
    *   Members to the struct.
    *
    *   [int] align
@@ -86,25 +79,21 @@ class BinaryTypeHelper {
    *   Data structure padding.
    */
   @deprecated
-  StructType declareStruct(String name, Map<String, dynamic> members, {int align, int pack}) {
-    if (pack == null) {
-      pack = this.pack;
-    }
-
+  StructType declareStruct(String name, members, {int align, bool packed: false}) {
     BinaryType type;
     if (name != null) {
       type = _tryGetType("struct $name");
     }
 
     if (type is! StructType) {
-      type = new StructType(name, null, dataModel, align: align, pack: pack);
+      type = new StructType(name, null, dataModel, align: align, packed: packed);
       if (name != null) {
         types.registerType(type);
       }
     }
 
     if (members != null) {
-      _addMembers(type, members, pack);
+      _addMembers(type, members, packed);
     }
 
     return type;
@@ -120,7 +109,9 @@ class BinaryTypeHelper {
    *   Name of the union.
    *
    *   [Map]<[String], [BinaryType]> members
-   *   Members to the union.
+   *   [Map]<[String], [String]> members
+   *   [List]<[StructureMember]> members
+   *   Members to the struct.
    *
    *   [int] align
    *   Data alignment for this type.
@@ -129,25 +120,21 @@ class BinaryTypeHelper {
    *   Data structure padding.
    */
   @deprecated
-  UnionType declareUnion(String name, Map<String, dynamic> members, {int align, int pack}) {
-    if (pack == null) {
-      pack = this.pack;
-    }
-
+  UnionType declareUnion(String name, members, {int align, bool packed}) {
     BinaryType type;
     if (name != null) {
       type = _tryGetType("union $name");
     }
 
     if (type is! UnionType) {
-      type = new UnionType(name, null, dataModel, align: align, pack: pack);
+      type = new UnionType(name, null, dataModel, align: align, packed: packed);
       if (name != null) {
         types.registerType(type);
       }
     }
 
     if (members != null) {
-      _addMembers(type, members, pack);
+      _addMembers(type, members, packed);
     }
 
     return type;
@@ -214,13 +201,19 @@ class BinaryTypeHelper {
     return new String.fromCharCodes(characters);
   }
 
-  void _addMembers(StructureType type, Map<String, dynamic> members, int pack) {
-    var normalizedMembers = <String, BinaryType>{};
-    for (var name in members.keys) {
-      normalizedMembers[name] = _getType(members[name]);
-    }
+  void _addMembers(StructureType type, members, bool packed) {
+    if (members is Map<String, dynamic>) {
+      var normalizedMembers = <String, BinaryType>{};
+      for (var name in members.keys) {
+        normalizedMembers[name] = _getType(members[name]);
+      }
 
-    type.addMembers(normalizedMembers, pack: pack);
+      type.addMembers(normalizedMembers, packed: packed);
+    } else if (members is List<StructureMember>) {
+      type.addMembers(members, packed: packed);
+    } else {
+      throw new ArgumentError.value(members, "members");
+    }
   }
 
   BinaryType _getType(type, [BinaryType defaultType]) {

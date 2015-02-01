@@ -1,3 +1,10 @@
+## 0.0.16
+
+- Added more compatibility with C99 standard. Flexible arrays, declaration and behavior of the bit-fields, behavior of the packed structural types
+- Completely reimplemented the structural types. Introduced the concept of the `storage units` for compatibility of the `libffi` library   
+- Initial support of `bit-fields`. Currently only declaration without an access/modification (will be added later)
+- Slightly reduced the dependence on `unsafe_extension` through the new concept of the `_PhysicalData`. `_PhysicalData` implements `ByteData` with unlimited length (for preventing the overhead on the data manipulation with a large data massives with the length greater than the size of `Smi`)
+
 ## 0.0.15
 
 - Added support for macro processing

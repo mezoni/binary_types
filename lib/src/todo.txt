@@ -11,3 +11,7 @@ void _setValue(int base, int offset, value) {
       super._setValue(base, offset, value);
     }
   }
+
+ =================
+ Arrays with zero-length should not check length.
+ Suitable with flexible arrays in structs

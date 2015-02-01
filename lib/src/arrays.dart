@@ -27,19 +27,25 @@ class ArrayType extends BinaryType {
       throw new ArgumentError("type: $type");
     }
 
-    if (length == null || length <= 0) {
+    if (length == null || length < 0) {
       throw new ArgumentError("length: $length");
+    }
+
+    String lengthAsString;
+    if (length == 0) {
+      lengthAsString = "[]";
+    } else {
+      lengthAsString = "[$length]";
     }
 
     if (type is ArrayType) {
       ArrayType arrayType = type;
       _targetType = arrayType._targetType;
       _dimensions = "${arrayType._dimensions}";
-      _dimensions = "[$length]$_dimensions";
-
+      _dimensions = "[$lengthAsString]$_dimensions";
     } else {
       _targetType = type;
-      _dimensions = "[$length]";
+      _dimensions = "[$lengthAsString]";
     }
 
     if (type.size == 0) {

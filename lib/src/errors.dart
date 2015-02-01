@@ -15,12 +15,20 @@ class BinaryTypeError implements Exception {
     throw new BinaryTypeError("Declaration '$declaration' has error: $message");
   }
 
-  static void differentDataModel(String subject) {
-    throw new BinaryTypeError("Different data models not allowed: $subject");
+  static void differentDataModel([String subject]) {
+    if (subject == null) {
+      throw new BinaryTypeError("Different data models not allowed");
+    } else {
+      throw new BinaryTypeError("Different data models not allowed: $subject");
+    }
   }
 
   static void enumerationValueOutOfRange(EnumType type, String name, int value, BinaryType intType) {
     throw new BinaryTypeError("Enumeration value '$name' ($value) is out of  '$intType' range for the type '$type'");
+  }
+
+  static void flexibleArrayMemberNotAtEndOfStruct(StructType structureType, String memberName) {
+    throw new BinaryTypeError("Flexible array member '$memberName' not at end of struct '$structureType'");
   }
 
   static void illegalMemberName(BinaryType type, String name) {
@@ -31,8 +39,8 @@ class BinaryTypeError implements Exception {
     throw new BinaryTypeError("Illegal use of incomplete type '$parameter' as the parameter #'$index' of function '$name'");
   }
 
-  static void incompleteMemberType(BinaryType type, String name, BinaryType member) {
-    throw new BinaryTypeError("Illegal use of incomplete type '$member' as the member '$name' for the type '$type'");
+  static void incompleteMemberType(StructType structureType, BinaryType memberType) {
+    throw new BinaryTypeError("Illegal use of incomplete type '$memberType' as the member of the type '$structureType'");
   }
 
   static void indexOutOfArange(BinaryType type, int index, int range) {
@@ -55,11 +63,11 @@ class BinaryTypeError implements Exception {
     throw new BinaryTypeError("Only one member of a union can be initialized");
   }
 
-  static void redefinitionOfMembersIsNotAllowed(BinaryType type) {
-    throw new BinaryTypeError("Redefinition of members is not allowed for the type '$type'");
+  static void redefinitionOfMemberIsNotAllowed(StructureType structureType, String memberName) {
+    throw new BinaryTypeError("Redefinition of member '$memberName' is not allowed for the type '$structureType'");
   }
 
-  static void requiresAtLeastOneMember(BinaryType type) {
+  static void requiresAtLeastOneMember(StructureType type) {
     throw new BinaryTypeError("Requires at least one member for the type '$type'");
   }
 
@@ -89,7 +97,11 @@ class BinaryTypeError implements Exception {
   }
 
   static void unableGetDefaultValueForIncompleteType(BinaryType type) {
-    throw new BinaryTypeError("Unable to 'get default' for the incomplete type '$type'");
+    throw new BinaryTypeError("Unable to 'get default value' for the incomplete type '$type'");
+  }
+
+  static void unableGetOffsetOfBitFieldMember(StructureType structureType, String memberName) {
+    throw new BinaryTypeError("Unable to 'get offset' of the bit-field member '$memberName' for the type '$structureType'");
   }
 
   static void unablePerformingOperation(BinaryType type, String operation, [Map arguments]) {

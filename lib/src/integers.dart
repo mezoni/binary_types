@@ -59,7 +59,7 @@ class Int16Type extends IntType {
   }
 
   int _getValue(int base, int offset) {
-    return Unsafe.readInt16(base, offset);
+    return new _PhysicalData(base, 0).getInt16(offset);
   }
 
   void _setValue(int base, int offset, value) {
@@ -68,7 +68,7 @@ class Int16Type extends IntType {
     }
 
     if (value is int) {
-      Unsafe.writeInt16(base, offset, value);
+      new _PhysicalData(base, 0).setInt16(offset, value);
     } else {
       super._setValue(base, offset, value);
     }
@@ -134,7 +134,7 @@ class Int32Type extends IntType {
   }
 
   int _getValue(int base, int offset) {
-    return Unsafe.readInt32(base, offset);
+    return new _PhysicalData(base, 0).getInt32(offset);
   }
 
   void _setValue(int base, int offset, value) {
@@ -143,7 +143,7 @@ class Int32Type extends IntType {
     }
 
     if (value is int) {
-      Unsafe.writeInt32(base, offset, value);
+      new _PhysicalData(base, 0).setInt32(offset, value);
     } else {
       super._setValue(base, offset, value);
     }
@@ -209,7 +209,7 @@ class Int64Type extends IntType {
   }
 
   int _getValue(int base, int offset) {
-    return Unsafe.readInt64(base, offset);
+    return new _PhysicalData(base, 0).getInt64(offset);
   }
 
   void _setValue(int base, int offset, value) {
@@ -218,7 +218,7 @@ class Int64Type extends IntType {
     }
 
     if (value is int) {
-      Unsafe.writeInt64(base, offset, value);
+      new _PhysicalData(base, 0).setInt64(offset, value);
     } else {
       super._setValue(base, offset, value);
     }
@@ -285,7 +285,7 @@ class Int8Type extends IntType {
   }
 
   int _getValue(int base, int offset) {
-    return Unsafe.readInt8(base, offset);
+    return new _PhysicalData(base, 0).getInt8(offset);
   }
 
   void _setValue(int base, int offset, value) {
@@ -294,7 +294,7 @@ class Int8Type extends IntType {
     }
 
     if (value is int) {
-      Unsafe.writeInt8(base, offset, value);
+      new _PhysicalData(base, 0).setInt8(offset, value);
     } else {
       super._setValue(base, offset, value);
     }
@@ -547,7 +547,7 @@ abstract class IntType extends BinaryType {
    *   Data alignment of binary type.
    */
   static IntType createLongLong(bool signed, DataModel dataModel, {int align}) {
-    var type = create(dataModel.sizeOfLong, signed, dataModel, align: align);
+    var type = create(dataModel.sizeOfLongLong, signed, dataModel, align: align);
     switch (signed) {
       case true:
         type._basicType = BASIC_TYPE_LONG_LONG | BASIC_TYPE_SIGNED;
@@ -650,7 +650,7 @@ class Uint16Type extends IntType {
   }
 
   int _getValue(int base, int offset) {
-    return Unsafe.readUint16(base, offset);
+    return new _PhysicalData(base, 0).getUint16(offset);
   }
 
   void _setValue(int base, int offset, value) {
@@ -659,7 +659,7 @@ class Uint16Type extends IntType {
     }
 
     if (value is int) {
-      Unsafe.writeUint16(base, offset, value);
+      new _PhysicalData(base, 0).setUint16(offset, value);
     } else {
       super._setValue(base, offset, value);
     }
@@ -724,7 +724,7 @@ class Uint32Type extends IntType {
   }
 
   int _getValue(int base, int offset) {
-    return Unsafe.readUint32(base, offset);
+    return new _PhysicalData(base, 0).getUint32(offset);
   }
 
   void _setValue(base, offset, value) {
@@ -733,7 +733,7 @@ class Uint32Type extends IntType {
     }
 
     if (value is int) {
-      Unsafe.writeUint32(base, offset, value);
+      new _PhysicalData(base, 0).setUint32(offset, value);
     } else {
       super._setValue(base, offset, value);
     }
@@ -798,7 +798,7 @@ class Uint64Type extends IntType {
   }
 
   int _getValue(int base, int offset) {
-    return Unsafe.readUint64(base, offset);
+    return new _PhysicalData(base, 0).getUint64(offset);
   }
 
   void _setValue(int base, int offset, value) {
@@ -807,7 +807,7 @@ class Uint64Type extends IntType {
     }
 
     if (value is int) {
-      Unsafe.writeUint64(base, offset, value);
+      new _PhysicalData(base, 0).setUint64(offset, value);
     } else {
       super._setValue(base, offset, value);
     }
@@ -872,7 +872,7 @@ class Uint8Type extends IntType {
   }
 
   int _getValue(int base, int offset) {
-    return Unsafe.readUint8(base, offset);
+    return new _PhysicalData(base, 0).getUint8(offset);
   }
 
   void _setValue(int base, int offset, value) {
@@ -881,7 +881,7 @@ class Uint8Type extends IntType {
     }
 
     if (value is int) {
-      Unsafe.writeUint8(base, offset, value);
+      new _PhysicalData(base, 0).setUint16(offset, value);
     } else {
       super._setValue(base, offset, value);
     }

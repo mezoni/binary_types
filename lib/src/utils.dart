@@ -2,6 +2,16 @@ part of binary_types;
 
 class _Utils {
   // TODO: Improve
+  static int alignOffset(int offset, int align) {
+    var remainder = offset % align;
+    if (remainder != 0) {
+      offset -= remainder;
+      offset += align;
+    }
+
+    return offset;
+  }
+
   static String toHex(int value, [int size]) {
     if (value == null) {
       value = 0;
@@ -28,5 +38,15 @@ class _Utils {
     }
 
     return "0x" + result;
+  }
+
+  static int getMemberAlignment(BinaryType type, int align, bool packed) {
+    if (align != null) {
+      return align;
+    } else if (packed) {
+      return 1;
+    } else {
+      return type.align;
+    }
   }
 }
