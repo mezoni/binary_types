@@ -21,7 +21,7 @@ Initial release. Use at your own risk!
 **Limitations**
 
 - Long double type not supported (and never be) 
-- Struct bit fields not supported yet
+- Struct bit fields not supported (was started an initial implementation)
 
 **Supported binary types**
 
