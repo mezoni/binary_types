@@ -25,7 +25,7 @@ class VoidType extends BinaryType {
 
   int get size => 0;
 
-  VoidType _clone({int align}) {
+  VoidType _clone({int align, bool packed}) {
     return new VoidType(_dataModel);
   }
 

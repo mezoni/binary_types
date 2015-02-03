@@ -86,7 +86,7 @@ class PointerType extends BinaryType {
     }
   }
 
-  PointerType _clone({int align}) {
+  PointerType _clone({int align, bool packed}) {
     return new PointerType(type, _dataModel, align: align);
   }
 

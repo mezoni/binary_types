@@ -11,7 +11,7 @@ class BinaryTypeError implements Exception {
     throw new BinaryTypeError("Creation an array of the type '$type' is not allowed");
   }
 
-  static void declarationError(BinaryDeclaration declaration, String message) {
+  static void declarationError(Declaration declaration, String message) {
     throw new BinaryTypeError("Declaration '$declaration' has error: $message");
   }
 

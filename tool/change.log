@@ -28,3 +28,7 @@
 0.0.16 Initial support of `bit-fields`. Currently only declaration without an access/modification (will be added later)
 0.0.16 Added more compatibility with C99 standard. Flexible arrays, declaration and behavior of the bit-fields, behavior of the packed structural types
 0.0.16 Slightly reduced the dependence on `unsafe_extension` through the new concept of the `_PhysicalData`. `_PhysicalData` implements `ByteData` with unlimited length (for preventing the overhead on the data manipulation with a large data massives with the length greater than the size of `Smi`)
+0.0.17 Class `BinaryTypes` was freed from the all public members (except the members that represent primitive types). Class `BinaryTypes` was freed from the all public members (except the members that represent primitive types). From now it ready for use as the base container class for descendant binary types with the members that represent the declared types as members by their names (synonyms)
+0.0.17 Function `BinaryTypes.declare()` was moved to `BinaryTypeHelper.declare()`
+0.0.17 Initial support of `attributes`
+0.0.17 Implementation support of the attributes `aligned` and `packed` almost completed

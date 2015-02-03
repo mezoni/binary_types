@@ -61,12 +61,30 @@ typedef struct { int i;
 struct struct8_t {
   struct struct8_t *s;
 };
+
+struct struct_with_bit_fields {
+  long long ll;
+  char c : 1;
+  int i: 2;
+  unsigned char uc_bf : 1;
+  unsigned int ui_bf: 2;
+};
+
+struct packed_struct_with_bit_fields {
+  long long ll;
+  char c : 1;
+  int i: 2;
+  unsigned char uc_bf : 1;
+  unsigned int ui_bf: 2;
+} __attribute__((aligned(16), packed));
+
 ''';
 
 void main() {
   var test = new Test();
   test.testAlloc();
   test.testArrays();
+  test.testBitFields();
   test.testCommon();
   test.testCStrings();
   test.testEnums();
@@ -78,6 +96,16 @@ void main() {
   print('Done');
 }
 
+class Expect {
+  static void equals(actual, expected, String reason) {
+    expect(actual, expected, reason: reason);
+  }
+
+  static void isTrue(actual, String reason) {
+    expect(actual, true, reason: reason);
+  }
+}
+
 class Test {
   BinaryTypeHelper helper;
 
@@ -85,50 +113,11 @@ class Test {
 
   Test() {
     t = new BinaryTypes();
-    t.declare(_header);
     helper = new BinaryTypeHelper(t);
+    helper.declare(_header);
   }
 
   BinaryObject alloc(String type, [value]) => t[type].alloc(value);
-
-  void testEnums() {
-    group("Enum types types", () {
-      test("Enum values.", () {
-        void testEnum(BinaryType enumType, Map<String, int> map) {
-          var name = enumType.name;
-          for (var key in map.keys) {
-            var actual = enumType[key];
-            var matcher = map[key];
-            expect(actual, matcher, reason: "$name.$key == $matcher");
-          }
-        }
-
-        // Color
-        var enum_t = t["enum Color"];
-        var map = {
-          "RED": 0,
-          "GREEN": 1,
-          "BLUE": 2
-        };
-        testEnum(enum_t, map);
-
-        // enum _ABC
-        enum_t = t["enum _ENUM_ABC"];
-        map = {
-          "A": 0,
-          "B": 1,
-          "C": 0,
-          "D": 1,
-          "E": 2
-        };
-        testEnum(enum_t, map);
-
-        // ABC
-        enum_t = t["ENUM_ABC"];
-        testEnum(enum_t, map);
-      });
-    });
-  }
 
   void testAlloc() {
     group("Memory allocation.", () {
@@ -171,6 +160,36 @@ class Test {
           // ia[index] = ia[index];
           ia[index] = ia[index];
         }
+      });
+    });
+  }
+
+  void testBitFields() {
+    group("Bit-fields.", () {
+      test("Access data through the bit-fields.", () {
+        // TODO: Implement bit-fields tests
+      });
+    });
+  }
+
+  void testCStrings() {
+    group("'C' string binary types.", () {
+      test("Access data through 'C' string binary types.", () {
+        var testString = "Hello";
+        var codeUnits = testString.codeUnits;
+        final ca = helper.allocString(testString);
+        var length = testString.length;
+        for (var i = 0; i < length; i++) {
+          // ca[i]
+          var c = ca[i].value;
+          Expect.isTrue(c == codeUnits[i], "ca[$i]");
+        }
+
+        Expect.isTrue(ca[length].value == 0, "*ca[length] == 0;");
+
+        //
+        var strFromMemory = helper.readString(ca);
+        Expect.isTrue(strFromMemory == testString, "testString == strFromMemory;");
       });
     });
   }
@@ -239,24 +258,41 @@ class Test {
     });
   }
 
-  void testCStrings() {
-    group("'C' string binary types.", () {
-      test("Access data through 'C' string binary types.", () {
-        var testString = "Hello";
-        var codeUnits = testString.codeUnits;
-        final ca = helper.allocString(testString);
-        var length = testString.length;
-        for (var i = 0; i < length; i++) {
-          // ca[i]
-          var c = ca[i].value;
-          Expect.isTrue(c == codeUnits[i], "ca[$i]");
+  void testEnums() {
+    group("Enum types types", () {
+      test("Enum values.", () {
+        void testEnum(BinaryType enumType, Map<String, int> map) {
+          var name = enumType.name;
+          for (var key in map.keys) {
+            var actual = enumType[key];
+            var matcher = map[key];
+            expect(actual, matcher, reason: "$name.$key == $matcher");
+          }
         }
 
-        Expect.isTrue(ca[length].value == 0, "*ca[length] == 0;");
+        // Color
+        var enum_t = t["enum Color"];
+        var map = {
+          "RED": 0,
+          "GREEN": 1,
+          "BLUE": 2
+        };
+        testEnum(enum_t, map);
 
-        //
-        var strFromMemory = helper.readString(ca);
-        Expect.isTrue(strFromMemory == testString, "testString == strFromMemory;");
+        // enum _ABC
+        enum_t = t["enum _ENUM_ABC"];
+        map = {
+          "A": 0,
+          "B": 1,
+          "C": 0,
+          "D": 1,
+          "E": 2
+        };
+        testEnum(enum_t, map);
+
+        // ABC
+        enum_t = t["ENUM_ABC"];
+        testEnum(enum_t, map);
       });
     });
   }
@@ -312,9 +348,9 @@ class Test {
     group("Function declarations.", () {
       test("Arity of declared functions.", () {
         // char* ()(char*)
-        var func_t = helper.declareFunc("foo", t['char*'], [t['char*']]);
+        var func_t = new FunctionType("foo", t['char*'], [t['char*']], helper.dataModel);
         // char* ()(...)
-        var func_va_args_t = helper.declareFunc("baz", t['char*'], [t['int'], t['...']]);
+        var func_va_args_t = new FunctionType("baz", t['char*'], [t['int'], t['...']], helper.dataModel);
 
         Expect.equals(func_t.arity, 1, 'func_t.arity == 1');
         Expect.equals(func_va_args_t.arity, 1, 'func_va_args_t.arity == 1');
@@ -513,14 +549,8 @@ class Test {
       test("Access data through binary struct and union types.", () {
         Expect.equals('struct _Point', t['struct _Point'].name, '(struct _Point).name == "struct _Point"');
 
-        // typedef struct _Point POINT;
-        t['POINT'] = t['struct _Point'];
+        // POINT == struct _Point
         Expect.isTrue(t['POINT'] == t['struct _Point'], 'POINT == struct _Point');
-
-        // typedef struct {int i;} structX2_t;
-        t['struct2X_t'] = helper.declareStruct(null, {
-          'i': t['int']
-        });
 
         // struct1_t
         var struct1_t = t['struct1_t'];
@@ -586,36 +616,7 @@ class Test {
         rect2['a'] = rect2['b'];
         Expect.equals(3, rect2['a']['x'].value, 'rect.a.x == 3');
         Expect.equals(4, rect2['a']['y'].value, 'rect.a.x == 4');
-
-        t['struct_inner_t'] = helper.declareStruct(null, {
-          'ip': t['int*']
-        });
-        t['struct_outer_t'] = helper.declareStruct(null, {
-          'inner': t['struct_inner_t']
-        });
-        var outer = t['struct_outer_t'].alloc();
-        var outerValue = outer.value;
-        var ip = outerValue["inner"]["ip"];
-
-        var members = {};
-        members["ia"] = t["int"].array(10);
-        var struct7_t = helper.declareStruct(null, null);
-        Expect.isTrue(struct7_t.size == 0, "sizeof(struct7_t) == 0");
-        struct7_t.addMembers(members);
-        Expect.isTrue(struct7_t.size != 0, "sizeof(struct7_t) != 0");
       });
-
-      // TODO: Add test of struct packing
     });
-  }
-}
-
-class Expect {
-  static void equals(actual, expected, String reason) {
-    expect(actual, expected, reason: reason);
-  }
-
-  static void isTrue(actual, String reason) {
-    expect(actual, true, reason: reason);
   }
 }

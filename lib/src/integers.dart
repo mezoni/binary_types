@@ -379,7 +379,7 @@ abstract class IntType extends BinaryType {
    */
   bool get signed;
 
-  IntType _clone({int align}) {
+  IntType _clone({int align, bool packed}) {
     var copy = create(size, signed, dataModel, align: align);
     copy._basicType = _basicType;
     return copy;

@@ -33,9 +33,9 @@ class ArrayType extends BinaryType {
 
     String lengthAsString;
     if (length == 0) {
-      lengthAsString = "[]";
+      lengthAsString = "";
     } else {
-      lengthAsString = "[$length]";
+      lengthAsString = "$length";
     }
 
     if (type is ArrayType) {
@@ -88,7 +88,7 @@ class ArrayType extends BinaryType {
 
   int get size => _size;
 
-  ArrayType _clone({int align}) {
+  ArrayType _clone({int align, bool packed}) {
     return new ArrayType(type, length, _dataModel, align: align);
   }
 

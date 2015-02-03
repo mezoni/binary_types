@@ -55,8 +55,8 @@ void main() {
   print("Typedefs:");
   var index = 0;
   for (var type in types) {
-    var newType = "t${index++}";
-    t[newType] = type;
-    print(t[newType].typedefName);
+    var name = "t${index++}";
+    var newType = type.clone(name);
+    print(newType.typedefName);
   }
 }

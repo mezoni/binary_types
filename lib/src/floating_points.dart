@@ -28,7 +28,7 @@ class DoubleType extends FloatingPointType {
 
   int get size => _dataModel.sizeOfDouble;
 
-  DoubleType _clone({int align}) {
+  DoubleType _clone({int align, bool packed}) {
     return new DoubleType(_dataModel, align: align);
   }
 
@@ -77,7 +77,7 @@ class FloatType extends FloatingPointType {
 
   int get size => _dataModel.sizeOfFloat;
 
-  FloatType _clone({int align}) {
+  FloatType _clone({int align, bool packed}) {
     return new FloatType(_dataModel, align: align);
   }
 

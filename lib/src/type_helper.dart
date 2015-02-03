@@ -12,8 +12,8 @@ class BinaryTypeHelper {
       throw new ArgumentError.notNull("types");
     }
 
-    _char = types["char"];
-    _dataModel = types["int"].dataModel;
+    _char = types.char_t;
+    _dataModel = types.int_t.dataModel;
   }
 
   /**
@@ -41,125 +41,18 @@ class BinaryTypeHelper {
   }
 
   /**
-     * DEPRECATED! Use "binary declarations" instead
-     *
-     * Declares the "function" binary type.
-     *
-     * Parameters:
-     *   [BinaryType] returnType
-     *   Type of return value.
-     *
-     *   [List]<[BinaryType]> parameters
-     *   Function parameters.
-     */
-  @deprecated
-  // TODO: Register function in types
-  FunctionType declareFunc(String name, BinaryType returnType, List<BinaryType> parameters) {
-    return new FunctionType(name, returnType, parameters, dataModel);
-  }
-
-  /**
-   * DEPRECATED! Use "binary declarations" instead
-   *
-   * Declares the "struct" binary type.
+   * Declares the types specified in textual format.
    *
    * Parameters:
-   *   [String] name
-   *   Name of the struct.
+   *   [String] text
+   *   Declarations in textual format.
    *
-   *   [Map]<[String], [BinaryType]> members
-   *   [Map]<[String], [String]> members
-   *   [List]<[StructureMember]> members
-   *   Members to the struct.
-   *
-   *   [int] align
-   *   Data alignment for this type.
-   *
-   *   [int] pack
-   *   Data structure padding.
+   *   [Map]<[String], [String]> environment
+   *   Environment values for preprocessing declarations.
    */
-  @deprecated
-  StructType declareStruct(String name, members, {int align, bool packed: false}) {
-    BinaryType type;
-    if (name != null) {
-      type = _tryGetType("struct $name");
-    }
-
-    if (type is! StructType) {
-      type = new StructType(name, null, dataModel, align: align, packed: packed);
-      if (name != null) {
-        types.registerType(type);
-      }
-    }
-
-    if (members != null) {
-      _addMembers(type, members, packed);
-    }
-
-    return type;
-  }
-
-  /**
-   * DEPRECATED! Use "binary declarations" instead
-   *
-   * Declares the "union" binary type.
-   *
-   * Parameters:
-   *   [String] name
-   *   Name of the union.
-   *
-   *   [Map]<[String], [BinaryType]> members
-   *   [Map]<[String], [String]> members
-   *   [List]<[StructureMember]> members
-   *   Members to the struct.
-   *
-   *   [int] align
-   *   Data alignment for this type.
-   *
-   *   [int] pack
-   *   Data structure padding.
-   */
-  @deprecated
-  UnionType declareUnion(String name, members, {int align, bool packed}) {
-    BinaryType type;
-    if (name != null) {
-      type = _tryGetType("union $name");
-    }
-
-    if (type is! UnionType) {
-      type = new UnionType(name, null, dataModel, align: align, packed: packed);
-      if (name != null) {
-        types.registerType(type);
-      }
-    }
-
-    if (members != null) {
-      _addMembers(type, members, packed);
-    }
-
-    return type;
-  }
-
-  /**
-   * Returns true if the binary type is declared; otherwise: false.
-   *
-   * Parameters:
-   *   [String] name
-   *   Name of the binary type.
-   */
-  @deprecated
-  bool isTypeDeclared(String name) {
-    if (name == null) {
-      throw new ArgumentError.notNull("name");
-    }
-
-    try {
-      var type = types[name];
-    } catch (e) {
-      return false;
-    }
-
-    return true;
+  void declare(String source, {Map<String, String> environment}) {
+    var declaration = new _Declarations(types);
+    declaration.declare(source, environment: environment);
   }
 
   /**
@@ -199,43 +92,5 @@ class BinaryTypeHelper {
     }
 
     return new String.fromCharCodes(characters);
-  }
-
-  void _addMembers(StructureType type, members, bool packed) {
-    if (members is Map<String, dynamic>) {
-      var normalizedMembers = <String, BinaryType>{};
-      for (var name in members.keys) {
-        normalizedMembers[name] = _getType(members[name]);
-      }
-
-      type.addMembers(normalizedMembers, packed: packed);
-    } else if (members is List<StructureMember>) {
-      type.addMembers(members, packed: packed);
-    } else {
-      throw new ArgumentError.value(members, "members");
-    }
-  }
-
-  BinaryType _getType(type, [BinaryType defaultType]) {
-    if (type is String) {
-      return types[type];
-    } else if (type is BinaryType) {
-      return type;
-    }
-
-    if (defaultType != null) {
-      return defaultType;
-    }
-
-    throw new ArgumentError("type: $type");
-  }
-
-  BinaryType _tryGetType(String name) {
-    try {
-      return types[name];
-    } catch (s) {
-    }
-
-    return null;
   }
 }

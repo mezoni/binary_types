@@ -25,7 +25,7 @@ class VaListType extends BinaryType {
 
   int get size => 0;
 
-  VaListType _clone({int align}) {
+  VaListType _clone({int align, bool packed}) {
     return new VaListType(_dataModel);
   }
 

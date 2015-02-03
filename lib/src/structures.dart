@@ -32,13 +32,17 @@ class StructType extends StructureType {
     }
   }
 
-  StructType _clone({int align}) {
+  StructType _clone({int align, bool packed}) {
     if (this.members.isEmpty) {
       BinaryTypeError.unableCloneIncompleteType(this);
     }
 
+    if (packed == null) {
+      packed = this.packed;
+    }
+
     var members = _members.values.toList();
-    var copy = new StructType._internal(tag, members, _dataModel, align: align, packed: _packed);
+    var copy = new StructType._internal(tag, members, _dataModel, align: align, packed: packed);
     copy._id = this;
     return copy;
   }
@@ -133,10 +137,7 @@ class StructureMember {
     }
 
     if (align != null) {
-      var powerOf2 = (align != 0) && ((align & (align - 1)) == 0);
-      if (!powerOf2) {
-        throw new ArgumentError("Align '$align' should be power of 2 value.");
-      }
+      _Utils.checkPowerOfTwo(align, "align");
     }
 
     if (width != null) {
@@ -265,12 +266,20 @@ abstract class StructureType extends BinaryType {
    *   [List]<[StructureMember]> members
    *   Members to add.
    *
+   *   [int] align
+   *   Data alignment of structural type.
+   *
    *   [bool] packed
    *   Indicates that the structural type are packed or not.
    */
-  void addMembers(members, {bool packed: false}) {
+  void addMembers(members, {int align, bool packed: false}) {
     if (members == null) {
       throw new ArgumentError.notNull("members");
+    }
+
+    if (align != null) {
+      _Utils.checkPowerOfTwo(align, "align");
+      _align = align;
     }
 
     if (packed == null) {
@@ -289,23 +298,33 @@ abstract class StructureType extends BinaryType {
     _storageUnits = new StorageUnits(members, this, packed: packed);
     var isStruct = this is StructType;
     var largestAlign = 0;
+    var largestSize = 0;
     var offset = 0;
     for (var member in storageUnits.members.values) {
       var align = member.align;
+      var size = member.type.size;
       if (largestAlign < align) {
         largestAlign = align;
       }
 
+      if (largestSize < size) {
+        largestSize = size;
+      }
+
       if (isStruct) {
         offset = _Utils.alignOffset(offset, align);
-        offset += member.type.size;
+        offset += size;
       }
     }
 
     if (isStruct) {
       _size = _Utils.alignOffset(offset, largestAlign);
     } else {
-      _size = largestAlign;
+      if (largestAlign > largestSize) {
+        _size = largestAlign;
+      } else {
+        _size = _Utils.alignOffset(largestSize, largestAlign);
+      }
     }
 
     if (_align == null) {
@@ -492,13 +511,17 @@ class UnionType extends StructureType {
     }
   }
 
-  UnionType _clone({int align}) {
+  UnionType _clone({int align, bool packed}) {
     if (this.members.isEmpty) {
       BinaryTypeError.unableCloneIncompleteType(this);
     }
 
+    if (packed == null) {
+      packed = this.packed;
+    }
+
     var members = _members.values.toList();
-    var copy = new UnionType._internal(tag, members, _dataModel, align: align, packed: _packed);
+    var copy = new UnionType._internal(tag, members, _dataModel, align: align, packed: packed);
     copy._id = this;
     return copy;
   }

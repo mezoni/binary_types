@@ -63,10 +63,7 @@ abstract class BinaryType {
     }
 
     if (align != null) {
-      var powerOf2 = (align != 0) && ((align & (align - 1)) == 0);
-      if (!powerOf2) {
-        throw new ArgumentError("Align '$align' should be power of 2 value.");
-      }
+      _Utils.checkPowerOfTwo(align, "align");
     }
 
     _align = align;
@@ -164,16 +161,17 @@ abstract class BinaryType {
    *   [int] align
    *   Data alignment for this type.
    */
-  BinaryType clone(String name, {int align}) {
+  BinaryType clone(String name, {int align, bool packed}) {
     if (name == null) {
       throw new ArgumentError.notNull("null");
     }
 
+    // TODO: size > 0
     if (align == null && size > 0) {
       align = this.align;
     }
 
-    var copy = _clone(align: align);
+    var copy = _clone(align: align, packed: packed);
     copy._name = name;
     copy._original = this;
     copy._typedefName = "typedef ${formatName(identifier: name)}";
@@ -571,7 +569,7 @@ abstract class BinaryType {
     return null;
   }
 
-  BinaryType _clone({int align});
+  BinaryType _clone({int align, bool packed});
 
   bool _compareContent(int base, int offset, value) {
     BinaryTypeError.unablePerformingOperation(this, "compare content", {

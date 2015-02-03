@@ -33,14 +33,7 @@ class StorageUnit {
       throw new ArgumentError.notNull("align");
     }
 
-    if (align < 0) {
-      throw new ArgumentError.value(align, "align");
-    }
-
-    var powerOf2 = (align != 0) && ((align & (align - 1)) == 0);
-    if (!powerOf2) {
-      throw new ArgumentError("Align '$align' should be power of 2 value.");
-    }
+    _Utils.checkPowerOfTwo(align, "align");
   }
 
   /**
