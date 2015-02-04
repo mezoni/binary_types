@@ -33,7 +33,7 @@ struct _Point {
   int y;
 } unusedVar;
 
-typedef struct _Point POINT;
+typedef struct _Point POINT, *PPOINT;
 
 typedef struct {
   int i;
@@ -50,7 +50,7 @@ typedef struct {
 typedef struct {
   POINT a;
   POINT b;
-} RECT;
+} RECT, *PRECT;
 
 typedef struct { int i;
   int* ip;

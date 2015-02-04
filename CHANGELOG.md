@@ -1,6 +1,10 @@
+## 0.0.18
+
+- Made adaptations to the new version of package `binary_declarations`
+
 ## 0.0.17
 
-- Class `BinaryTypes` was freed from the all public members (except the members that represent primitive types). Class `BinaryTypes` was freed from the all public members (except the members that represent primitive types). From now it ready for use as the base container class for descendant binary types with the members that represent the declared types as members by their names (synonyms)
+- Class `BinaryTypes` was freed from the all public members (except the members that represent primitive types). From now it ready for use as the base container class for descendant binary types with the members that represent the declared types as members by their names (synonyms)
 - Function `BinaryTypes.declare()` was moved to `BinaryTypeHelper.declare()`
 - Implementation support of the attributes `aligned` and `packed` almost completed
 - Initial support of `attributes`

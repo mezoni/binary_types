@@ -77,5 +77,5 @@ class BinaryData {
     type._setElementValue(base, offset, index, value);
   }
 
-  String toString() => type.formatName(references: 1);
+  String toString() => type.formatName(pointers: 1);
 }

@@ -23,16 +23,36 @@ class _Declarations {
     try {
       for (declaration in declarations) {
         if (declaration is TypedefDeclaration) {
-          var typedefType = declaration.type;
-          var type = typedefType.type;
-          var name = typedefType.name;
-          var binaryType = _declareType(type);
-          var attributes = _Metadata.getAttributes(type.metadata, null);
-          attributes = _Metadata.getAttributes(typedefType.metadata, attributes);
-          attributes = _Metadata.getAttributes(declaration.metadata, attributes);
-          var align = _Metadata.getAttributeAligned(attributes, null);
-          var packed = _Metadata.getAttributePacked(attributes, false);
-          _defineType(name, binaryType, align, packed);
+          var originalType = declaration.type;
+          var originalBinaryType = _declareType(originalType);
+          for (var synonym in declaration.synonyms) {
+            var binaryType = originalBinaryType;
+            var pointers = synonym.pointers;
+            while (pointers-- > 0) {
+              binaryType = binaryType.ptr();
+            }
+
+            var dimensions = synonym.dimensions;
+            if (dimensions != null) {
+              var length = dimensions.length;
+              for (var i = length - 1; i >= 0; i--) {
+                var dimension = dimensions[i];
+                if (dimension == null) {
+                  dimension = 0;
+                }
+
+                binaryType = binaryType.array(dimension);
+              }
+            }
+
+            var attributes = _Metadata.getAttributes(synonym.metadata, null);
+            attributes = _Metadata.getAttributes(originalType.metadata, attributes);
+            attributes = _Metadata.getAttributes(declaration.metadata, attributes);
+            var align = _Metadata.getAttributeAligned(attributes, null);
+            var packed = _Metadata.getAttributePacked(attributes, false);
+            _defineType(synonym.name, binaryType, align, packed);
+          }
+
         } else if (declaration is StructureDeclaration) {
           _declareStructure(declaration.type);
         } else if (declaration is EnumDeclaration) {
@@ -144,8 +164,7 @@ class _Declarations {
       var attributes = _Metadata.getAttributes(memberType.metadata, null);
       attributes = _Metadata.getAttributes(member.metadata, attributes);
       var align = _Metadata.getAttributeAligned(attributes, null);
-      // Querying new attributes, since we need ignoring an attribute "packed"
-      // in the type.
+      // Querying new attributes, since we need ignoring an attribute "packed" in the type
       attributes = _Metadata.getAttributes(member.metadata, null);
       var packed = _Metadata.getAttributePacked(attributes, false);
       if (packed) {
@@ -168,6 +187,8 @@ class _Declarations {
   BinaryType _declareType(TypeSpecification type) {
     if (type is ArrayTypeSpecification) {
       return _declareArray(type);
+    } else if (type is DefinedTypeSpecification) {
+      return types._types[type.name];
     } else if (type is EnumTypeSpecification) {
       return _declareEnum(type);
     } else if (type is FloatTypeSpecification) {
@@ -178,8 +199,6 @@ class _Declarations {
       return _declareType(type.type).ptr();
     } else if (type is StructureTypeSpecification) {
       return _declareStructure(type);
-    } else if (type is SynonymTypeSpecification) {
-      return types._types[type.name];
     } else if (type is TaggedTypeSpecification) {
       return types._types[type.name];
     } else if (type is VaListTypeSpecification) {
@@ -200,38 +219,5 @@ class _Declarations {
     var copy = original.clone(synonym, align: align, packed: packed);
     types._types[synonym] = copy;
     return copy;
-  }
-
-  Map<String, List<List<String>>> _getTypeAttributes(TypeSpecification type, [Map<String, List<List<String>>> attributes]) {
-    if (type == null) {
-      throw new ArgumentError.notNull("type");
-    }
-
-    if (attributes == null) {
-      attributes = <String, List<List<String>>>{};
-    }
-
-    var types = <TypeSpecification>[];
-    if (type is StructureTypeSpecification) {
-      types.add(type.taggedType);
-      types.add(type);
-    } else if (type is EnumTypeSpecification) {
-      types.add(type.taggedType);
-      types.add(type);
-    } else if (type is TypedefTypeSpecification) {
-      types.add(type);
-      types.add(type.type);
-    } else {
-      types.add(type);
-    }
-
-    for (var type in types) {
-      var metadata = type.metadata;
-      if (metadata != null) {
-        _Metadata.getAttributes(metadata, attributes);
-      }
-    }
-
-    return attributes;
   }
 }

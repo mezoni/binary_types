@@ -238,16 +238,16 @@ abstract class BinaryType {
    *   [int] references
    *   Number of references.
    */
-  String formatName({String identifier, int references: 0}) {
-    if (references == null || references < 0) {
-      throw new ArgumentError.value(references, "references");
+  String formatName({String identifier, int pointers: 0}) {
+    if (pointers == null || pointers < 0) {
+      throw new ArgumentError.value(pointers, "pointers");
     }
 
     var sb = new StringBuffer();
     if (_original != null) {
       sb.write(name);
       sb.write(" ");
-      sb.write("".padRight(references, "*"));
+      sb.write("".padRight(pointers, "*"));
       if (identifier != null) {
         sb.write(identifier);
       }
@@ -258,7 +258,7 @@ abstract class BinaryType {
           ArrayType arrayType = this;
           var targetType = arrayType._targetType;
           var type = arrayType.type;
-          if (references == 0) {
+          if (pointers == 0) {
             sb.write(targetType);
             if (targetType.kind != BinaryKinds.POINTER) {
               sb.write(" ");
@@ -274,7 +274,7 @@ abstract class BinaryType {
               var string = targetType.formatName();
               sb.write(string);
               sb.write("(");
-              sb.write("".padRight(references, "*"));
+              sb.write("".padRight(pointers, "*"));
               if (identifier != null) {
                 sb.write(identifier);
               }
@@ -282,7 +282,7 @@ abstract class BinaryType {
               sb.write(")");
               sb.write(type._dimensions);
             } else {
-              var string = targetType.formatName(references: references);
+              var string = targetType.formatName(pointers: pointers);
               sb.write(string);
               if (identifier != null) {
                 sb.write(identifier);
@@ -296,7 +296,7 @@ abstract class BinaryType {
           sb.write(functionType.returnType);
           sb.write(" ");
           sb.write("(");
-          sb.write("".padRight(references, "*"));
+          sb.write("".padRight(pointers, "*"));
           sb.write(functionType._identifier);
           sb.write(")(");
           var parameters = functionType.parameters;
@@ -310,13 +310,13 @@ abstract class BinaryType {
         case BinaryKinds.POINTER:
           PointerType pointerType = this;
           var targetType = pointerType._targetType;
-          var string = targetType.formatName(identifier: identifier, references: references + pointerType.level + 1);
+          var string = targetType.formatName(identifier: identifier, pointers: pointers + pointerType.level + 1);
           sb.write(string);
           break;
         default:
           sb.write(name);
           sb.write(" ");
-          sb.write("".padRight(references, "*"));
+          sb.write("".padRight(pointers, "*"));
           if (identifier != null) {
             sb.write(identifier);
           }
