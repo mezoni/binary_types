@@ -14,8 +14,6 @@ class DoubleType extends FloatingPointType {
     }
   }
 
-  int get align => _dataModel.alignOfDouble;
-
   BinaryKinds get kind => BinaryKinds.DOUBLE;
 
   String get name {
@@ -62,8 +60,6 @@ class FloatType extends FloatingPointType {
       _align = dataModel.alignOfFloat;
     }
   }
-
-  int get align => _dataModel.alignOfFloat;
 
   BinaryKinds get kind => BinaryKinds.FLOAT;
 

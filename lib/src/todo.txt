@@ -15,3 +15,6 @@ void _setValue(int base, int offset, value) {
  =================
  Arrays with zero-length should not check length.
  Suitable with flexible arrays in structs
+  =================
+  POINTER align cannot be decreased
+  STRUCT align not less then largest align

@@ -111,7 +111,7 @@ class FunctionType extends BinaryType {
   bool get variadic => _variadic;
 
   FunctionType _clone({int align, bool packed}) {
-    return new FunctionType(name, returnType, _parameters, _dataModel);
+    return new FunctionType(name, returnType, _parameters, _dataModel, align: align);
   }
 
   bool _compatible(BinaryType other, bool strong) {

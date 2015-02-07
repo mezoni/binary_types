@@ -202,7 +202,7 @@ void main() {
   });
 }
 
-String _header = '''
+const String _header = '''
 // https://github.com/llvm-mirror/clang/blob/master/test/Sema/struct-packed-align.c
 // Packed structs.
 struct s {

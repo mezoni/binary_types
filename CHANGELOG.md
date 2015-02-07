@@ -1,3 +1,8 @@
+## 0.0.19
+
+- Significant rework of the implementation of the performing the type declarations. The support of the attributes `aligned` and `packed` was implemented and was tested
+- The predefined values available now in the declarations environment. Currently this is `__OS__` `__ BITNESS __`
+
 ## 0.0.18
 
 - Made adaptations to the new version of package `binary_declarations`

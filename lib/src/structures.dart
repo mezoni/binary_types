@@ -279,7 +279,6 @@ abstract class StructureType extends BinaryType {
 
     if (align != null) {
       _Utils.checkPowerOfTwo(align, "align");
-      _align = align;
     }
 
     if (packed == null) {
@@ -327,10 +326,15 @@ abstract class StructureType extends BinaryType {
       }
     }
 
-    if (_align == null) {
-      _align = largestAlign;
+    if (align == null) {
+      align = largestAlign;
+    } else {
+      if (align < largestAlign) {
+        align = largestAlign;
+      }
     }
 
+    _align = align;
     if (_size < _align) {
       _size = _align;
     }

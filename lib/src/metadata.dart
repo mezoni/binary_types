@@ -1,10 +1,22 @@
 part of binary_types;
 
 class _Metadata {
-  static int getAttributeAligned(Map<String, List<List<String>>> attributes, int previousValue) {
-    var values = _getLastValues(attributes, "aligned");
+  static final _Metadata empty = new _Metadata(const <Metadata>[]);
+
+  Map<String, List<List<String>>> _attributes;
+
+  _Metadata(List<Metadata> metadataList) {
+    if (metadataList == null) {
+      throw new ArgumentError.notNull("metadataList");
+    }
+
+    _attributes = _joinMetadata(metadataList);
+  }
+
+  int get aligned {
+    var values = _getLastValues(_attributes, "aligned");
     if (values == null) {
-      return previousValue;
+      return null;
     }
 
     if (values.isEmpty) {
@@ -30,46 +42,55 @@ class _Metadata {
     return value;
   }
 
-  static bool getAttributePacked(Map<String, List<List<String>>> attributes, bool previousValue) {
-    var values = _getLastValues(attributes, "packed");
+  bool get packed {
+    var values = _getLastValues(_attributes, "packed");
     if (values == null) {
-      return previousValue;
+      return false;
     }
 
     return true;
   }
 
-  static Map<String, List<List<String>>> getAttributes(Metadata metadata, Map<String, List<List<String>>> map) {
-    if (map == null) {
-      map = <String, List<List<String>>>{};
+  Map<String, List<List<String>>> _getAttributes(Metadata metadata, Map<String, List<List<String>>> attributes) {
+    if (attributes == null) {
+      attributes = <String, List<List<String>>>{};
     }
 
     if (metadata == null) {
-      return map;
+      return attributes;
     }
 
     for (var attributeList in metadata.attributeList) {
       for (var value in attributeList.attributes) {
         var name = value.name;
-        var list = map[name];
+        var list = attributes[name];
         if (list == null) {
           list = <List<String>>[];
-          map[name] = list;
+          attributes[name] = list;
         }
 
         list.add(value.parameters);
       }
     }
 
-    return map;
+    return attributes;
   }
 
-  static List<String> _getLastValues(Map<String, List<List<String>>> attributes, String name) {
+  List<String> _getLastValues(Map<String, List<List<String>>> attributes, String name) {
     var values = attributes[name];
     if (values == null) {
       return null;
     }
 
     return values.last;
+  }
+
+  Map<String, List<List<String>>> _joinMetadata(List<Metadata> metadataList) {
+    Map<String, List<List<String>>> result;
+    for (var metadata in metadataList) {
+      result = _getAttributes(metadata, result);
+    }
+
+    return result;
   }
 }

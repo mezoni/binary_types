@@ -195,17 +195,12 @@ class BinaryTypes {
   }
 
   void _cloneBasicInt(IntType type, List<String> names, [bool typedef = false]) {
-    var name = type.name;
     for (var fullname in names) {
-      var alias = name;
+      BinaryType copy;
       if (typedef) {
-        alias = fullname;
-      }
-
-      var copy = type.clone(alias);
-      if (!typedef) {
-        copy._original = null;
-        copy._typedefName = "";
+        copy = type.clone(fullname);
+      } else {
+        copy = type.copy(fullname);
       }
 
       _types[fullname] = copy;

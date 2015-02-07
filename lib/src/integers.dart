@@ -250,7 +250,6 @@ class Int8Type extends IntType {
     }
   }
 
-
   BinaryKinds get kind => BinaryKinds.SINT8;
 
   int get max => MAX;

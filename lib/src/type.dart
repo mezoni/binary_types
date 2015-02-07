@@ -158,16 +158,21 @@ abstract class BinaryType {
    * Clones the type.
    *
    * Parameters:
+   *   [String] name
+   *   Name of the cloned type.
+   *
    *   [int] align
    *   Data alignment for this type.
+   *
+   *   [bool] packed
+   *   Indicates that data should be packed or not.
    */
   BinaryType clone(String name, {int align, bool packed}) {
     if (name == null) {
       throw new ArgumentError.notNull("null");
     }
 
-    // TODO: size > 0
-    if (align == null && size > 0) {
+    if (align == null) {
       align = this.align;
     }
 
@@ -209,6 +214,36 @@ abstract class BinaryType {
     }
 
     return _compatible(other, strong);
+  }
+
+  /**
+   * Creates the type.
+   *
+   * Parameters:
+   *  [String] name
+   *   Name of the copied type; otherwise null.
+   *
+   *   [int] align
+   *   Data alignment for this type.
+   *
+   *   [bool] packed
+   *   Indicates that data should be packed or not.
+   */
+  BinaryType copy([String name]) {
+    var copy = _clone();
+    if (name == null) {
+      copy._name = this.name;
+    } else {
+      copy._name = name;
+    }
+
+    if (original == this) {
+      copy._original = copy;
+    } else {
+      copy._original = original;
+    }
+
+    return copy;
   }
 
   /**

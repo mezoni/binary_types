@@ -88,7 +88,7 @@ class EnumType extends BinaryType {
   dynamic _cast(value) => _type._cast(value);
 
   BinaryType _clone({int align, bool packed}) {
-    return new EnumType(tag, values, dataModel);
+    return new EnumType(tag, values, dataModel, align: align);
   }
 
   bool _compatible(BinaryType other, bool strong) {
