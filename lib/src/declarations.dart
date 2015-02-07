@@ -13,7 +13,7 @@ class _Declarations {
     _dataModel = types.int_t.dataModel;
   }
 
-  void declare(String source, {Map<String, String> environment}) {
+  Declarations declare(String source, {Map<String, String> environment}) {
     if (source == null) {
       throw new ArgumentError.notNull("source");
     }
@@ -43,6 +43,8 @@ class _Declarations {
     } catch (e, s) {
       BinaryTypeError.declarationError(declaration, "$e\n$s");
     }
+
+    return declarations;
   }
 
   void _checkTag(BinaryType type, String tag) {

@@ -1,7 +1,11 @@
+## 0.0.20
+
+- Function `BinaryTypeHelper.declare()` returns now the `Declarations`. This should prevent an unnecessary double parsing of the declarations in `binary_interop` 
+
 ## 0.0.19
 
 - Significant rework of the implementation of the performing the type declarations. The support of the attributes `aligned` and `packed` was implemented and was tested
-- The predefined values available now in the declarations environment. Currently this is `__OS__` `__ BITNESS __`
+- The predefined values available now in the declarations environment. Currently this is `__OS__` `__BITNESS__`
 
 ## 0.0.18
 

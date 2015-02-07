@@ -50,9 +50,9 @@ class BinaryTypeHelper {
    *   [Map]<[String], [String]> environment
    *   Environment values for preprocessing declarations.
    */
-  void declare(String source, {Map<String, String> environment}) {
+  Declarations declare(String source, {Map<String, String> environment}) {
     var declaration = new _Declarations(types);
-    declaration.declare(source, environment: environment);
+    return declaration.declare(source, environment: environment);
   }
 
   /**
