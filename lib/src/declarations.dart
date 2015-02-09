@@ -10,7 +10,7 @@ class _Declarations {
       throw new ArgumentError.notNull("types");
     }
 
-    _dataModel = types.int_t.dataModel;
+    _dataModel = types["int"].dataModel;
   }
 
   Declarations declare(String source, {Map<String, String> environment}) {

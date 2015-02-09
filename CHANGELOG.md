@@ -1,3 +1,8 @@
+## 0.0.21
+
+- Added possibility to import previously declared types into the new binary types. This allows reuse already the declared binary types
+- Breaking changes. Class `BinaryTypes` was freed from the the members that represent primitive types. From now the class `BinaryTypes` is a lightweight class without any public members 
+
 ## 0.0.20
 
 - Function `BinaryTypeHelper.declare()` returns now the `Declarations`. This should prevent an unnecessary double parsing of the declarations in `binary_interop` 

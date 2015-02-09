@@ -182,32 +182,32 @@ void main() {
       name = "struct struct_with_int";
       align = t[name].align;
       size = t[name].size;
-      expect(align, t.int_t.align, reason: "Alignof $name");
-      expect(size, t.int_t.size, reason: "Size: $name");
+      expect(align, t["int"].align, reason: "Alignof $name");
+      expect(size, t["int"].size, reason: "Size: $name");
 
       name = "struct struct_with_char_and_int";
       align = t[name].align;
       size = t[name].size;
-      expect(align, t.int_t.align, reason: "Alignof $name");
-      expect(size, t.int_t.size * 2, reason: "Size: $name");
+      expect(align, t["int"].align, reason: "Alignof $name");
+      expect(size, t["int"].size * 2, reason: "Size: $name");
 
       name = "struct struct_with_char_and_INT1";
       align = t[name].align;
       size = t[name].size;
       expect(align, 1, reason: "Alignof $name");
-      expect(size, t.char_t.size + t["INT1"].size, reason: "Size: $name");
+      expect(size, t["char"].size + t["INT1"].size, reason: "Size: $name");
 
       name = "struct s_with_i";
       align = t[name].align;
       size = t[name].size;
-      expect(align, t.int_t.align, reason: "Alignof $name");
-      expect(size, t.int_t.size * 2, reason: "Size: $name");
+      expect(align, t["int"].align, reason: "Alignof $name");
+      expect(size, t["int"].size * 2, reason: "Size: $name");
 
       name = "struct s_with_I";
       align = t[name].align;
       size = t[name].size;
       expect(align, 1, reason: "Alignof $name");
-      expect(size, t.char_t.size + t["INT1"].size, reason: "Size: $name");
+      expect(size, t["char"].size + t["INT1"].size, reason: "Size: $name");
 
       name = "struct s_with_s";
       align = t[name].align;
@@ -219,7 +219,7 @@ void main() {
       align = t[name].align;
       size = t[name].size;
       expect(align, 1, reason: "Alignof $name");
-      expect(size, t.char_t.size + t["struct s"].size, reason: "Size: $name");
+      expect(size, t["char"].size + t["struct s"].size, reason: "Size: $name");
     });
 
     test("Typedef integers, floats", () {

@@ -12,8 +12,8 @@ class BinaryTypeHelper {
       throw new ArgumentError.notNull("types");
     }
 
-    _char = types.char_t;
-    _dataModel = types.int_t.dataModel;
+    _char = types["char"];
+    _dataModel = types["int"].dataModel;
   }
 
   /**

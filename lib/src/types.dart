@@ -3,152 +3,44 @@ part of binary_types;
 /**
  * Binary types.
  */
-// TODO: check the uniqueness of tags (enum, struct, union)
 class BinaryTypes {
 
-  BinaryType _char_t;
-
   DataModel _dataModel;
-
-  BinaryType _double_t;
-
-  BinaryType _float_t;
-
-  BinaryType _int_t;
-
-  BinaryType _long_t;
-
-  BinaryType _long_long_t;
-
-  BinaryType _short_t;
-
-  BinaryType _signed_char_t;
 
   Map<String, BinaryType> _tags = new Map<String, BinaryType>();
 
   Map<String, BinaryType> _types = new Map<String, BinaryType>();
 
-  BinaryType _unsigned_char_t;
-
-  BinaryType _unsigned_int_t;
-
-  BinaryType _unsigned_long_t;
-
-  BinaryType _unsigned_long_long_t;
-
-  BinaryType _unsigned_short_t;
-
-  BinaryTypes({DataModel dataModel}) {
+  /**
+   * Creates new types.
+   *
+   * Parameters:
+   *   [DataModel] dataModel
+   *   Data model for the binary types.
+   *
+   *   [BinaryTypes] types
+   *   Previously declared types (all declared types will be imported).
+   */
+  BinaryTypes({DataModel dataModel, BinaryTypes types}) {
     if (dataModel == null) {
-      dataModel = new DataModel();
+      if (types != null) {
+        dataModel = types["int"].dataModel;
+      } else {
+        dataModel = new DataModel();
+      }
     }
 
     _dataModel = dataModel;
-    _init();
-  }
+    if (types != null) {
+      if (types["int"].dataModel != dataModel) {
+        BinaryTypeError.differentDataModel();
+      }
 
-  BinaryType get char_t {
-    if (_char_t == null) {
-      _char_t = this["char"];
+      _types.addAll(types._types);
+      _tags.addAll(types._tags);
+    } else {
+      _init();
     }
-
-    return _char_t;
-  }
-
-  BinaryType get double_t {
-    if (_double_t == null) {
-      _double_t = this["double"];
-    }
-
-    return _double_t;
-  }
-
-  BinaryType get float_t {
-    if (_float_t == null) {
-      _float_t = this["float"];
-    }
-
-    return _float_t;
-  }
-
-  BinaryType get int_t {
-    if (_int_t == null) {
-      _int_t = this["int"];
-    }
-
-    return _int_t;
-  }
-
-  BinaryType get long_long_t {
-    if (_long_long_t == null) {
-      _long_long_t = this["long long"];
-    }
-
-    return _long_long_t;
-  }
-
-  BinaryType get long_t {
-    if (_long_t == null) {
-      _long_t = this["long"];
-    }
-
-    return _long_t;
-  }
-
-  BinaryType get short_t {
-    if (_short_t == null) {
-      _short_t = this["short"];
-    }
-
-    return _short_t;
-  }
-
-  BinaryType get signed_char_t {
-    if (_signed_char_t == null) {
-      _signed_char_t = this["signed char"];
-    }
-
-    return _signed_char_t;
-  }
-
-  BinaryType get unsigned_char_t {
-    if (_unsigned_char_t == null) {
-      _unsigned_char_t = this["unsigned char"];
-    }
-
-    return _unsigned_char_t;
-  }
-
-  BinaryType get unsigned_int_t {
-    if (_unsigned_int_t == null) {
-      _unsigned_int_t = this["unsigned int"];
-    }
-
-    return _unsigned_int_t;
-  }
-
-  BinaryType get unsigned_long_long_t {
-    if (_unsigned_long_long_t == null) {
-      _unsigned_long_long_t = this["unsigned long long"];
-    }
-
-    return _unsigned_long_long_t;
-  }
-
-  BinaryType get unsigned_long_t {
-    if (_unsigned_long_t == null) {
-      _unsigned_long_t = this["unsigned long"];
-    }
-
-    return _unsigned_long_t;
-  }
-
-  BinaryType get unsigned_short_t {
-    if (_unsigned_short_t == null) {
-      _unsigned_short_t = this["unsigned short"];
-    }
-
-    return _unsigned_short_t;
   }
 
   BinaryType operator [](String name) {

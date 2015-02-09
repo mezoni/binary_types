@@ -2,7 +2,7 @@ import 'package:binary_types/binary_types.dart';
 
 void main() {
   var t = new BinaryTypes();
-  var dataMode = t.int_t.dataModel;
+  var dataMode = t["int"].dataModel;
   var types = <BinaryType>[];
   var type = new FunctionType("myfunc", t["int"], [(t["void*"])], dataMode);
   types.add(type);

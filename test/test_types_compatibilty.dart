@@ -6,99 +6,99 @@ final _t = new BinaryTypes();
 void main() {
   // TODO: Test functions compatibilties
   // TODO: Test structures compatibilties
-  var x = _t.short_t.compatible(_t.unsigned_short_t, true);
+  var x = _t["short"].compatible(_t["unsigned short"], true);
   group("Binary types compatibilties.", () {
     test("Arrays types.", () {
-      _compare(_t.char_t.array(1), _t.signed_char_t.array(1), false, true);
-      _compare(_t.char_t.array(1), _t.signed_char_t.array(2), false, false);
-      _compare(_t.char_t.array(1).array(1), _t.signed_char_t.array(1).array(1), false, true);
-      _compare(_t.char_t.array(1).array(1), _t.signed_char_t.array(1).array(2), false, false);
+      _compare(_t["char"].array(1), _t["signed char"].array(1), false, true);
+      _compare(_t["char"].array(1), _t["signed char"].array(2), false, false);
+      _compare(_t["char"].array(1).array(1), _t["signed char"].array(1).array(1), false, true);
+      _compare(_t["char"].array(1).array(1), _t["signed char"].array(1).array(2), false, false);
     });
 
     test("Pointer types.", () {
-      _compare(_t.char_t.ptr(), _t.signed_char_t.ptr(), false, true);
-      _compare(_t.char_t.ptr().ptr(), _t.signed_char_t.ptr(), false, false);
-      _compare(_t.char_t.ptr().ptr(), _t.signed_char_t.ptr().ptr(), false, true);
+      _compare(_t["char"].ptr(), _t["signed char"].ptr(), false, true);
+      _compare(_t["char"].ptr().ptr(), _t["signed char"].ptr(), false, false);
+      _compare(_t["char"].ptr().ptr(), _t["signed char"].ptr().ptr(), false, true);
     });
 
     test("Floating points types.", () {
-      _compare(_t.float_t, _t.float_t, true, true);
-      _compare(_t.double_t, _t.float_t, false, false);
+      _compare(_t["float"], _t["float"], true, true);
+      _compare(_t["double"], _t["float"], false, false);
     });
 
     test("Integer types.", () {
       // Compatible
-      _compare(_t.char_t, _t.signed_char_t, false, true);
-      _compare(_t.char_t, _t.unsigned_char_t, false, true);
-      _compare(_t.signed_char_t, _t.unsigned_char_t, false, true);
-      _compare(_t.short_t, _t.unsigned_short_t, false, true);
-      _compare(_t.int_t, _t.unsigned_int_t, false, true);
-      _compare(_t.long_t, _t.unsigned_long_t, false, true);
-      _compare(_t.long_long_t, _t.unsigned_long_long_t, false, true);
+      _compare(_t["char"], _t["signed char"], false, true);
+      _compare(_t["char"], _t["unsigned char"], false, true);
+      _compare(_t["signed char"], _t["unsigned char"], false, true);
+      _compare(_t["short"], _t["unsigned short"], false, true);
+      _compare(_t["int"], _t["unsigned int"], false, true);
+      _compare(_t["long"], _t["unsigned long"], false, true);
+      _compare(_t["long long"], _t["unsigned long long"], false, true);
 
       // Incompatible type
-      _compare(_t.char_t, _t.short_t, false, false);
-      _compare(_t.char_t, _t.unsigned_short_t, false, false);
-      _compare(_t.char_t, _t.int_t, false, false);
-      _compare(_t.char_t, _t.unsigned_int_t, false, false);
-      _compare(_t.char_t, _t.int_t, false, false);
-      _compare(_t.char_t, _t.unsigned_int_t, false, false);
-      _compare(_t.char_t, _t.long_t, false, false);
-      _compare(_t.char_t, _t.unsigned_long_t, false, false);
-      _compare(_t.char_t, _t.long_long_t, false, false);
-      _compare(_t.char_t, _t.unsigned_long_long_t, false, false);
+      _compare(_t["char"], _t["short"], false, false);
+      _compare(_t["char"], _t["unsigned short"], false, false);
+      _compare(_t["char"], _t["int"], false, false);
+      _compare(_t["char"], _t["unsigned int"], false, false);
+      _compare(_t["char"], _t["int"], false, false);
+      _compare(_t["char"], _t["unsigned int"], false, false);
+      _compare(_t["char"], _t["long"], false, false);
+      _compare(_t["char"], _t["unsigned long"], false, false);
+      _compare(_t["char"], _t["long long"], false, false);
+      _compare(_t["char"], _t["unsigned long long"], false, false);
 
-      _compare(_t.signed_char_t, _t.short_t, false, false);
-      _compare(_t.signed_char_t, _t.unsigned_short_t, false, false);
-      _compare(_t.signed_char_t, _t.int_t, false, false);
-      _compare(_t.signed_char_t, _t.unsigned_int_t, false, false);
-      _compare(_t.signed_char_t, _t.int_t, false, false);
-      _compare(_t.signed_char_t, _t.unsigned_int_t, false, false);
-      _compare(_t.signed_char_t, _t.long_t, false, false);
-      _compare(_t.signed_char_t, _t.unsigned_long_t, false, false);
-      _compare(_t.signed_char_t, _t.long_long_t, false, false);
-      _compare(_t.signed_char_t, _t.unsigned_long_long_t, false, false);
+      _compare(_t["signed char"], _t["short"], false, false);
+      _compare(_t["signed char"], _t["unsigned short"], false, false);
+      _compare(_t["signed char"], _t["int"], false, false);
+      _compare(_t["signed char"], _t["unsigned int"], false, false);
+      _compare(_t["signed char"], _t["int"], false, false);
+      _compare(_t["signed char"], _t["unsigned int"], false, false);
+      _compare(_t["signed char"], _t["long"], false, false);
+      _compare(_t["signed char"], _t["unsigned long"], false, false);
+      _compare(_t["signed char"], _t["long long"], false, false);
+      _compare(_t["signed char"], _t["unsigned long long"], false, false);
 
-      _compare(_t.unsigned_char_t, _t.short_t, false, false);
-      _compare(_t.unsigned_char_t, _t.unsigned_short_t, false, false);
-      _compare(_t.unsigned_char_t, _t.int_t, false, false);
-      _compare(_t.unsigned_char_t, _t.unsigned_int_t, false, false);
-      _compare(_t.unsigned_char_t, _t.int_t, false, false);
-      _compare(_t.unsigned_char_t, _t.unsigned_int_t, false, false);
-      _compare(_t.unsigned_char_t, _t.long_t, false, false);
-      _compare(_t.unsigned_char_t, _t.unsigned_long_t, false, false);
-      _compare(_t.unsigned_char_t, _t.long_long_t, false, false);
-      _compare(_t.unsigned_char_t, _t.unsigned_long_long_t, false, false);
+      _compare(_t["unsigned char"], _t["short"], false, false);
+      _compare(_t["unsigned char"], _t["unsigned short"], false, false);
+      _compare(_t["unsigned char"], _t["int"], false, false);
+      _compare(_t["unsigned char"], _t["unsigned int"], false, false);
+      _compare(_t["unsigned char"], _t["int"], false, false);
+      _compare(_t["unsigned char"], _t["unsigned int"], false, false);
+      _compare(_t["unsigned char"], _t["long"], false, false);
+      _compare(_t["unsigned char"], _t["unsigned long"], false, false);
+      _compare(_t["unsigned char"], _t["long long"], false, false);
+      _compare(_t["unsigned char"], _t["unsigned long long"], false, false);
 
-      _compare(_t.short_t, _t.int_t, false, false);
-      _compare(_t.short_t, _t.unsigned_int_t, false, false);
-      _compare(_t.short_t, _t.long_t, false, false);
-      _compare(_t.short_t, _t.unsigned_long_t, false, false);
-      _compare(_t.short_t, _t.long_long_t, false, false);
-      _compare(_t.short_t, _t.unsigned_long_long_t, false, false);
+      _compare(_t["short"], _t["int"], false, false);
+      _compare(_t["short"], _t["unsigned int"], false, false);
+      _compare(_t["short"], _t["long"], false, false);
+      _compare(_t["short"], _t["unsigned long"], false, false);
+      _compare(_t["short"], _t["long long"], false, false);
+      _compare(_t["short"], _t["unsigned long long"], false, false);
 
-      _compare(_t.unsigned_short_t, _t.int_t, false, false);
-      _compare(_t.unsigned_short_t, _t.unsigned_int_t, false, false);
-      _compare(_t.unsigned_short_t, _t.long_t, false, false);
-      _compare(_t.unsigned_short_t, _t.unsigned_long_t, false, false);
-      _compare(_t.unsigned_short_t, _t.long_long_t, false, false);
-      _compare(_t.unsigned_short_t, _t.unsigned_long_long_t, false, false);
+      _compare(_t["unsigned short"], _t["int"], false, false);
+      _compare(_t["unsigned short"], _t["unsigned int"], false, false);
+      _compare(_t["unsigned short"], _t["long"], false, false);
+      _compare(_t["unsigned short"], _t["unsigned long"], false, false);
+      _compare(_t["unsigned short"], _t["long long"], false, false);
+      _compare(_t["unsigned short"], _t["unsigned long long"], false, false);
 
-      _compare(_t.int_t, _t.long_t, false, false);
-      _compare(_t.int_t, _t.unsigned_long_t, false, false);
-      _compare(_t.int_t, _t.long_long_t, false, false);
-      _compare(_t.int_t, _t.unsigned_long_long_t, false, false);
+      _compare(_t["int"], _t["long"], false, false);
+      _compare(_t["int"], _t["unsigned long"], false, false);
+      _compare(_t["int"], _t["long long"], false, false);
+      _compare(_t["int"], _t["unsigned long long"], false, false);
 
-      _compare(_t.unsigned_int_t, _t.long_t, false, false);
-      _compare(_t.unsigned_int_t, _t.unsigned_long_t, false, false);
-      _compare(_t.unsigned_int_t, _t.long_long_t, false, false);
-      _compare(_t.unsigned_int_t, _t.unsigned_long_long_t, false, false);
+      _compare(_t["unsigned int"], _t["long"], false, false);
+      _compare(_t["unsigned int"], _t["unsigned long"], false, false);
+      _compare(_t["unsigned int"], _t["long long"], false, false);
+      _compare(_t["unsigned int"], _t["unsigned long long"], false, false);
 
-      _compare(_t.long_t, _t.long_long_t, false, false);
-      _compare(_t.long_t, _t.unsigned_long_long_t, false, false);
+      _compare(_t["long"], _t["long long"], false, false);
+      _compare(_t["long"], _t["unsigned long long"], false, false);
 
-      _compare(_t.unsigned_long_t, _t.long_long_t, false, false);
-      _compare(_t.unsigned_long_t, _t.unsigned_long_long_t, false, false);
+      _compare(_t["unsigned long"], _t["long long"], false, false);
+      _compare(_t["unsigned long"], _t["unsigned long long"], false, false);
     });
   });
 }

@@ -36,3 +36,5 @@
 0.0.19 Significant rework of the implementation of the performing the type declarations. The support of the attributes `aligned` and `packed` was implemented and was tested
 0.0.19 The predefined values available now in the declarations environment. Currently this is `__OS__` `__BITNESS__`
 0.0.20 Function `BinaryTypeHelper.declare()` returns now the `Declarations`. This should prevent an unnecessary double parsing of the declarations in `binary_interop` 
+0.0.21 Added possibility to import previously declared types into the new binary types. This allows reuse already the declared binary types
+0.0.21 Breaking changes. Class `BinaryTypes` was freed from the the members that represent primitive types. From now the class `BinaryTypes` is a lightweight class without any public members 

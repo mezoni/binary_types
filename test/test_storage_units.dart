@@ -7,9 +7,9 @@ void main() {
       test("Only leading zero-length bit-fields.", () {
         var t = new BinaryTypes();
         var members = <StructureMember>[];
-        members.add(new StructureMember(null, t.char_t, width: 0));
-        members.add(new StructureMember(null, t.int_t, width: 0));
-        var structureType = _createStructureType(isStruct, null, null, t.int_t.dataModel);
+        members.add(new StructureMember(null, t["char"], width: 0));
+        members.add(new StructureMember(null, t["int"], width: 0));
+        var structureType = _createStructureType(isStruct, null, null, t["int"].dataModel);
         var units = new StorageUnits(members, structureType, packed: false);
         var elements = units.elements;
         var unitMembers = units.members;
@@ -20,10 +20,10 @@ void main() {
       test("Leading zero-length bit-fields before other members.", () {
         var t = new BinaryTypes();
         var members = <StructureMember>[];
-        members.add(new StructureMember(null, t.char_t, width: 0));
-        members.add(new StructureMember(null, t.int_t, width: 0));
-        members.add(new StructureMember("a", t.int_t, width: 1));
-        var structureType = _createStructureType(isStruct, null, null, t.int_t.dataModel);
+        members.add(new StructureMember(null, t["char"], width: 0));
+        members.add(new StructureMember(null, t["int"], width: 0));
+        members.add(new StructureMember("a", t["int"], width: 1));
+        var structureType = _createStructureType(isStruct, null, null, t["int"].dataModel);
         var units = new StorageUnits(members, structureType, packed: false);
         var elements = units.elements;
         var unitMembers = units.members;
@@ -34,12 +34,12 @@ void main() {
       test("Leading zero-length bit-fields after other members.", () {
         var t = new BinaryTypes();
         var members = <StructureMember>[];
-        members.add(new StructureMember(null, t.char_t, width: 0));
-        members.add(new StructureMember(null, t.int_t, width: 0));
-        members.add(new StructureMember("a", t.int_t, width: 1));
-        members.add(new StructureMember(null, t.char_t, width: 0));
-        members.add(new StructureMember(null, t.int_t, width: 0));
-        var structureType = _createStructureType(isStruct, null, null, t.int_t.dataModel);
+        members.add(new StructureMember(null, t["char"], width: 0));
+        members.add(new StructureMember(null, t["int"], width: 0));
+        members.add(new StructureMember("a", t["int"], width: 1));
+        members.add(new StructureMember(null, t["char"], width: 0));
+        members.add(new StructureMember(null, t["int"], width: 0));
+        var structureType = _createStructureType(isStruct, null, null, t["int"].dataModel);
         var units = new StorageUnits(members, structureType, packed: false);
         var elements = units.elements;
         var unitMembers = units.members;
@@ -50,29 +50,29 @@ void main() {
       test("Finishing bit-fields by a zero-length bit-fields.", () {
         var t = new BinaryTypes();
         var members = <StructureMember>[];
-        members.add(new StructureMember("a", t.int_t, width: 1));
-        members.add(new StructureMember(null, t.char_t, width: 0));
-        members.add(new StructureMember(null, t.long_long_t, width: 0));
-        members.add(new StructureMember(null, t.int_t, width: 0));
-        var structureType = _createStructureType(isStruct, null, null, t.int_t.dataModel);
+        members.add(new StructureMember("a", t["int"], width: 1));
+        members.add(new StructureMember(null, t["char"], width: 0));
+        members.add(new StructureMember(null, t["long long"], width: 0));
+        members.add(new StructureMember(null, t["int"], width: 0));
+        var structureType = _createStructureType(isStruct, null, null, t["int"].dataModel);
         var units = new StorageUnits(members, structureType, packed: false);
         var elements = units.elements;
         var unitMembers = units.members;
         var size = elements.first.size;
-        expect(size, t.long_long_t.size, reason: "Chosen not a largest in size finished zero-length bit-field");
+        expect(size, t["long long"].size, reason: "Chosen not a largest in size finished zero-length bit-field");
       });
 
       test("Bit-fields in packed units (1 byte).", () {
         var t = new BinaryTypes();
         var members = <StructureMember>[];
-        members.add(new StructureMember(null, t.char_t, width: 0));
-        members.add(new StructureMember(null, t.int_t, width: 0));
-        members.add(new StructureMember("c", t.char_t, width: 1));
-        members.add(new StructureMember("i", t.int_t, width: 1));
-        members.add(new StructureMember("ll", t.long_long_t, width: 1));
-        members.add(new StructureMember(null, t.char_t, width: 0));
-        members.add(new StructureMember(null, t.int_t, width: 0));
-        var structureType = _createStructureType(isStruct, null, null, t.int_t.dataModel);
+        members.add(new StructureMember(null, t["char"], width: 0));
+        members.add(new StructureMember(null, t["int"], width: 0));
+        members.add(new StructureMember("c", t["char"], width: 1));
+        members.add(new StructureMember("i", t["int"], width: 1));
+        members.add(new StructureMember("ll", t["long long"], width: 1));
+        members.add(new StructureMember(null, t["char"], width: 0));
+        members.add(new StructureMember(null, t["int"], width: 0));
+        var structureType = _createStructureType(isStruct, null, null, t["int"].dataModel);
         var units = new StorageUnits(members, structureType, packed: true);
         var elements = units.elements;
         var unitMembers = units.members;
@@ -84,14 +84,14 @@ void main() {
       test("Bit-fields in packed units (3 byte).", () {
         var t = new BinaryTypes();
         var members = <StructureMember>[];
-        members.add(new StructureMember(null, t.char_t, width: 0));
-        members.add(new StructureMember(null, t.int_t, width: 0));
-        members.add(new StructureMember("c", t.char_t, width: 4));
-        members.add(new StructureMember("i", t.int_t, width: 12));
-        members.add(new StructureMember("ll", t.long_long_t, width: 8));
-        members.add(new StructureMember(null, t.char_t, width: 0));
-        members.add(new StructureMember(null, t.int_t, width: 0));
-        var structureType = _createStructureType(isStruct, null, null, t.int_t.dataModel);
+        members.add(new StructureMember(null, t["char"], width: 0));
+        members.add(new StructureMember(null, t["int"], width: 0));
+        members.add(new StructureMember("c", t["char"], width: 4));
+        members.add(new StructureMember("i", t["int"], width: 12));
+        members.add(new StructureMember("ll", t["long long"], width: 8));
+        members.add(new StructureMember(null, t["char"], width: 0));
+        members.add(new StructureMember(null, t["int"], width: 0));
+        var structureType = _createStructureType(isStruct, null, null, t["int"].dataModel);
         var units = new StorageUnits(members, structureType, packed: true);
         var elements = units.elements;
         var unitMembers = units.members;
@@ -102,13 +102,13 @@ void main() {
       test("Bit-fields exceed size in non-packed units.", () {
         var t = new BinaryTypes();
         var members = <StructureMember>[];
-        members.add(new StructureMember(null, t.char_t, width: 0));
-        members.add(new StructureMember(null, t.int_t, width: 0));
-        members.add(new StructureMember("c0", t.char_t, width: 7));
-        members.add(new StructureMember("c1", t.char_t, width: 2));
-        members.add(new StructureMember(null, t.char_t, width: 0));
-        members.add(new StructureMember(null, t.int_t, width: 0));
-        var structureType = _createStructureType(isStruct, null, null, t.int_t.dataModel);
+        members.add(new StructureMember(null, t["char"], width: 0));
+        members.add(new StructureMember(null, t["int"], width: 0));
+        members.add(new StructureMember("c0", t["char"], width: 7));
+        members.add(new StructureMember("c1", t["char"], width: 2));
+        members.add(new StructureMember(null, t["char"], width: 0));
+        members.add(new StructureMember(null, t["int"], width: 0));
+        var structureType = _createStructureType(isStruct, null, null, t["int"].dataModel);
         var units = new StorageUnits(members, structureType, packed: false);
         var elements = units.elements;
         var unitMembers = units.members;
@@ -119,11 +119,11 @@ void main() {
       test("Flexible array.", () {
         var t = new BinaryTypes();
         var members = <StructureMember>[];
-        members.add(new StructureMember(null, t.long_long_t, width: 0));
-        members.add(new StructureMember("a", t.int_t, width: 1));
-        members.add(new StructureMember(null, t.long_long_t, width: 0));
-        members.add(new StructureMember("ia", t.int_t.array(0)));
-        var structureType = _createStructureType(isStruct, null, null, t.int_t.dataModel);
+        members.add(new StructureMember(null, t["long long"], width: 0));
+        members.add(new StructureMember("a", t["int"], width: 1));
+        members.add(new StructureMember(null, t["long long"], width: 0));
+        members.add(new StructureMember("ia", t["int"].array(0)));
+        var structureType = _createStructureType(isStruct, null, null, t["int"].dataModel);
         var units = new StorageUnits(members, structureType, packed: false);
         var elements = units.elements;
         var unitMembers = units.members;
@@ -134,29 +134,29 @@ void main() {
       test("Array.", () {
         var t = new BinaryTypes();
         var members = <StructureMember>[];
-        members.add(new StructureMember("ia", t.int_t.array(2)));
-        members.add(new StructureMember(null, t.long_long_t, width: 0));
-        var structureType = _createStructureType(isStruct, null, null, t.int_t.dataModel);
+        members.add(new StructureMember("ia", t["int"].array(2)));
+        members.add(new StructureMember(null, t["long long"], width: 0));
+        var structureType = _createStructureType(isStruct, null, null, t["int"].dataModel);
         var units = new StorageUnits(members, structureType, packed: false);
         var elements = units.elements;
         var unitMembers = units.members;
         expect(elements.length, 2, reason: "Length of units is not a '2' elements");
-        expect(elements.first.type, t.int_t, reason: "Type of #1 unit is not an array element type");
-        expect(elements.last.type, t.int_t, reason: "Type of #2 unit is not an array element type");
-        expect(elements.first.align, t.int_t.align, reason: "Align of #1 unit not an align of element type");
+        expect(elements.first.type, t["int"], reason: "Type of #1 unit is not an array element type");
+        expect(elements.last.type, t["int"], reason: "Type of #2 unit is not an array element type");
+        expect(elements.first.align, t["int"].align, reason: "Align of #1 unit not an align of element type");
         expect(elements.last.align, 1, reason: "Align of #2 unit is not '1'");
         expect(unitMembers.length, 1, reason: "Wrong number of members");
-        expect(unitMembers["ia"].type, t.int_t.array(2), reason: "Member type is not an array type");
+        expect(unitMembers["ia"].type, t["int"].array(2), reason: "Member type is not an array type");
       });
 
       test("Packed struct.", () {
         var t = new BinaryTypes();
         var members = <StructureMember>[];
-        members.add(new StructureMember("c", t.char_t));
-        members.add(new StructureMember("i", t.int_t));
-        members.add(new StructureMember("ll", t.long_long_t));
-        members.add(new StructureMember(null, t.long_long_t, width: 0));
-        var structureType = _createStructureType(isStruct, null, null, t.int_t.dataModel);
+        members.add(new StructureMember("c", t["char"]));
+        members.add(new StructureMember("i", t["int"]));
+        members.add(new StructureMember("ll", t["long long"]));
+        members.add(new StructureMember(null, t["long long"], width: 0));
+        var structureType = _createStructureType(isStruct, null, null, t["int"].dataModel);
         var units = new StorageUnits(members, structureType, packed: true);
         var elements = units.elements;
         var unitMembers = units.members;
@@ -164,8 +164,8 @@ void main() {
         var offsetInt = 0;
         var offsetLongLong = 0;
         if (isStruct) {
-          offsetInt = t.char_t.size;
-          offsetLongLong = offsetInt + t.int_t.size;
+          offsetInt = t["char"].size;
+          offsetLongLong = offsetInt + t["int"].size;
         }
 
         expect(elements.length, 3, reason: "Length of units is not a '2' elements");
@@ -178,11 +178,11 @@ void main() {
       test("Non packed struct.", () {
         var t = new BinaryTypes();
         var members = <StructureMember>[];
-        members.add(new StructureMember("c", t.char_t));
-        members.add(new StructureMember("i", t.int_t));
-        members.add(new StructureMember("ll", t.long_long_t));
-        members.add(new StructureMember(null, t.long_long_t, width: 0));
-        var structureType = _createStructureType(isStruct, null, null, t.int_t.dataModel);
+        members.add(new StructureMember("c", t["char"]));
+        members.add(new StructureMember("i", t["int"]));
+        members.add(new StructureMember("ll", t["long long"]));
+        members.add(new StructureMember(null, t["long long"], width: 0));
+        var structureType = _createStructureType(isStruct, null, null, t["int"].dataModel);
         var units = new StorageUnits(members, structureType, packed: false);
         var elements = units.elements;
         var unitMembers = units.members;
@@ -190,8 +190,8 @@ void main() {
         var offsetInt = 0;
         var offsetLongLong = 0;
         if (isStruct) {
-          offsetInt = t.int_t.align;
-          offsetLongLong = t.long_long_t.align;
+          offsetInt = t["int"].align;
+          offsetLongLong = t["long long"].align;
         }
 
         expect(elements.length, 3, reason: "Length of units is not a '2' elements");
