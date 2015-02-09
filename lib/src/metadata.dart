@@ -3,7 +3,7 @@ part of binary_types;
 class _Metadata {
   static final _Metadata empty = new _Metadata(const <Metadata>[]);
 
-  Map<String, List<List<String>>> _attributes;
+  Map<String, List<List<dynamic>>> _attributes;
 
   _Metadata(List<Metadata> metadataList) {
     if (metadataList == null) {
@@ -14,7 +14,7 @@ class _Metadata {
   }
 
   int get aligned {
-    var values = _getLastValues(_attributes, "aligned");
+    var values = getLastValues(_attributes, "aligned");
     if (values == null) {
       return null;
     }
@@ -23,37 +23,43 @@ class _Metadata {
       return 16;
     }
 
-    var parameter = values.first.trim();
-    var radix = 10;
-    if (parameter.startsWith("0x")) {
-      radix = 16;
-    } else if (parameter.startsWith("0")) {
-      radix = 8;
+    if (values.length != 1) {
+      _wrongNumberOfArguments("aligned");
     }
 
-    int value;
-    try {
-      value = int.parse(values.first, radix: radix);
-      _Utils.checkPowerOfTwo(value, "aligned");
-    } catch (e) {
-      throw new StateError("Wrong parameter value '$parameter' of the attribute 'aligned'");
+    var parameter = values.first;
+    if (parameter is! int) {
+      _wrongArgumentType("aligned", "integer");
     }
 
-    return value;
+    return parameter;
   }
 
   bool get packed {
-    var values = _getLastValues(_attributes, "packed");
+    var values = getLastValues(_attributes, "packed");
     if (values == null) {
       return false;
+    }
+
+    if (!values.isEmpty) {
+      _wrongNumberOfArguments("packed");
     }
 
     return true;
   }
 
-  Map<String, List<List<String>>> _getAttributes(Metadata metadata, Map<String, List<List<String>>> attributes) {
+  List<String> getLastValues(Map<String, List<List<String>>> attributes, String name) {
+    var values = attributes[name];
+    if (values == null) {
+      return null;
+    }
+
+    return values.last;
+  }
+
+  Map<String, List<List<dynamic>>> _getAttributes(Metadata metadata, Map<String, List<List<String>>> attributes) {
     if (attributes == null) {
-      attributes = <String, List<List<String>>>{};
+      attributes = <String, List<List<dynamic>>>{};
     }
 
     if (metadata == null) {
@@ -65,7 +71,7 @@ class _Metadata {
         var name = value.name;
         var list = attributes[name];
         if (list == null) {
-          list = <List<String>>[];
+          list = <List<dynamic>>[];
           attributes[name] = list;
         }
 
@@ -76,21 +82,20 @@ class _Metadata {
     return attributes;
   }
 
-  List<String> _getLastValues(Map<String, List<List<String>>> attributes, String name) {
-    var values = attributes[name];
-    if (values == null) {
-      return null;
-    }
-
-    return values.last;
-  }
-
-  Map<String, List<List<String>>> _joinMetadata(List<Metadata> metadataList) {
-    Map<String, List<List<String>>> result;
+  Map<String, List<List<dynamic>>> _joinMetadata(List<Metadata> metadataList) {
+    Map<String, List<List<dynamic>>> result;
     for (var metadata in metadataList) {
       result = _getAttributes(metadata, result);
     }
 
     return result;
+  }
+
+  void _wrongArgumentType(String name, String type) {
+    throw new StateError("Attribute '$name' argument not a $type");
+  }
+
+  void _wrongNumberOfArguments(String name) {
+    throw new StateError("Wrong number of arguments specified for '$name' attribute");
   }
 }

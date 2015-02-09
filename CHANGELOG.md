@@ -1,3 +1,7 @@
+## 0.0.22
+
+- Made adaptations to the new version of package `binary_declarations`
+
 ## 0.0.21
 
 - Added possibility to import previously declared types into the new binary types. This allows reuse already the declared binary types
