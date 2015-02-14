@@ -1,3 +1,10 @@
+## 0.0.23
+
+- Completely reimplemented class `_Declarations`
+- Initial support of the `_Bool` binary type
+- Made adaptations to the new version of package `binary_declarations`    
+- Reimplemented the `structural` and the `enumeration` classes to the full support of the declaring type synonyms in the `typedef` declarations
+
 ## 0.0.22
 
 - Made adaptations to the new version of package `binary_declarations`

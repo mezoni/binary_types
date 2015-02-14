@@ -2,9 +2,9 @@ import 'package:binary_types/binary_types.dart';
 
 void main() {
   var t = new BinaryTypes();
-  var dataMode = t["int"].dataModel;
+  var dataModel = t["int"].dataModel;
   var types = <BinaryType>[];
-  var type = new FunctionType("myfunc", t["int"], [(t["void*"])], dataMode);
+  var type = new FunctionType("myfunc", t["int"], [(t["void*"])], dataModel);
   types.add(type);
   types.add(type.ptr());
   types.add(type.ptr().ptr());
@@ -17,7 +17,7 @@ void main() {
   types.add(type.array(1).array(2).ptr());
   types.add(type.array(1).array(2).ptr().ptr());
   types.add(type.array(1).ptr().array(1));
-  types.add(new EnumType("Color", ["RED", "GREEN", "RED"], dataMode));
+  types.add(new EnumType("Color", dataModel)..addEnumerators(["RED", "GREEN", "RED"]));
   print("=====================");
   print("Types:");
   for (var type in types) {

@@ -3,6 +3,8 @@ part of binary_types;
 class BinaryKinds {
   static const BinaryKinds ARRAY = const BinaryKinds("ARRAY");
 
+  static const BinaryKinds BOOL = const BinaryKinds("BOOL");
+
   static const BinaryKinds DOUBLE = const BinaryKinds("DOUBLE");
 
   static const BinaryKinds ENUM = const BinaryKinds("ENUM");
@@ -68,12 +70,24 @@ abstract class BinaryType {
 
     _align = align;
     _dataModel = dataModel;
+    _original = this;
   }
+
+  /**
+   * Indicates that the type is the original type and is not a synonym.
+   */
+  bool get isOriginal => identical(this, original);
 
   /**
    * Returns the alignment in bytes, required for any instance of the type.
    */
-  int get align => _align;
+  int get align {
+    if (_align == null) {
+      BinaryTypeError.unableGetAlignmentIncompleteType(this);
+    }
+
+    return _align;
+  }
 
   /**
    * Returns the model of binary data.
@@ -167,18 +181,18 @@ abstract class BinaryType {
    *   [bool] packed
    *   Indicates that data should be packed or not.
    */
-  BinaryType clone(String name, {int align, bool packed}) {
+  BinaryType clone(String name, {int align}) {
     if (name == null) {
       throw new ArgumentError.notNull("null");
     }
 
-    if (align == null) {
+    if (align == null && size != 0) {
       align = this.align;
     }
 
-    var copy = _clone(align: align, packed: packed);
+    var copy = _clone(align: align);
     copy._name = name;
-    copy._original = this;
+    copy._original = this._original;
     copy._typedefName = "typedef ${formatName(identifier: name)}";
     return copy;
   }
@@ -279,7 +293,7 @@ abstract class BinaryType {
     }
 
     var sb = new StringBuffer();
-    if (_original != null) {
+    if (!identical(this, original)) {
       sb.write(name);
       sb.write(" ");
       sb.write("".padRight(pointers, "*"));
@@ -330,10 +344,9 @@ abstract class BinaryType {
           FunctionType functionType = this;
           sb.write(functionType.returnType);
           sb.write(" ");
-          sb.write("(");
           sb.write("".padRight(pointers, "*"));
           sb.write(functionType._identifier);
-          sb.write(")(");
+          sb.write("(");
           var parameters = functionType.parameters;
           if (!parameters.isEmpty) {
             var string = parameters.map((type) => type.name).join(", ");
@@ -604,7 +617,7 @@ abstract class BinaryType {
     return null;
   }
 
-  BinaryType _clone({int align, bool packed});
+  BinaryType _clone({int align});
 
   bool _compareContent(int base, int offset, value) {
     BinaryTypeError.unablePerformingOperation(this, "compare content", {

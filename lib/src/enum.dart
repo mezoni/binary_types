@@ -3,65 +3,29 @@ part of binary_types;
 class EnumType extends BinaryType {
   final String tag;
 
+  int _defaultValue;
+
+  Map<String, int> _enumerators = <String, int>{};
+
+  int _size = 0;
+
   BinaryType _type;
 
-  Map<String, int> _values;
+  EnumType(this.tag, DataModel dataModel, {int align}) : super(dataModel, align: align);
 
-  EnumType(this.tag, values, DataModel dataModel, {int align}) : super(dataModel, align: align) {
-    if (values == null) {
-      throw new ArgumentError.notNull("values");
+  int get defaultValue {
+    if (size == 0) {
+      BinaryTypeError.unableGetDefaultValueForIncompleteType(this);
     }
 
-    if (values is List) {
-      var list = values;
-      values = <String, int>{};
-      for (var name in list) {
-        if (name is String) {
-          values[name] = null;
-        } else {
-          throw new ArgumentError("List of value contains illegal elements.");
-        }
-      }
-
-    } else if (values is! Map) {
-      throw new ArgumentError.value(values, "values");
-    }
-
-    // TODO: sizeOfEnum?
-    var sizeOfEnum = dataModel.sizeOfInt;
-    _type = IntType.create(sizeOfEnum, true, dataModel, align: align);
-    var prev = -1;
-    var signed = false;
-    var max = (1 << (sizeOfEnum * 8 - 1)) - 1;
-    var min = -(max + 1);
-    _values = <String, int>{};
-    for (var name in values.keys) {
-      if (name is! String || name.isEmpty) {
-        BinaryTypeError.illegalMemberName(this, name);
-      }
-
-      var value = values[name];
-      if (value is int) {
-        prev = value;
-      } else if (value == null) {
-        value = ++prev;
-      } else {
-        throw new ArgumentError("List of values contains illegal elements.");
-      }
-
-      if (value < 0) {
-        signed = true;
-      }
-
-      if (value < min || value > max) {
-        BinaryTypeError.enumerationValueOutOfRange(this, name, value, _type);
-      }
-
-      _values[name] = value;
-    }
+    var original = _original as EnumType;
+    return original._defaultValue;
   }
 
-  int get defaultValue => 0;
+  Map<String, int> get enumerators {
+    var original = _original as EnumType;
+    return new UnmodifiableMapView<String, int>(original._enumerators);
+  }
 
   BinaryKinds get kind => BinaryKinds.ENUM;
 
@@ -81,23 +45,113 @@ class EnumType extends BinaryType {
     return _name;
   }
 
-  int get size => _dataModel.sizeOfInt;
+  int get size {
+    var original = _original as EnumType;
+    return original._size;
+  }
 
-  Map<String, int> get values => new UnmodifiableMapView<String, int>(_values);
+  /**
+   * Adds the enumerators to the enum binary type.
+   *
+   * Parameters:
+   *   [List]<[int]> enumerators
+   *   [Map]<[String], [int]> enumerators
+   *   Enumerators to be added to the enum type.
+   *
+   *   [int] align
+   *   Data alignment for the binary type.
+   */
+  void addEnumerators(enumerators, {int align}) {
+    if (enumerators == null) {
+      throw new ArgumentError.notNull("enumerators");
+    }
+
+    if (!isOriginal) {
+      BinaryTypeError.unableModifyTypeSynonym(_original, name);
+    }
+
+    if (this.enumerators.length != 0) {
+      BinaryTypeError.unableRedeclareType(name);
+    }
+
+    if (enumerators is List) {
+      var list = enumerators;
+      enumerators = <String, int>{};
+      for (var name in list) {
+        if (name is String) {
+          enumerators[name] = null;
+        } else {
+          throw new ArgumentError("List of value contains illegal elements.");
+        }
+      }
+
+    } else if (enumerators is! Map<String, int>) {
+      throw new ArgumentError.value(enumerators, "enumerators");
+    }
+
+    enumerators = enumerators as Map<String, int>;
+    if (enumerators.length == 0) {
+      throw new ArgumentError("Enumerators should contain at least one element");
+    }
+
+    var sizeOfEnum = dataModel.sizeOfInt;
+    _type = IntType.create(sizeOfEnum, true, dataModel, align: align);
+    var prev = -1;
+    var signed = false;
+    var max = (1 << (sizeOfEnum * 8 - 1)) - 1;
+    var min = -(max + 1);
+    _enumerators = <String, int>{};
+    for (var name in enumerators.keys) {
+      if (name is! String || name.isEmpty) {
+        BinaryTypeError.illegalMemberName(this, name);
+      }
+
+      var value = enumerators[name];
+      if (value is int) {
+        prev = value;
+      } else if (value == null) {
+        value = ++prev;
+      } else {
+        throw new ArgumentError("Emumerators contains illegal elements.");
+      }
+
+      if (value < 0) {
+        signed = true;
+      }
+
+      if (value < min || value > max) {
+        BinaryTypeError.enumeratorOutOfRange(this, name, value, _type);
+      }
+
+      _enumerators[name] = value;
+    }
+
+    if (align != null) {
+      _align = align;
+    } else {
+      _align = _dataModel.sizeOfInt;
+    }
+
+    _defaultValue = _enumerators[_enumerators.keys.first];
+    _size = _dataModel.sizeOfInt;
+  }
 
   dynamic _cast(value) => _type._cast(value);
 
-  BinaryType _clone({int align, bool packed}) {
-    return new EnumType(tag, values, dataModel, align: align);
+  BinaryType _clone({int align}) {
+    return new EnumType(tag, dataModel, align: align);
   }
 
   bool _compatible(BinaryType other, bool strong) {
-    // TODO: Improve
-    return identical(this, other);
+    if (other is EnumType) {
+      return identical(_original, other._original);
+    }
+
+    return false;
   }
 
   int _getTypeElement(String name) {
-    var value = _values[name];
+    var value = enumerators[name];
     if (value != null) {
       return value;
     }

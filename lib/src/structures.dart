@@ -11,10 +11,6 @@ class StructType extends StructureType {
    *   [String] tag
    *   Tag of the struct type.
    *
-   *   [Map]<[String], [BinaryType]> members
-   *   [List]<[StructureMember]> members
-   *   Members of the struct type.
-   *
    *   [DataModel] dataModel
    *   Data model of binary type.
    *
@@ -24,32 +20,15 @@ class StructType extends StructureType {
    *   [int] pack
    *   Data padding for binary type.
    */
-  StructType(String tag, members, DataModel dataModel, {int align, bool packed: false}) : this._internal(tag, members, dataModel, align: align, packed: packed);
+  StructType(String tag, DataModel dataModel, {int align}) : super("struct", tag, dataModel, align: align);
 
-  StructType._internal(String tag, members, DataModel dataModel, {int align, bool packed: false}) : super("struct", tag, dataModel, align: align) {
-    if (members != null) {
-      addMembers(members, packed: packed);
-    }
-  }
-
-  StructType _clone({int align, bool packed}) {
-    if (this.members.isEmpty) {
-      BinaryTypeError.unableCloneIncompleteType(this);
-    }
-
-    if (packed == null) {
-      packed = this.packed;
-    }
-
-    var members = _members.values.toList();
-    var copy = new StructType._internal(tag, members, _dataModel, align: align, packed: packed);
-    copy._id = this;
-    return copy;
+  StructType _clone({int align}) {
+    return new StructType(tag, _dataModel, align: align);
   }
 
   Map _getValue(int base, int offset) {
     var value = {};
-    for (var member in _members.values) {
+    for (var member in members.values) {
       value[member.name] = _getMemberValue(member, base, offset);
     }
 
@@ -60,17 +39,16 @@ class StructType extends StructureType {
     Unsafe.memorySet(base, offset, 0, size);
     if (value is Map<String, dynamic>) {
       for (var key in value.keys) {
-        var member = _members[key];
+        var member = members[key];
         if (member == null) {
           BinaryTypeError.memberNotFound(this, key);
         }
 
         _initializeMember(member, base, offset, value[key]);
       }
-
     } else if (value is List) {
       var length = value.length;
-      var members = _members.values.toList();
+      var members = this.members.values.toList();
       if (length > members.length) {
         BinaryTypeError.valueLengthExceedsNumberOfMembers(this, members.length, length);
       }
@@ -78,7 +56,6 @@ class StructType extends StructureType {
       for (var i = 0; i < length; i++) {
         _initializeMember(members[i], base, offset, value[i]);
       }
-
     } else {
       super._initialize(base, offset, value);
     }
@@ -91,14 +68,13 @@ class StructType extends StructureType {
           throw new ArgumentError("The map of members contains invalid elements");
         }
 
-        var member = _members[key];
+        var member = members[key];
         if (member == null) {
           BinaryTypeError.memberNotFound(this, key);
         }
 
         _setMemberValue(member, base, offset, value);
       }
-
     } else {
       super._setValue(base, offset, value);
     }
@@ -149,7 +125,7 @@ class StructureMember {
         throw new ArgumentError("Zero-length bit-field '$name' should be unnamed");
       }
 
-      if (!(type is IntType || type is EnumType)) {
+      if (!(type is BoolType || type is IntType || type is EnumType)) {
         throw new ArgumentError("Invalid type of the bit-field: ${type.runtimeType}");
       }
     }
@@ -186,11 +162,7 @@ abstract class StructureType extends BinaryType {
    */
   final String tag;
 
-  StructureType _id;
-
-  Map<String, StructureMember> _members;
-
-  bool _packed;
+  Map<String, StructureMember> _members = <String, StructureMember>{};
 
   int _size = 0;
 
@@ -198,19 +170,16 @@ abstract class StructureType extends BinaryType {
 
   StructureType(String kind, this.tag, DataModel dataModel, {int align}) : super(dataModel, align: align) {
     if (tag != null && tag.isEmpty) {
-      throw new ArgumentError("Name should be not empty string or unspecified.");
+      throw new ArgumentError("Name should be not empty string or unspecified");
     }
-
-    _id = this;
-    _members = <String, StructureMember>{};
   }
 
   dynamic get defaultValue {
-    if (_members.length == 0) {
+    if (size == 0) {
       BinaryTypeError.unableGetDefaultValueForIncompleteType(this);
     }
 
-    var value = {};
+    var value = <String, dynamic>{};
     for (var member in members.values) {
       value[member.name] = member.type.defaultValue;
     }
@@ -223,7 +192,10 @@ abstract class StructureType extends BinaryType {
   /**
    * Returns the members of the structural binary type.
    */
-  Map<String, StructureMember> get members => _members;
+  Map<String, StructureMember> get members {
+    var original = _original as StructureType;
+    return new UnmodifiableMapView<String, StructureMember>(original._members);
+  }
 
   String get name {
     if (_name == null) {
@@ -246,17 +218,18 @@ abstract class StructureType extends BinaryType {
     return _name;
   }
 
-  /**
-   * Indicates that the structure type are packed or not.
-   */
-  bool get packed => _packed;
-
-  int get size => _size;
+  int get size {
+    var original = _original as StructureType;
+    return original._size;
+  }
 
   /**
    * Returns the storage units of the structural binary type.
    */
-  StorageUnits get storageUnits => _storageUnits;
+  StorageUnits get storageUnits {
+    var original = _original as StructureType;
+    return original._storageUnits;
+  }
 
   /**
    * Adds the members to the incomplete structured binary type.
@@ -277,12 +250,20 @@ abstract class StructureType extends BinaryType {
       throw new ArgumentError.notNull("members");
     }
 
+    if (!isOriginal) {
+      BinaryTypeError.unableModifyTypeSynonym(_original, name);
+    }
+
     if (align != null) {
       _Utils.checkPowerOfTwo(align, "align");
     }
 
     if (packed == null) {
       throw new ArgumentError.notNull("packed");
+    }
+
+    if (this.members.length != 0) {
+      BinaryTypeError.unableRedeclareType(name);
     }
 
     if (members is Map<String, BinaryType>) {
@@ -292,9 +273,12 @@ abstract class StructureType extends BinaryType {
     }
 
     members = members as List<StructureMember>;
-    _members = <String, StructureMember>{};
-    _packed = packed;
     _storageUnits = new StorageUnits(members, this, packed: packed);
+    _members = storageUnits.members;
+    if (members.length == 0) {
+      throw new ArgumentError("Members should contain at least one named element");
+    }
+
     var isStruct = this is StructType;
     var largestAlign = 0;
     var largestSize = 0;
@@ -338,15 +322,11 @@ abstract class StructureType extends BinaryType {
     if (_size < _align) {
       _size = _align;
     }
-
-    _members = new UnmodifiableMapView<String, StructureMember>(storageUnits.members);
-    _storageUnits = storageUnits;
   }
 
   bool _compatible(BinaryType other, bool strong) {
-    // TODO: Improve
     if (other is StructureType) {
-      if (identical(_id, other._id)) {
+      if (identical(original, other.original)) {
         return true;
       }
     }
@@ -356,7 +336,7 @@ abstract class StructureType extends BinaryType {
 
   BinaryData _getElement(int base, int offset, index) {
     if (index is String) {
-      var member = _members[index];
+      var member = members[index];
       if (member == null) {
         BinaryTypeError.memberNotFound(this, index);
       }
@@ -371,7 +351,7 @@ abstract class StructureType extends BinaryType {
 
   dynamic _getElementValue(int base, int offset, index) {
     if (index is String) {
-      var member = _members[index];
+      var member = members[index];
       if (member == null) {
         BinaryTypeError.memberNotFound(this, index);
       }
@@ -401,7 +381,7 @@ abstract class StructureType extends BinaryType {
   }
 
   int _offsetOf(String memberName) {
-    var member = _members[memberName];
+    var member = members[memberName];
     if (member == null) {
       BinaryTypeError.memberNotFound(this, memberName);
     }
@@ -434,7 +414,7 @@ abstract class StructureType extends BinaryType {
 
   void _setElement(int base, int offset, index, value) {
     if (index is String) {
-      var member = _members[index];
+      var member = members[index];
       if (member == null) {
         BinaryTypeError.memberNotFound(this, index);
       }
@@ -451,7 +431,7 @@ abstract class StructureType extends BinaryType {
 
   void _setElementValue(int base, int offset, index, value) {
     if (index is String) {
-      var member = _members[index];
+      var member = members[index];
       if (member == null) {
         BinaryTypeError.memberNotFound(this, index);
       }
@@ -507,27 +487,10 @@ class UnionType extends StructureType {
    *   Members of the struct type.
    *
    */
-  UnionType(String tag, members, DataModel dataModel, {int align, bool packed: false}) : this._internal(tag, members, dataModel, align: align, packed: packed);
+  UnionType(String tag, DataModel dataModel, {int align}) : super("union", tag, dataModel, align: align);
 
-  UnionType._internal(String tag, members, DataModel dataModel, {int align, bool packed: false}) : super("union", tag, dataModel, align: align) {
-    if (members != null) {
-      addMembers(members, packed: packed);
-    }
-  }
-
-  UnionType _clone({int align, bool packed}) {
-    if (this.members.isEmpty) {
-      BinaryTypeError.unableCloneIncompleteType(this);
-    }
-
-    if (packed == null) {
-      packed = this.packed;
-    }
-
-    var members = _members.values.toList();
-    var copy = new UnionType._internal(tag, members, _dataModel, align: align, packed: packed);
-    copy._id = this;
-    return copy;
+  UnionType _clone({int align}) {
+     return new UnionType(tag, _dataModel, align: align);
   }
 
   void _initialize(int base, int offset, value) {
@@ -538,14 +501,13 @@ class UnionType extends StructureType {
           throw new ArgumentError("The map of members contains invalid elements");
         }
 
-        var member = _members[key];
+        var member = members[key];
         if (member == null) {
           BinaryTypeError.memberNotFound(this, key);
         }
 
         _initializeMember(member, base, offset, value[key]);
       }
-
     } else {
       super._initialize(base, offset, value);
     }
@@ -558,14 +520,13 @@ class UnionType extends StructureType {
           throw new ArgumentError("The map of members contains invalid elements");
         }
 
-        var member = _members[key];
+        var member = members[key];
         if (member == null) {
           BinaryTypeError.memberNotFound(this, key);
         }
 
         _setMemberValue(member, base, offset, value);
       }
-
     } else {
       super._setValue(base, offset, value);
     }

@@ -105,6 +105,9 @@ class BinaryTypes {
   }
 
   void _init() {
+    // _Bool
+    _types["_Bool"] = new BoolType(_dataModel);
+
     // char
     _types["char"] = IntType.createChar(null, _dataModel);
 

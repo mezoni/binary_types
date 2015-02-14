@@ -4,10 +4,12 @@ import 'dart:collection';
 import 'dart:io';
 import 'dart:typed_data';
 
+import "package:binary_declarations/attribute_reader.dart";
 import "package:binary_declarations/binary_declarations.dart";
 import "package:unsafe_extension/unsafe_extension.dart";
 
 part 'src/arrays.dart';
+part 'src/bool.dart';
 part 'src/data.dart';
 part 'src/data_model.dart';
 part 'src/declarations.dart';
@@ -16,7 +18,6 @@ part 'src/errors.dart';
 part 'src/floating_points.dart';
 part 'src/function.dart';
 part 'src/integers.dart';
-part 'src/metadata.dart';
 part 'src/object.dart';
 part 'src/physical_data.dart';
 part 'src/pointer.dart';

@@ -5,6 +5,8 @@ class _Declarations {
 
   DataModel _dataModel;
 
+  _Scope _scope;
+
   _Declarations(this.types) {
     if (types == null) {
       throw new ArgumentError.notNull("types");
@@ -18,6 +20,7 @@ class _Declarations {
       throw new ArgumentError.notNull("source");
     }
 
+    _scope = new _Scope(types);
     var env = <String, String>{};
     if (environment != null) {
       env.addAll(environment);
@@ -47,217 +50,288 @@ class _Declarations {
     return declarations;
   }
 
-  void _checkTag(BinaryType type, String tag) {
-    if (tag == null) {
-      return;
+  List<DeclarationSpecifiers> _combineMetadata(TypeQualifiers qualifiers, DeclarationSpecifiers specifiers) {
+    var result = <DeclarationSpecifiers>[];
+    if (qualifiers != null) {
+      for (var qualifier in qualifiers.qualifiers) {
+        if (qualifier.metadata != null) {
+          result.add(qualifier.metadata);
+        }
+      }
     }
 
-    var taggedType = types._tags[tag];
-    if (taggedType == null) {
-      return;
+    if (specifiers != null) {
+      result.add(specifiers);
     }
 
-    var name = type.name;
-    if (taggedType.kind == type.kind) {
-      BinaryTypeError.unableRedeclareType(name);
-    } else {
-      BinaryTypeError.unableRedeclareTypeWithTag(name, tag);
-    }
+    return result;
   }
 
   void _declareEnum(EnumDeclaration declaration) {
     var type = declaration.type;
-    var taggedType = type.taggedType;
-    var binaryType = _resolveEnum(type);
-    _registerTaggedType(taggedType, binaryType);
+    _resolveEnum(type);
   }
 
   StructureMember _declareMember(ParameterDeclaration declaration) {
-    var identifier = declaration.identifier;
+    var declarator = declaration.declarator;
+    String name;
+    int width;
+    if (declarator.identifier != null) {
+      name = declarator.identifier.name;
+      width = declarator.width;
+    }
+
     var type = declaration.type;
     var binaryType = _resolveType(type);
-    var typeAlign = binaryType.align;
-    var metadata = new _Metadata([identifier.metadata, type.metadata, declaration.metadata]);
-    var align = metadata.aligned;
-    var packed = metadata.packed;
+    binaryType = _resolveDeclarator(declarator, binaryType);
+    if (width != null) {
+      if (!(binaryType is IntType || binaryType is EnumType)) {
+        BinaryTypeError.declarationError(declaration, "Invalid type of the bit-field member");
+      }
+    }
+
+    var metadata = [declarator.metadata];
+    metadata.addAll(_getTypeMetadata(type));
+    metadata.addAll(_getDeclarationMetadata(declaration));
+    var reader = new AttributeReader(metadata);
+    var align = _getAligned(reader);
+    var packed = _getPacked(reader);
     if (packed) {
       if (align == null) {
         align = 1;
       }
     } else {
-      if (align != null) {
+      if (align != null && binaryType.size != 0) {
+        var typeAlign = binaryType.align;
         if (align < typeAlign) {
           align = typeAlign;
         }
       }
     }
 
-    return new StructureMember(identifier.name, binaryType, align: align, width: declaration.width);
+    return new StructureMember(name, binaryType, align: align, width: width);
   }
 
   void _declareStructure(StructureDeclaration declaration) {
     var type = declaration.type;
-    var taggedType = type.taggedType;
-    var binaryType = _resolveStructure(type);
-    _registerTaggedType(taggedType, binaryType);
+    _resolveStructure(type);
   }
 
-  BinaryType _declareSynonym(TypeSpecification type, _Out<String> name, BinaryType binaryType) {
-    switch (type.typeKind) {
-      case TypeSpecificationKind.DEFINED:
-        name.value = type.name;
-        break;
-      case TypeSpecificationKind.ARRAY:
-        var arrayType = type as ArrayTypeSpecification;
-        binaryType = _declareSynonym(arrayType.type, name, binaryType);
-        var dimensions = arrayType.dimensions.dimensions;
-        var length = dimensions.length;
-        for (var i = length - 1; i >= 0; i--) {
-          var dimension = dimensions[i];
-          if (dimension == null) {
-            dimension = 0;
-          }
+  void _declareTypedef(TypedefDeclaration declaration) {
+    var type = declaration.type;
+    var originalType = _resolveType(type);
+    for (var declarator in declaration.declarators) {
+      var binaryType = _resolveDeclarator(declarator, originalType);
+      var metadata = <DeclarationSpecifiers>[];
+      switch (type.typeKind) {
+        case TypeSpecificationKind.DEFINED:
+        case TypeSpecificationKind.FLOAT:
+        case TypeSpecificationKind.INTEGER:
+        case TypeSpecificationKind.VOID:
+          // Bug in gcc?
+          metadata.add(declarator.metadata);
+          metadata.addAll(_getTypeMetadata(type));
+          break;
+        default:
+          metadata.addAll(_getTypeMetadata(type));
+          metadata.add(declarator.metadata);
+      }
 
-          binaryType = binaryType.array(dimension);
-        }
+      var reader = new AttributeReader(metadata);
+      _defineType(declarator.identifier.name, binaryType, reader);
+    }
+  }
 
-        break;
-      case TypeSpecificationKind.POINTER:
-        var pointerType = type as PointerTypeSpecification;
-        binaryType = _declareSynonym(pointerType.type, name, binaryType);
-        binaryType = binaryType.ptr();
-        break;
-      default:
-        throw new ArgumentError("Unable declare synonym '${type.typeKind}' $name");
+  BinaryType _declareParameter(ParameterDeclaration declaration) {
+    var binaryType = _resolveType(declaration.type);
+    var declarator = declaration.declarator;
+    if (declarator != null) {
+      binaryType = _resolveDeclarator(declarator, binaryType);
     }
 
     return binaryType;
   }
 
-  void _declareTypedef(TypedefDeclaration declaration) {
-    var type = declaration.type;
-    _registerTypeIfNecessary(type);
-    var originalType = _resolveType(type);
-    for (var synonym in declaration.synonyms) {
-      var name = new _Out<String>();
-      var binaryType = _declareSynonym(synonym, name, originalType);
-      _Metadata metadata;
-      switch (type.typeKind) {
-        case TypeSpecificationKind.DEFINED:
-        case TypeSpecificationKind.FLOAT:
-        case TypeSpecificationKind.INTEGER:
-          // Bug in gcc?
-          metadata = new _Metadata([synonym.metadata, type.metadata]);
-          break;
-        default:
-          metadata = new _Metadata([type.metadata, synonym.metadata]);
+  void _declareVariable(VariableDeclaration declaration) {
+    var baseType = _resolveType(declaration.type);
+    for (var declarator in declaration.declarators) {
+      var binaryType = _resolveDeclarator(declarator, baseType);
+      if (binaryType.size == 0) {
+        BinaryTypeError.declarationError(declaration, "Unable to determine the size of the type '$binaryType'");
       }
-
-      _defineType(name.value, binaryType, metadata);
     }
   }
 
-  void _declareVariable(VariableDeclaration declaration) {
-    _registerTypeIfNecessary(declaration.type);
-  }
-
-  BinaryType _defineType(String synonym, BinaryType binaryType, _Metadata metadata) {
-    var previous = types._types[synonym];
+  BinaryType _defineType(String synonym, BinaryType binaryType, AttributeReader reader) {
+    _scope.types[_scope.current][synonym];
+    var previous = _scope.types[_scope.current][synonym];
     if (previous != null && !previous.compatible(binaryType, true)) {
       BinaryTypeError.unableRedeclareType(synonym);
     }
 
-    var align = metadata.aligned;
-    var packed = metadata.packed;
-    var copy = binaryType.clone(synonym, align: align, packed: packed);
-    types._types[synonym] = copy;
+    var align = _getAligned(reader);
+    var copy = binaryType.clone(synonym, align: align);
+    _scope.types[_scope.current][synonym] = copy;
     return copy;
   }
 
-  void _registerTaggedType(TaggedTypeSpecification type, BinaryType binaryType) {
-    var tag = type.tag;
-    _checkTag(binaryType, tag);
+  int _getAligned(AttributeReader reader) {
+    return reader.getIntegerArgument("aligned", 0, 16, maxLength: 1, minLength: 0);
+  }
+
+  List<DeclarationSpecifiers> _getDeclarationMetadata(Declaration declaration) {
+    return _combineMetadata(declaration.qualifiers, declaration.metadata);
+  }
+
+  bool _getPacked(AttributeReader reader) {
+    return reader.defined("packed", maxLength: 0, minLength: 0);
+  }
+
+  List<DeclarationSpecifiers> _getTypeMetadata(TypeSpecification type) {
+    return _combineMetadata(type.qualifiers, type.metadata);
+  }
+
+  void _registerElaboratedType(ElaboratedTypeSpecifier elaboratedType, BinaryType binaryType) {
+    String tag = elaboratedType.tag != null ? elaboratedType.tag.name : null;
     if (tag != null) {
-      types._tags[tag] = binaryType;
-      types._types[type.name] = binaryType;
+      _scope.tags[_scope.current][tag] = binaryType;
+      _scope.types[_scope.current][elaboratedType.name] = binaryType;
     }
   }
 
-  void _registerTypeIfNecessary(TypeSpecification type) {
-    BinaryType binaryType;
-    TaggedTypeSpecification taggedType;
-    switch (type.typeKind) {
-      case TypeSpecificationKind.ENUM:
-        taggedType = (type as EnumTypeSpecification).taggedType;
-        binaryType = _resolveEnum(type);
-        break;
-      case TypeSpecificationKind.STRUCTURE:
-        taggedType = (type as StructureTypeSpecification).taggedType;
-        binaryType = _resolveStructure(type);
-        break;
-      default:
-        return;
+  BinaryType _resolveDeclarator(Declarator declarator, BinaryType binaryType) {
+    if (declarator == null) {
+      return binaryType;
     }
 
-    _registerTaggedType(taggedType, binaryType);
-  }
+    if (declarator.isPointers) {
+      for (var pointer in declarator.pointers.specifiers) {
+        // TODO: Declaration specifiers
+        binaryType = binaryType.ptr();
+      }
+    }
 
-  BinaryType _resolveArray(ArrayTypeSpecification type) {
-    var binaryType = _resolveType(type.type);
-    var dimensions = type.dimensions.dimensions;
-    var length = dimensions.length;
-    for (var i = length - 1; i >= 0; i--) {
-      var dimension = dimensions[i];
-      if (dimension == null) {
-        dimension = 0;
+    if (declarator.isFunction) {
+      var returnType = binaryType;
+      var parameters = <BinaryType>[];
+      _scope.enter();
+      for (var declaration in declarator.parameters.declarations) {
+        var parameter = _declareParameter(declaration);
+        parameters.add(parameter);
       }
 
-      binaryType = binaryType.array(dimension);
+      _scope.exit();
+      binaryType = new FunctionType(declarator.identifier.name, returnType, parameters, _dataModel);
+      if (declarator.isFunctionPointer) {
+        var pointers = declarator.pointers;
+        for (var pointer in declarator.functionPointers.specifiers) {
+          binaryType = binaryType.ptr();
+        }
+      }
+    }
+
+    if (declarator.isArray) {
+      var dimensions = declarator.dimensions.dimensions;
+      var length = dimensions.length;
+      for (var i = length - 1; i >= 0; i--) {
+        var dimension = dimensions[i];
+        if (dimension == null) {
+          dimension = 0;
+        }
+
+        binaryType = binaryType.array(dimension);
+      }
+    }
+
+    return binaryType;
+  }
+
+  BinaryType _resolveElaboratedType(ElaboratedTypeSpecifier type, bool checkCompleteness) {
+    if (type.tag == null) {
+      return null;
+    }
+
+    var tag = type.tag.name;
+    var binaryType = _scope.tags[_scope.current][tag];
+    if (binaryType == null) {
+      return null;
+    }
+
+    var name = type.name;
+    var complete = false;
+    var compatible = false;
+    switch (binaryType.kind) {
+      case BinaryKinds.ENUM:
+        var enumType = binaryType as EnumType;
+        complete = !enumType.enumerators.isEmpty;
+        compatible = type.kind == "enum";
+        break;
+      case BinaryKinds.STRUCT:
+        var structureType = binaryType as StructureType;
+        complete = structureType.size != 0;
+        compatible = type.kind == "struct" || type.kind == "union";
+        break;
+    }
+
+    if (!compatible) {
+      BinaryTypeError.unableRedeclareTypeWithTag(name, tag);
+    }
+
+    if (checkCompleteness && complete) {
+      BinaryTypeError.unableRedeclareType(name);
     }
 
     return binaryType;
   }
 
   BinaryType _resolveEnum(EnumTypeSpecification type) {
-    var taggedType = type.taggedType;
-    var metadata = new _Metadata([taggedType.metadata, type.metadata]);
-    var align = metadata.aligned;
-    var packed = metadata.packed;
-    var tag = taggedType.tag;
-    var values = <String, int>{};
-    for (var value in type.values) {
-      values[value.name] = value.value;
+    var elaboratedType = type.elaboratedType;
+    var metadata = [elaboratedType.metadata];
+    metadata.addAll(_getTypeMetadata(type));
+    var reader = new AttributeReader(metadata);
+    var align = _getAligned(reader);
+    String tag = elaboratedType.tag != null ? elaboratedType.tag.name : null;
+    var hasEmumerators = !type.enumerators.isEmpty;
+    EnumType binaryType = _resolveElaboratedType(elaboratedType, hasEmumerators);
+    if (binaryType == null) {
+      binaryType = new EnumType(tag, _dataModel, align: align);
+      _registerElaboratedType(elaboratedType, binaryType);
     }
 
-    return new EnumType(tag, values, _dataModel, align: align);
-  }
+    var enumerators = <String, int>{};
+    for (var enumerator in type.enumerators) {
+      enumerators[enumerator.identifier.name] = enumerator.value;
+    }
 
-  BinaryType _resolvePointer(PointerTypeSpecification type) {
-    var binaryType = _resolveType(type.type);
-    return binaryType.ptr();
+    if (!enumerators.isEmpty) {
+      binaryType.addEnumerators(enumerators, align: align);
+    }
+
+    return binaryType;
   }
 
   BinaryType _resolveStructure(StructureTypeSpecification type) {
-    var taggedType = type.taggedType;
-    var metadata = new _Metadata([taggedType.metadata, type.metadata]);
-    var align = metadata.aligned;
-    var packed = metadata.packed;
-    var tagKind = taggedType.tagKind;
-    var tag = taggedType.tag;
-    StructureType structureType;
-    switch (tagKind) {
-      case TaggedTypeKinds.STRUCT:
-        structureType = new StructType(tag, null, _dataModel, align: align, packed: packed);
-        break;
-      case TaggedTypeKinds.UNION:
-        structureType = new UnionType(tag, null, _dataModel, align: align, packed: packed);
-        break;
-    }
+    var elaboratedType = type.elaboratedType;
+    var metadata = [elaboratedType.metadata];
+    metadata.addAll(_getTypeMetadata(type));
+    var reader = new AttributeReader(metadata);
+    var align = _getAligned(reader);
+    var packed = _getPacked(reader);
+    var kind = elaboratedType.kind;
+    String tag = elaboratedType.tag != null ? elaboratedType.tag.name : null;
+    var hasMembers = !type.members.isEmpty;
+    StructureType binaryType = _resolveElaboratedType(elaboratedType, hasMembers);
+    if (binaryType == null) {
+      switch (kind) {
+        case "struct":
+          binaryType = new StructType(tag, _dataModel, align: align);
+          break;
+        case "union":
+          binaryType = new UnionType(tag, _dataModel, align: align);
+          break;
+      }
 
-    BinaryType replacedType;
-    if (tag != null) {
-      replacedType = types._types[taggedType.name];
-      types._types[taggedType.name] = structureType;
+      _registerElaboratedType(elaboratedType, binaryType);
     }
 
     var members = <StructureMember>[];
@@ -265,36 +339,26 @@ class _Declarations {
       members.add(_declareMember(member));
     }
 
-    if (tag != null) {
-      types._types[taggedType.name] = replacedType;
-    }
-
     if (!members.isEmpty) {
-      structureType.addMembers(members, align: align, packed: packed);
+      binaryType.addMembers(members, align: align, packed: packed);
     }
 
-    return structureType;
+    return binaryType;
   }
 
   BinaryType _resolveType(TypeSpecification type) {
     BinaryType binaryType;
     switch (type.typeKind) {
-      case TypeSpecificationKind.ARRAY:
-        binaryType = _resolveArray(type);
-        break;
       case TypeSpecificationKind.ENUM:
         binaryType = _resolveEnum(type);
         break;
+      case TypeSpecificationKind.BOOL:
       case TypeSpecificationKind.DEFINED:
       case TypeSpecificationKind.FLOAT:
       case TypeSpecificationKind.INTEGER:
-      case TypeSpecificationKind.TAGGED:
       case TypeSpecificationKind.VA_LIST:
       case TypeSpecificationKind.VOID:
         binaryType = types[type.name];
-        break;
-      case TypeSpecificationKind.POINTER:
-        binaryType = _resolvePointer(type);
         break;
       case TypeSpecificationKind.STRUCTURE:
         binaryType = _resolveStructure(type);
@@ -307,12 +371,36 @@ class _Declarations {
   }
 }
 
-class _Out<T> {
-  T value;
+class _Scope {
+  List<Map<String, BinaryType>> tags;
 
-  _Out([this.value]);
+  List<Map<String, BinaryType>> types;
 
-  String toString() {
-    return value.toString();
+  int current = 0;
+
+  int previous = 0;
+
+  _Scope(BinaryTypes types) {
+    tags = <Map<String, BinaryType>>[types._tags];
+    this.types = <Map<String, BinaryType>>[types._types];
+  }
+
+  void enter() {
+    tags.add(<String, BinaryType>{});
+    types.add(<String, BinaryType>{});
+    previous = current++;
+  }
+
+  void exit() {
+    if (current <= 0) {
+      throw new StateError("Cannot exit scope");
+    }
+
+    tags.removeLast();
+    types.removeLast();
+    current--;
+    if (previous > 0) {
+      previous--;
+    }
   }
 }

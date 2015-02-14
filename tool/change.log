@@ -39,3 +39,7 @@
 0.0.21 Added possibility to import previously declared types into the new binary types. This allows reuse already the declared binary types
 0.0.21 Breaking changes. Class `BinaryTypes` was freed from the the members that represent primitive types. From now the class `BinaryTypes` is a lightweight class without any public members 
 0.0.22 Made adaptations to the new version of package `binary_declarations`
+0.0.23 Initial support of the `_Bool` binary type
+0.0.23 Completely reimplemented class `_Declarations`
+0.0.23 Reimplemented the `structural` and the `enumeration` classes to the full support of the declaring type synonyms in the `typedef` declarations
+0.0.23 Made adaptations to the new version of package `binary_declarations`    

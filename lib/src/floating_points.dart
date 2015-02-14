@@ -26,7 +26,7 @@ class DoubleType extends FloatingPointType {
 
   int get size => _dataModel.sizeOfDouble;
 
-  DoubleType _clone({int align, bool packed}) {
+  DoubleType _clone({int align}) {
     return new DoubleType(_dataModel, align: align);
   }
 
@@ -73,7 +73,7 @@ class FloatType extends FloatingPointType {
 
   int get size => _dataModel.sizeOfFloat;
 
-  FloatType _clone({int align, bool packed}) {
+  FloatType _clone({int align}) {
     return new FloatType(_dataModel, align: align);
   }
 
@@ -104,11 +104,11 @@ abstract class FloatingPointType extends BinaryType {
 
   FloatingPointType(DataModel dataModel, {int align}) : super(dataModel, align: align);
 
-  dynamic get defaultValue {
+  double get defaultValue {
     return 0.0;
   }
 
-  dynamic _cast(value) {
+  double _cast(value) {
     if (value is int) {
       value = value.toDouble();
     }

@@ -2,6 +2,10 @@ import 'package:binary_types/binary_types.dart';
 import 'package:unittest/unittest.dart';
 
 var _header = '''
+typedef int FUNC1(int), *PFUNC1(int, ...);
+
+typedef int (FUNC2)(char *), (*PFUNC2)(int, char *);
+
 enum Color { RED, GREEN, BLUE };
 
 typedef enum _ENUM_ABC {
@@ -78,6 +82,10 @@ struct packed_struct_with_bit_fields {
   unsigned int ui_bf: 2;
 } __attribute__((aligned(16), packed));
 
+typedef union union_with_bool {
+  _Bool b;
+  char c;
+} union_with_bool_t;
 ''';
 
 void main() {
@@ -85,6 +93,7 @@ void main() {
   test.testAlloc();
   test.testArrays();
   test.testBitFields();
+  test.testBools();
   test.testCommon();
   test.testCStrings();
   test.testEnums();
@@ -190,6 +199,40 @@ class Test {
         //
         var strFromMemory = helper.readString(ca);
         Expect.isTrue(strFromMemory == testString, "testString == strFromMemory;");
+      });
+    });
+  }
+
+  void testBools() {
+    group("Bool binary types.", () {
+      test("Access data through binary bool types.", () {
+        var b = t["_Bool"].alloc(0);
+        expect(b.value, false, reason: "b == false");
+        // b = true
+        b.value = true;
+        expect(b.value, true, reason: "b == false");
+        // b = false
+        b.value = false;
+        expect(b.value, false, reason: "b == false");
+
+        // union_with_bool_t u;
+        var u = t["union_with_bool_t"].alloc();
+        // u.c = 0;
+        u["c"].value = 0;
+        // u.b == false;
+        expect(u["b"].value, false, reason: "b == false");
+        // u.c = 1;
+        u["c"].value = 1;
+        // u.b == true;
+        expect(u["b"].value, true, reason: "b == true");
+        // u.c = 41;
+        u["c"].value = 41;
+        // u.b == true;
+        expect(u["b"].value, true, reason: "b == true");
+        // u.c = -1;
+        u["c"].value = -1;
+        // u.b == true;
+        expect(u["b"].value, true, reason: "b == true");
       });
     });
   }

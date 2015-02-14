@@ -35,7 +35,7 @@ class Int16Type extends IntType {
 
   int get size => SIZE;
 
-  dynamic _cast(value) {
+  int _cast(value) {
     if (value is double) {
       value = value.toInt();
     }
@@ -110,7 +110,7 @@ class Int32Type extends IntType {
 
   int get size => SIZE;
 
-  dynamic _cast(value) {
+  int _cast(value) {
     if (value is double) {
       value = value.toInt();
     }
@@ -185,7 +185,7 @@ class Int64Type extends IntType {
 
   int get size => SIZE;
 
-  dynamic _cast(value) {
+  int _cast(value) {
     if (value is double) {
       value = value.toInt();
     }
@@ -260,7 +260,7 @@ class Int8Type extends IntType {
 
   int get size => SIZE;
 
-  dynamic _cast(value) {
+  int _cast(value) {
     if (value is double) {
       value = value.toInt();
     }
@@ -357,7 +357,7 @@ abstract class IntType extends BinaryType {
     }
   }
 
-  dynamic get defaultValue {
+  int get defaultValue {
     return 0;
   }
 
@@ -378,7 +378,7 @@ abstract class IntType extends BinaryType {
    */
   bool get signed;
 
-  IntType _clone({int align, bool packed}) {
+  IntType _clone({int align}) {
     var copy = create(size, signed, dataModel, align: align);
     copy._basicType = _basicType;
     return copy;

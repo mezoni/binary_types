@@ -23,8 +23,8 @@ class BinaryTypeError implements Exception {
     }
   }
 
-  static void enumerationValueOutOfRange(EnumType type, String name, int value, BinaryType intType) {
-    throw new BinaryTypeError("Enumeration value '$name' ($value) is out of  '$intType' range for the type '$type'");
+  static void enumeratorOutOfRange(EnumType type, String name, int value, BinaryType intType) {
+    throw new BinaryTypeError("Enumerator '$name' ($value) is out of  '$intType' range for the type '$type'");
   }
 
   static void flexibleArrayMemberNotAtEndOfStruct(StructType structureType, String memberName) {
@@ -102,6 +102,10 @@ class BinaryTypeError implements Exception {
 
   static void unableGetOffsetOfBitFieldMember(StructureType structureType, String memberName) {
     throw new BinaryTypeError("Unable to 'get offset' of the bit-field member '$memberName' for the type '$structureType'");
+  }
+
+  static void unableModifyTypeSynonym(BinaryType original, String synonym) {
+    throw new BinaryTypeError("Unable to modify the '$synonym' for the type '$original'");
   }
 
   static void unablePerformingOperation(BinaryType type, String operation, [Map arguments]) {

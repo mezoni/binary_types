@@ -205,9 +205,16 @@ void main() {
 }
 
 StructureType _createStructureType(bool isStruct, String tag, List<StructureMember> members, DataModel dataModel) {
+  StructureType type;
   if (isStruct) {
-    return new StructType(tag, members, dataModel);
+    type = new StructType(tag, dataModel);
   } else {
-    return new UnionType(tag, members, dataModel);
+    type = new UnionType(tag, dataModel);
   }
+
+  if (members != null) {
+    type.addMembers(members);
+  }
+
+  return type;
 }

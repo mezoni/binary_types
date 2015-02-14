@@ -103,14 +103,14 @@ class FunctionType extends BinaryType {
 
   List<BinaryType> get parameters => new UnmodifiableListView(_parameters);
 
-  int get size => _dataModel.sizeOfPointer;
+  int get size => 1;
 
   /**
    * Indicates when the function is VARIADIC function.
    */
   bool get variadic => _variadic;
 
-  FunctionType _clone({int align, bool packed}) {
+  FunctionType _clone({int align}) {
     return new FunctionType(name, returnType, _parameters, _dataModel, align: align);
   }
 

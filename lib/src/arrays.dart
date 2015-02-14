@@ -88,7 +88,7 @@ class ArrayType extends BinaryType {
 
   int get size => _size;
 
-  ArrayType _clone({int align, bool packed}) {
+  ArrayType _clone({int align}) {
     return new ArrayType(type, length, _dataModel, align: align);
   }
 
