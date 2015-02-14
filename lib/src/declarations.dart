@@ -5,7 +5,11 @@ class _Declarations {
 
   DataModel _dataModel;
 
+  Map<String, FunctionType> _functions;
+
   _Scope _scope;
+
+  Map<String, BinaryType> _variables;
 
   _Declarations(this.types) {
     if (types == null) {
@@ -15,11 +19,21 @@ class _Declarations {
     _dataModel = types["int"].dataModel;
   }
 
-  Declarations declare(String source, {Map<String, String> environment}) {
+  Declarations declare(String source, {Map<String, String> environment, Map<String, FunctionType> functions, Map<String, BinaryType> variables}) {
     if (source == null) {
       throw new ArgumentError.notNull("source");
     }
 
+    if (functions == null) {
+      functions = <String, FunctionType>{};
+    }
+
+    if (variables == null) {
+      variables = <String, BinaryType>{};
+    }
+
+    _functions = functions;
+    _variables = variables;
     _scope = new _Scope(types);
     var env = <String, String>{};
     if (environment != null) {
@@ -41,6 +55,8 @@ class _Declarations {
           _declareEnum(declaration);
         } else if (declaration is VariableDeclaration) {
           _declareVariable(declaration);
+        } else if (declaration is FunctionDeclaration) {
+          _declareFunction(declaration);
         }
       }
     } catch (e, s) {
@@ -48,6 +64,13 @@ class _Declarations {
     }
 
     return declarations;
+  }
+
+  void _declareFunction(FunctionDeclaration declaration) {
+    var declarator = declaration.declarator;
+    var binaryType = _resolveType(declaration.type);
+    binaryType = _resolveDeclarator(declarator, binaryType);
+    _functions[declarator.identifier.name] = binaryType;
   }
 
   List<DeclarationSpecifiers> _combineMetadata(TypeQualifiers qualifiers, DeclarationSpecifiers specifiers) {
@@ -112,6 +135,16 @@ class _Declarations {
     return new StructureMember(name, binaryType, align: align, width: width);
   }
 
+  BinaryType _declareParameter(ParameterDeclaration declaration) {
+    var binaryType = _resolveType(declaration.type);
+    var declarator = declaration.declarator;
+    if (declarator != null) {
+      binaryType = _resolveDeclarator(declarator, binaryType);
+    }
+
+    return binaryType;
+  }
+
   void _declareStructure(StructureDeclaration declaration) {
     var type = declaration.type;
     _resolveStructure(type);
@@ -142,16 +175,6 @@ class _Declarations {
     }
   }
 
-  BinaryType _declareParameter(ParameterDeclaration declaration) {
-    var binaryType = _resolveType(declaration.type);
-    var declarator = declaration.declarator;
-    if (declarator != null) {
-      binaryType = _resolveDeclarator(declarator, binaryType);
-    }
-
-    return binaryType;
-  }
-
   void _declareVariable(VariableDeclaration declaration) {
     var baseType = _resolveType(declaration.type);
     for (var declarator in declaration.declarators) {
@@ -159,6 +182,8 @@ class _Declarations {
       if (binaryType.size == 0) {
         BinaryTypeError.declarationError(declaration, "Unable to determine the size of the type '$binaryType'");
       }
+
+      _variables[declarator.identifier.name] = binaryType;
     }
   }
 

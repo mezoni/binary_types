@@ -2,6 +2,9 @@ import 'package:binary_types/binary_types.dart';
 import 'package:unittest/unittest.dart';
 
 var _header = '''
+int foo(int *) __attribute__((alias("baz")));
+int i, *ip;
+
 typedef int FUNC1(int), *PFUNC1(int, ...);
 
 typedef int (FUNC2)(char *), (*PFUNC2)(int, char *);
