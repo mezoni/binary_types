@@ -44,3 +44,4 @@
 0.0.23 Reimplemented the `structural` and the `enumeration` classes to the full support of the declaring type synonyms in the `typedef` declarations
 0.0.23 Made adaptations to the new version of package `binary_declarations`    
 0.0.25 Added support for obtaining the symbol tables during the parsing declarations in `BinaryTypeHelper.declare()`. Into the corresponding symbol tables will be added functions and variables
+0.0.26 Made adaptations to the new version of package `binary_declarations`

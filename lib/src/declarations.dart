@@ -66,13 +66,6 @@ class _Declarations {
     return declarations;
   }
 
-  void _declareFunction(FunctionDeclaration declaration) {
-    var declarator = declaration.declarator;
-    var binaryType = _resolveType(declaration.type);
-    binaryType = _resolveDeclarator(declarator, binaryType);
-    _functions[declarator.identifier.name] = binaryType;
-  }
-
   List<DeclarationSpecifiers> _combineMetadata(TypeQualifiers qualifiers, DeclarationSpecifiers specifiers) {
     var result = <DeclarationSpecifiers>[];
     if (qualifiers != null) {
@@ -95,13 +88,19 @@ class _Declarations {
     _resolveEnum(type);
   }
 
+  void _declareFunction(FunctionDeclaration declaration) {
+    var declarator = declaration.declarator;
+    var binaryType = _resolveType(declaration.type);
+    binaryType = _resolveDeclarator(declarator, binaryType);
+    _functions[declarator.identifier.name] = binaryType;
+  }
+
   StructureMember _declareMember(ParameterDeclaration declaration) {
     var declarator = declaration.declarator;
     String name;
-    int width;
+    var width = _literalToInt(declarator.width);
     if (declarator.identifier != null) {
       name = declarator.identifier.name;
-      width = declarator.width;
     }
 
     var type = declaration.type;
@@ -201,7 +200,8 @@ class _Declarations {
   }
 
   int _getAligned(AttributeReader reader) {
-    return reader.getIntegerArgument("aligned", 0, 16, maxLength: 1, minLength: 0);
+    var literal = reader.getIntegerArgument("aligned", 0, new IntegerLiteral(text: "16", value: 16), maxLength: 1, minLength: 0);
+    return _literalToInt(literal);
   }
 
   List<DeclarationSpecifiers> _getDeclarationMetadata(Declaration declaration) {
@@ -214,6 +214,14 @@ class _Declarations {
 
   List<DeclarationSpecifiers> _getTypeMetadata(TypeSpecification type) {
     return _combineMetadata(type.qualifiers, type.metadata);
+  }
+
+  int _literalToInt(IntegerLiteral literal) {
+    if (literal == null) {
+      return null;
+    }
+
+    return literal.value;
   }
 
   void _registerElaboratedType(ElaboratedTypeSpecifier elaboratedType, BinaryType binaryType) {
@@ -259,7 +267,7 @@ class _Declarations {
       var dimensions = declarator.dimensions.dimensions;
       var length = dimensions.length;
       for (var i = length - 1; i >= 0; i--) {
-        var dimension = dimensions[i];
+        var dimension = _literalToInt(dimensions[i]);
         if (dimension == null) {
           dimension = 0;
         }

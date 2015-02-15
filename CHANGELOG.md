@@ -1,3 +1,7 @@
+## 0.0.26
+
+- Made adaptations to the new version of package `binary_declarations`
+
 ## 0.0.25
 
 - Added support for obtaining the symbol tables during the parsing declarations in `BinaryTypeHelper.declare()`. Into the corresponding symbol tables will be added functions and variables
