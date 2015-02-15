@@ -54,8 +54,8 @@ class EnumType extends BinaryType {
    * Adds the enumerators to the enum binary type.
    *
    * Parameters:
-   *   [List]<[int]> enumerators
-   *   [Map]<[String], [int]> enumerators
+   *   [List]<[String]> enumerators
+   *   [Map]<[String], [dynamic]> enumerators
    *   Enumerators to be added to the enum type.
    *
    *   [int] align
@@ -85,7 +85,7 @@ class EnumType extends BinaryType {
         }
       }
 
-    } else if (enumerators is! Map<String, int>) {
+    } else if (enumerators is! Map<String, dynamic>) {
       throw new ArgumentError.value(enumerators, "enumerators");
     }
 
@@ -111,6 +111,13 @@ class EnumType extends BinaryType {
         prev = value;
       } else if (value == null) {
         value = ++prev;
+      } else if (value is String) {
+        value = _enumerators[value];
+        prev = value;
+        if (value == null) {
+          throw new ArgumentError("Emumerators contains illegal elements.");
+        }
+
       } else {
         throw new ArgumentError("Emumerators contains illegal elements.");
       }

@@ -5,6 +5,8 @@ var _header = '''
 int foo(int *) __attribute__((alias("baz")));
 int i, *ip;
 
+typedef enum levels { ONE, TWO, LAST = TWO } levels;
+
 typedef int FUNC1(int), *PFUNC1(int, ...);
 
 typedef int (FUNC2)(char *), (*PFUNC2)(int, char *);
@@ -339,6 +341,9 @@ class Test {
         // ABC
         enum_t = t["ENUM_ABC"];
         testEnum(enum_t, map);
+
+        var levels = t["levels"];
+        expect(levels["LAST"], levels["LAST"], reason: "levels.LAST = levels.TWO");
       });
     });
   }

@@ -331,9 +331,20 @@ class _Declarations {
       _registerElaboratedType(elaboratedType, binaryType);
     }
 
-    var enumerators = <String, int>{};
+    var enumerators = <String, dynamic>{};
     for (var enumerator in type.enumerators) {
-      enumerators[enumerator.identifier.name] = enumerator.value;
+      var expression = enumerator.value;
+      Object value;
+      if (expression is IntegerLiteral) {
+        value = expression.value;
+      } else if (expression is Identifier) {
+        value = expression.name;
+      } else if (expression == null) {
+      } else {
+        throw new StateError("Invaild emumerator value '$enumerator'");
+      }
+
+      enumerators[enumerator.identifier.name] = value;
     }
 
     if (!enumerators.isEmpty) {

@@ -1,4 +1,4 @@
-## 0.0.26
+## 0.0.27
 
 - Made adaptations to the new version of package `binary_declarations`
 
