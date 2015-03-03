@@ -104,6 +104,20 @@ class BinaryTypes {
     return _cloneBasicInt(type, names, typedef);
   }
 
+  List<String> _reproduce2(List<List<String>> lists) {
+    var result = <String>[];
+    for (var list in lists) {
+      var elements = <List>[];
+      _rerpoduce(list, elements);
+      for (var element in elements) {
+        var name = element.join(" ");
+        result.add(name);
+      }
+    }
+
+    return result;
+  }
+
   void _init() {
     // _Bool
     _types["_Bool"] = new BoolType(_dataModel);
@@ -112,18 +126,28 @@ class BinaryTypes {
     _types["char"] = IntType.createChar(null, _dataModel);
 
     // Signed integers
-    _cloneBasicInt(IntType.createChar(true, _dataModel), const ["signed char"]);
-    _cloneBasicInt(IntType.createShort(true, _dataModel), const ["short", "short int", "signed short", "signed short int"]);
-    _cloneBasicInt(IntType.createInt(true, _dataModel), const ["int", "signed", "signed int"]);
-    _cloneBasicInt(IntType.createLong(true, _dataModel), const ["long", "long int", "signed long", "signed long int"]);
-    _cloneBasicInt(IntType.createLongLong(true, _dataModel), const ["long long", "long long int", "signed long long", "signed long long int"]);
+    var variants = _reproduce2([["char", "signed"]]);
+    _cloneBasicInt(IntType.createChar(true, _dataModel), variants);
+    variants = _reproduce2([["short"], ["short", "int"], ["short", "int", "signed"], ["short", "signed"]]);
+    _cloneBasicInt(IntType.createShort(true, _dataModel), variants);
+    variants = _reproduce2([["int"], ["int", "signed"], ["signed"]]);
+    _cloneBasicInt(IntType.createInt(true, _dataModel), variants);
+    variants = _reproduce2([["long"], ["long", "int"], ["long", "int", "signed"], ["long", "signed"]]);
+    _cloneBasicInt(IntType.createLong(true, _dataModel), variants);
+    variants = _reproduce2([["long long"], ["long long", "int"], ["long long", "int", "signed"], ["long long", "signed"]]);
+    _cloneBasicInt(IntType.createLongLong(true, _dataModel), variants);
 
     // Unsigned integers
-    _cloneBasicInt(IntType.createChar(false, _dataModel), const ["unsigned char"]);
-    _cloneBasicInt(IntType.createShort(false, _dataModel), const ["unsigned short", "unsigned short int"]);
-    _cloneBasicInt(IntType.createInt(false, _dataModel), const ["unsigned", "unsigned int"]);
-    _cloneBasicInt(IntType.createLong(false, _dataModel), const ["unsigned long", "unsigned long int"]);
-    _cloneBasicInt(IntType.createLongLong(false, _dataModel), const ["unsigned long long", "unsigned long long int"]);
+    variants = _reproduce2([["char", "unsigned"]]);
+    _cloneBasicInt(IntType.createChar(false, _dataModel), variants);
+    variants = _reproduce2([["short", "int", "unsigned"], ["short", "unsigned"]]);
+    _cloneBasicInt(IntType.createShort(false, _dataModel), variants);
+    variants = _reproduce2([["int", "unsigned"], ["unsigned"]]);
+    _cloneBasicInt(IntType.createInt(false, _dataModel), variants);
+    variants = _reproduce2([["long", "int", "unsigned"], ["long", "unsigned"]]);
+    _cloneBasicInt(IntType.createLong(false, _dataModel), variants);
+    variants = _reproduce2([["long long", "int", "unsigned"], ["long long", "unsigned"]]);
+    _cloneBasicInt(IntType.createLongLong(false, _dataModel), variants);
 
     // Fixed size integers
     _cloneInt(1, true, const ["int8_t"], true);
@@ -150,5 +174,42 @@ class BinaryTypes {
 
     // Variable arguments
     _types["..."] = new VaListType(_dataModel);
+  }
+
+  List<List> _rerpoduce(List list, List<List> result) {
+    var length = list.length;
+    if (length == 0) {
+      return result;
+    }
+
+    var copy = [];
+    copy.addAll(list);
+    if (length == 1) {
+      result.add(copy);
+      return result;
+    }
+
+    for (var i = 0; i < length; i++) {
+      var element = copy.first;
+      var results = <List>[];
+      var rest = copy.sublist(1);
+      if (rest.length != 0) {
+        _rerpoduce(rest, results);
+        for (var r in results) {
+          var foo = [element];
+          foo.addAll(r);
+          result.add(foo);
+        }
+      } else {
+        result.add([element]);
+      }
+
+      if (i + 1 < length) {
+        copy.removeAt(0);
+        copy.add(element);
+      }
+    }
+
+    return result;
   }
 }

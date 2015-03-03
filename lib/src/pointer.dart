@@ -162,11 +162,8 @@ class PointerType extends BinaryType {
       var valueType = value.type;
       if (type._compatible(valueType, false)) {
         compatible = true;
-      } else if (valueType is ArrayType) {
-        if (type._compatible(valueType.type, false)) {
-          compatible = true;
-        }
-
+      } else if (valueType is ArrayType && type._compatible(valueType.type, false)) {
+        compatible = true;
       } else if (type.kind == BinaryKinds.VOID) {
         compatible = true;
       }
