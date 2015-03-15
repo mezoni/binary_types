@@ -74,11 +74,6 @@ abstract class BinaryType {
   }
 
   /**
-   * Indicates that the type is the original type and is not a synonym.
-   */
-  bool get isOriginal => identical(this, original);
-
-  /**
    * Returns the alignment in bytes, required for any instance of the type.
    */
   int get align {
@@ -100,6 +95,11 @@ abstract class BinaryType {
   dynamic get defaultValue;
 
   /**
+   * Indicates that the type is the original type and is not a synonym.
+   */
+  bool get isOriginal => identical(this, original);
+
+  /**
    * Returns the kind of binary type.
    */
   BinaryKinds get kind;
@@ -109,6 +109,16 @@ abstract class BinaryType {
    */
   //String get name => _name;
   String get name;
+
+  /**
+   * Returns the binary object at NULL address.
+   * Does not allocates the memory.
+   *
+   * Parameters:
+   */
+  BinaryObject get nullPtr {
+    return new BinaryObject._internal(this, 0, 0);
+  }
 
   /**
    * Returns the original binary type for the typedef types.
@@ -471,6 +481,7 @@ abstract class BinaryType {
    *
    * Parameters:
    */
+  @deprecated
   BinaryObject nullObject() {
     return new BinaryObject._internal(this, 0, 0);
   }

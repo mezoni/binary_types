@@ -46,3 +46,7 @@
 0.0.25 Added support for obtaining the symbol tables during the parsing declarations in `BinaryTypeHelper.declare()`. Into the corresponding symbol tables will be added functions and variables
 0.0.27 Made adaptations to the new version of package `binary_declarations`
 0.0.29 Fixed minor bug in the `scope` resolution of the elaborated types
+0.0.30 Added check on `null pointer` in `BinaryTypeHelper.readString()` 
+0.0.30 Added getter `BinaryType.nullPtr`
+0.0.30 Added getter `BinaryData.isNullPtr`
+0.0.30 Deprecated `BinaryType.nullObject()`

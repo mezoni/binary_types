@@ -1,3 +1,10 @@
+## 0.0.30
+
+- Added check on `null pointer` in `BinaryTypeHelper.readString()` 
+- Added getter `BinaryData.isNullPtr`
+- Added getter `BinaryType.nullPtr`
+- Deprecated `BinaryType.nullObject()`
+
 ## 0.0.29
 
 - Fixed minor bug in the `scope` resolution of the elaborated types

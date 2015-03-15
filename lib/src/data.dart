@@ -47,6 +47,10 @@ class BinaryData {
     return type._getElement(base, offset, index);
   }
 
+  bool get isNullPtr {
+    return base == 0 && offset == 0;
+  }
+
   void operator []=(index, value) {
     type._setElement(base, offset, index, value);
   }

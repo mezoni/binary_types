@@ -115,7 +115,6 @@ void main() {
   var t = new BinaryTypes();
   var helper = new BinaryTypeHelper(t);
   helper.declare(_temp);
-
   group("Attributes", () {
     var t = new BinaryTypes();
     var helper = new BinaryTypeHelper(t);

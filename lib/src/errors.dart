@@ -55,6 +55,14 @@ class BinaryTypeError implements Exception {
     throw new BinaryTypeError("Member '$member' not found in the type '$type'");
   }
 
+  static void nullPointerException(BinaryType type) {
+    if (type == null) {
+      throw new BinaryTypeError("Null pointer exception");
+    } else {
+      throw new BinaryTypeError("Null pointer exception: '$type' value is NULL");
+    }
+  }
+
   static void onlyFirstMemberOfUnionCanBeInitialized() {
     throw new BinaryTypeError("Only the first member of a union can be initialized");
   }

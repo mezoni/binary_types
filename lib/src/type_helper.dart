@@ -65,7 +65,7 @@ class BinaryTypeHelper {
    * Reads the null-terminated string from memory.
    *
    * Parameters:
-   *   [Reference] reference
+   *   [BinaryData] data
    *   Reference to the null-terminated string.
    */
   String readString(BinaryData data) {
@@ -73,17 +73,26 @@ class BinaryTypeHelper {
       throw new ArgumentError.notNull("reference");
     }
 
-    var type = data.type;
-    if (type is ArrayType) {
-      type = type.type;
+    var dataType = data.type;
+    BinaryType type;
+    if (dataType is ArrayType) {
+      type = dataType.type;
+    } else if (dataType is PointerType) {
+      type = dataType.type;
+    } else {
+      throw new ArgumentError("Invalid string type '$dataType'");
     }
 
     if (type is! IntType) {
-      throw new ArgumentError("Referenced type '$type' should be integer type");
+      throw new ArgumentError("Character type '$dataType' should be integer type");
     }
 
     var base = data.base;
     var offset = data.offset;
+    if (base == 0 && offset == 0) {
+      BinaryTypeError.nullPointerException(dataType);
+    }
+
     var size = type.size;
     var characters = <int>[];
     var index = 0;
