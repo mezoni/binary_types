@@ -279,29 +279,30 @@ class _Declarations {
     return binaryType;
   }
 
-  BinaryType _resolveElaboratedType(ElaboratedTypeSpecifier type, bool checkCompleteness) {
+  BinaryType _resolveElaboratedType(ElaboratedTypeSpecifier type, bool hasMembers) {
     if (type.tag == null) {
       return null;
     }
 
     var tag = type.tag.name;
-    var binaryType = _scope.tags[_scope.current][tag];
+    BinaryType binaryType;
+    binaryType = _scope.findTag(tag, !hasMembers);
     if (binaryType == null) {
       return null;
     }
 
     var name = type.name;
-    var complete = false;
+    var completed = false;
     var compatible = false;
     switch (binaryType.kind) {
       case BinaryKinds.ENUM:
         var enumType = binaryType as EnumType;
-        complete = !enumType.enumerators.isEmpty;
+        completed = !enumType.enumerators.isEmpty;
         compatible = type.kind == "enum";
         break;
       case BinaryKinds.STRUCT:
         var structureType = binaryType as StructureType;
-        complete = structureType.size != 0;
+        completed = structureType.size != 0;
         compatible = type.kind == "struct" || type.kind == "union";
         break;
     }
@@ -310,7 +311,7 @@ class _Declarations {
       BinaryTypeError.unableRedeclareTypeWithTag(name, tag);
     }
 
-    if (checkCompleteness && complete) {
+    if (hasMembers && completed) {
       BinaryTypeError.unableRedeclareType(name);
     }
 
@@ -446,5 +447,30 @@ class _Scope {
     if (previous > 0) {
       previous--;
     }
+  }
+
+  BinaryType findTag(String key, bool readOnly) {
+    return _find(tags, key, readOnly);
+  }
+
+  BinaryType findType(String key, bool readOnly) {
+    return _find(types, key, readOnly);
+  }
+
+  BinaryType _find(List<Map<String, BinaryType>> scopes, String key, bool readOnly) {
+    var type = scopes[current][key];
+    if (type != null || !readOnly) {
+      return type;
+    }
+
+    var index = current;
+    while (--index >= 0) {
+      type = scopes[index][key];
+      if (type != null) {
+        break;
+      }
+    }
+
+    return type;
   }
 }

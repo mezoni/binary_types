@@ -1,3 +1,7 @@
+## 0.0.29
+
+- Fixed minor bug in the `scope` resolution of the elaborated types
+
 ## 0.0.27
 
 - Made adaptations to the new version of package `binary_declarations`
