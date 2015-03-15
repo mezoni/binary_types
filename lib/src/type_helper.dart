@@ -73,26 +73,21 @@ class BinaryTypeHelper {
       throw new ArgumentError.notNull("reference");
     }
 
-    var dataType = data.type;
-    BinaryType type;
-    if (dataType is ArrayType) {
-      type = dataType.type;
-    } else if (dataType is PointerType) {
-      type = dataType.type;
-    } else {
-      throw new ArgumentError("Invalid string type '$dataType'");
+    var type = data.type;
+    if (type is ArrayType) {
+      type = type.type;
     }
 
     if (type is! IntType) {
-      throw new ArgumentError("Character type '$dataType' should be integer type");
+      throw new ArgumentError("Character type '$type' should be an integer type");
+    }
+
+    if (data.isNullPtr) {
+      BinaryTypeError.nullPointerException(type);
     }
 
     var base = data.base;
     var offset = data.offset;
-    if (base == 0 && offset == 0) {
-      BinaryTypeError.nullPointerException(dataType);
-    }
-
     var size = type.size;
     var characters = <int>[];
     var index = 0;
