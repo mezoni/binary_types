@@ -352,8 +352,16 @@ abstract class BinaryType {
           FunctionType functionType = this;
           sb.write(functionType.returnType);
           sb.write(" ");
+          if (pointers != 0) {
+            sb.write("(");
+          }
+
           sb.write("".padRight(pointers, "*"));
           sb.write(functionType._identifier);
+          if (pointers != 0) {
+            sb.write(")");
+          }
+
           sb.write("(");
           var parameters = functionType.parameters;
           if (!parameters.isEmpty) {

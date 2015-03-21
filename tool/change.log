@@ -56,3 +56,4 @@
 0.0.32 Breaking changes. Removed class `VaListType` and their kind `BinaryKinds.VA_LIST`
 0.0.32 Added initial support for `sizeof()`. From now result of `sizeof()` are an expression
 0.0.32 Added initial support of expresssion in array dimensions and in the enumerators
+0.0.33 Fixed minor bug in the `Type.formatName()` for function pointer

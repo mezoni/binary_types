@@ -1,3 +1,7 @@
+## 0.0.33
+
+- Fixed minor bug in the `Type.formatName()` for function pointer
+
 ## 0.0.32
 
 - Added initial support for `sizeof()`. From now result of `sizeof()` are an expression

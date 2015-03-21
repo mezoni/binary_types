@@ -297,7 +297,6 @@ class _Declarations {
       var variadic = declarator.parameters.ellipsis != null;
       binaryType = new FunctionType(declarator.identifier.name, returnType, parameterTypes, variadic, _dataModel);
       if (declarator.isFunctionPointer) {
-        var pointers = declarator.pointers;
         for (var pointer in declarator.functionPointers.elements) {
           binaryType = binaryType.ptr();
         }
