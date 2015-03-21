@@ -48,7 +48,11 @@ class BinaryData {
   }
 
   bool get isNullPtr {
-    return base == 0 && offset == 0;
+    if (base != 0) {
+      return false;
+    }
+
+    return offset == 0;
   }
 
   void operator []=(index, value) {

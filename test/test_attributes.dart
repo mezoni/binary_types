@@ -24,31 +24,31 @@ typedef float __attribute__((aligned(2))) FLOAT2 __attribute__((aligned(1)));
 typedef float FLOAT16 __attribute__((aligned(16)));
 
 // align 16
-enum enum0 { A } __attribute__((aligned(16)));
+enum enum0 { A1 } __attribute__((aligned(16)));
 
 // align 16
-enum __attribute__((aligned(16))) enum1 { A };
+enum __attribute__((aligned(16))) enum1 { A2 };
 
 // align 32
-enum __attribute__((aligned(16))) enum2 { A } __attribute__((aligned(32)));
+enum __attribute__((aligned(16))) enum2 { A3 } __attribute__((aligned(32)));
 
 // align 16
-typedef enum enum3 { A } __attribute__((aligned(16))) E0;
+typedef enum enum3 { A4 } __attribute__((aligned(16))) E0;
 
 // align 16
-typedef enum __attribute__((aligned(16))) enum4 { A } E1;
+typedef enum __attribute__((aligned(16))) enum4 { A5 } E1;
 
 // align 32
-typedef enum __attribute__((aligned(16))) enum5 { A } __attribute__((aligned(32))) E2;
+typedef enum __attribute__((aligned(16))) enum5 { A6 } __attribute__((aligned(32))) E2;
 
 // align 64
-typedef enum enum6 { A } __attribute__((aligned(16))) E3 __attribute__((aligned(64)));
+typedef enum enum6 { A7 } __attribute__((aligned(16))) E3 __attribute__((aligned(64)));
 
 // align 64
-typedef enum __attribute__((aligned(16))) enum7 { A } E4 __attribute__((aligned(64)));
+typedef enum __attribute__((aligned(16))) enum7 { A8 } E4 __attribute__((aligned(64)));
 
 // align 64
-typedef enum __attribute__((aligned(16))) enum8 { A } __attribute__((aligned(32))) E5 __attribute__((aligned(64)));
+typedef enum __attribute__((aligned(16))) enum8 { A9 } __attribute__((aligned(32))) E5 __attribute__((aligned(64)));
 
 // align 16
 // size 16
@@ -115,6 +115,7 @@ void main() {
   var t = new BinaryTypes();
   var helper = new BinaryTypeHelper(t);
   helper.declare(_temp);
+
   group("Attributes", () {
     var t = new BinaryTypes();
     var helper = new BinaryTypeHelper(t);

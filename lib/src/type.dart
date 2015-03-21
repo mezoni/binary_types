@@ -33,8 +33,6 @@ class BinaryKinds {
 
   static const BinaryKinds UINT8 = const BinaryKinds("UINT8");
 
-  static const BinaryKinds VA_LIST = const BinaryKinds("VA_LIST");
-
   static const BinaryKinds VOID = const BinaryKinds("VOID");
 
   final String _name;

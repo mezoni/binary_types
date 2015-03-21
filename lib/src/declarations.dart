@@ -19,7 +19,8 @@ class _Declarations {
     _dataModel = types["int"].dataModel;
   }
 
-  Declarations declare(String source, {Map<String, String> environment, Map<String, FunctionType> functions, Map<String, BinaryType> variables}) {
+  Declarations declare(String source,
+      {Map<String, String> environment, Map<String, FunctionType> functions, Map<String, BinaryType> variables}) {
     if (source == null) {
       throw new ArgumentError.notNull("source");
     }
@@ -66,10 +67,43 @@ class _Declarations {
     return declarations;
   }
 
+  Map<String, int> _addEnumerators(Enumerators enumerators) {
+    var result = <String, int>{};
+    var prev = -1;
+    for (var enumerator in enumerators.elements) {
+      var name = enumerator.identifier.name;
+      if (_scope.enumerators[_scope.current].containsKey(name)) {
+        throw new StateError("Unable redeclare enumerator: $enumerator");
+      }
+
+      var expression = enumerator.value;
+      int value;
+      if (expression != null) {
+        var result = _evaluateExpresssion(expression, identifier: _resolveEnumerator, sizeof: _sizeof);
+        if (result is int) {
+          value = result;
+        } else {
+          throw new ArgumentError.value(expression, "enumerator", "Expected integer expression");
+        }
+      }
+
+      if (value is int) {
+        prev = value;
+      } else {
+        value = ++prev;
+      }
+
+      result[name] = value;
+      _scope.enumerators[_scope.current][name] = value;
+    }
+
+    return result;
+  }
+
   List<DeclarationSpecifiers> _combineMetadata(TypeQualifiers qualifiers, DeclarationSpecifiers specifiers) {
     var result = <DeclarationSpecifiers>[];
     if (qualifiers != null) {
-      for (var qualifier in qualifiers.qualifiers) {
+      for (var qualifier in qualifiers.elements) {
         if (qualifier.metadata != null) {
           result.add(qualifier.metadata);
         }
@@ -152,13 +186,13 @@ class _Declarations {
   void _declareTypedef(TypedefDeclaration declaration) {
     var type = declaration.type;
     var originalType = _resolveType(type);
-    for (var declarator in declaration.declarators) {
+    for (var declarator in declaration.declarators.elements) {
       var binaryType = _resolveDeclarator(declarator, originalType);
       var metadata = <DeclarationSpecifiers>[];
       switch (type.typeKind) {
+        case TypeSpecificationKind.BASIC:
+        case TypeSpecificationKind.BOOL:
         case TypeSpecificationKind.DEFINED:
-        case TypeSpecificationKind.FLOAT:
-        case TypeSpecificationKind.INTEGER:
         case TypeSpecificationKind.VOID:
           // Bug in gcc?
           metadata.add(declarator.metadata);
@@ -176,7 +210,7 @@ class _Declarations {
 
   void _declareVariable(VariableDeclaration declaration) {
     var baseType = _resolveType(declaration.type);
-    for (var declarator in declaration.declarators) {
+    for (var declarator in declaration.declarators.elements) {
       var binaryType = _resolveDeclarator(declarator, baseType);
       if (binaryType.size == 0) {
         BinaryTypeError.declarationError(declaration, "Unable to determine the size of the type '$binaryType'");
@@ -199,9 +233,15 @@ class _Declarations {
     return copy;
   }
 
+  dynamic _evaluateExpresssion(Expression expression, {Function identifier, Function sizeof}) {
+    var evaluator = new ExpressionEvaluator();
+    return evaluator.evaluate(expression, identifier: identifier, sizeof: sizeof);
+  }
+
   int _getAligned(AttributeReader reader) {
-    var literal = reader.getIntegerArgument("aligned", 0, new IntegerLiteral(text: "16", value: 16), maxLength: 1, minLength: 0);
-    return _literalToInt(literal);
+    var result =
+        reader.getIntegerArgument("aligned", 0, new IntegerLiteral(text: "16", value: 16), maxLength: 1, minLength: 0);
+    return result;
   }
 
   List<DeclarationSpecifiers> _getDeclarationMetadata(Declaration declaration) {
@@ -238,7 +278,7 @@ class _Declarations {
     }
 
     if (declarator.isPointers) {
-      for (var pointer in declarator.pointers.specifiers) {
+      for (var pointer in declarator.pointers.elements) {
         // TODO: Declaration specifiers
         binaryType = binaryType.ptr();
       }
@@ -246,28 +286,39 @@ class _Declarations {
 
     if (declarator.isFunction) {
       var returnType = binaryType;
-      var parameters = <BinaryType>[];
+      var parameterTypes = <BinaryType>[];
       _scope.enter();
-      for (var declaration in declarator.parameters.declarations) {
-        var parameter = _declareParameter(declaration);
-        parameters.add(parameter);
+      for (var declaration in declarator.parameters.elements) {
+        var parameterType = _declareParameter(declaration);
+        parameterTypes.add(parameterType);
       }
 
       _scope.exit();
-      binaryType = new FunctionType(declarator.identifier.name, returnType, parameters, _dataModel);
+      var variadic = declarator.parameters.ellipsis != null;
+      binaryType = new FunctionType(declarator.identifier.name, returnType, parameterTypes, variadic, _dataModel);
       if (declarator.isFunctionPointer) {
         var pointers = declarator.pointers;
-        for (var pointer in declarator.functionPointers.specifiers) {
+        for (var pointer in declarator.functionPointers.elements) {
           binaryType = binaryType.ptr();
         }
       }
     }
 
     if (declarator.isArray) {
-      var dimensions = declarator.dimensions.dimensions;
+      var dimensions = declarator.dimensions.elements;
       var length = dimensions.length;
       for (var i = length - 1; i >= 0; i--) {
-        var dimension = _literalToInt(dimensions[i]);
+        int dimension;
+        var expression = dimensions[i];
+        if (expression != null) {
+          var result = _evaluateExpresssion(expression, identifier: _resolveEnumerator, sizeof: _sizeof);
+          if (result is int) {
+            dimension = result;
+          } else {
+            throw new ArgumentError.value(expression, "dimension", "Expected integer expression");
+          }
+        }
+
         if (dimension == null) {
           dimension = 0;
         }
@@ -298,12 +349,12 @@ class _Declarations {
       case BinaryKinds.ENUM:
         var enumType = binaryType as EnumType;
         completed = !enumType.enumerators.isEmpty;
-        compatible = type.kind == "enum";
+        compatible = type.kind.name == "enum";
         break;
       case BinaryKinds.STRUCT:
         var structureType = binaryType as StructureType;
         completed = structureType.size != 0;
-        compatible = type.kind == "struct" || type.kind == "union";
+        compatible = type.kind.name == "struct" || type.kind.name == "union";
         break;
     }
 
@@ -325,34 +376,34 @@ class _Declarations {
     var reader = new AttributeReader(metadata);
     var align = _getAligned(reader);
     String tag = elaboratedType.tag != null ? elaboratedType.tag.name : null;
-    var hasEmumerators = !type.enumerators.isEmpty;
+    var hasEmumerators = false;
+    if (type.enumerators != null) {
+      hasEmumerators = !type.enumerators.elements.isEmpty;
+    }
+
     EnumType binaryType = _resolveElaboratedType(elaboratedType, hasEmumerators);
     if (binaryType == null) {
       binaryType = new EnumType(tag, _dataModel, align: align);
       _registerElaboratedType(elaboratedType, binaryType);
     }
 
-    var enumerators = <String, dynamic>{};
-    for (var enumerator in type.enumerators) {
-      var expression = enumerator.value;
-      Object value;
-      if (expression is IntegerLiteral) {
-        value = expression.value;
-      } else if (expression is Identifier) {
-        value = expression.name;
-      } else if (expression == null) {
-      } else {
-        throw new StateError("Invaild emumerator value '$enumerator'");
+    if (type.enumerators != null) {
+      var enumerators = _addEnumerators(type.enumerators);
+      if (!enumerators.isEmpty) {
+        binaryType.addEnumerators(enumerators, align: align);
       }
-
-      enumerators[enumerator.identifier.name] = value;
-    }
-
-    if (!enumerators.isEmpty) {
-      binaryType.addEnumerators(enumerators, align: align);
     }
 
     return binaryType;
+  }
+
+  int _resolveEnumerator(Identifier identifier) {
+    var value = _scope.enumerators[_scope.current][identifier.name];
+    if (value == null) {
+      throw new StateError("Undeclared identifier: $identifier");
+    }
+
+    return value;
   }
 
   BinaryType _resolveStructure(StructureTypeSpecification type) {
@@ -364,10 +415,14 @@ class _Declarations {
     var packed = _getPacked(reader);
     var kind = elaboratedType.kind;
     String tag = elaboratedType.tag != null ? elaboratedType.tag.name : null;
-    var hasMembers = !type.members.isEmpty;
+    var hasMembers = false;
+    if (type.members != null) {
+      hasMembers = !type.members.elements.isEmpty;
+    }
+
     StructureType binaryType = _resolveElaboratedType(elaboratedType, hasMembers);
     if (binaryType == null) {
-      switch (kind) {
+      switch (kind.name) {
         case "struct":
           binaryType = new StructType(tag, _dataModel, align: align);
           break;
@@ -379,13 +434,15 @@ class _Declarations {
       _registerElaboratedType(elaboratedType, binaryType);
     }
 
-    var members = <StructureMember>[];
-    for (var member in type.members) {
-      members.add(_declareMember(member));
-    }
+    if (type.members != null) {
+      var members = <StructureMember>[];
+      for (var member in type.members.elements) {
+        members.add(_declareMember(member));
+      }
 
-    if (!members.isEmpty) {
-      binaryType.addMembers(members, align: align, packed: packed);
+      if (!members.isEmpty) {
+        binaryType.addMembers(members, align: align, packed: packed);
+      }
     }
 
     return binaryType;
@@ -399,9 +456,7 @@ class _Declarations {
         break;
       case TypeSpecificationKind.BOOL:
       case TypeSpecificationKind.DEFINED:
-      case TypeSpecificationKind.FLOAT:
-      case TypeSpecificationKind.INTEGER:
-      case TypeSpecificationKind.VA_LIST:
+      case TypeSpecificationKind.BASIC:
       case TypeSpecificationKind.VOID:
         binaryType = types[type.name];
         break;
@@ -414,9 +469,18 @@ class _Declarations {
 
     return binaryType;
   }
+
+  int _sizeof(TypeSpecification type) {
+    _scope.enter();
+    var binaryType = _resolveType(type);
+    _scope.exit();
+    return binaryType.size;
+  }
 }
 
 class _Scope {
+  List<Map<String, int>> enumerators;
+
   List<Map<String, BinaryType>> tags;
 
   List<Map<String, BinaryType>> types;
@@ -426,11 +490,13 @@ class _Scope {
   int previous = 0;
 
   _Scope(BinaryTypes types) {
+    enumerators = <Map<String, int>>[types._enumerators];
     tags = <Map<String, BinaryType>>[types._tags];
     this.types = <Map<String, BinaryType>>[types._types];
   }
 
   void enter() {
+    enumerators.add(<String, int>{});
     tags.add(<String, BinaryType>{});
     types.add(<String, BinaryType>{});
     previous = current++;
@@ -441,12 +507,17 @@ class _Scope {
       throw new StateError("Cannot exit scope");
     }
 
+    enumerators.removeLast();
     tags.removeLast();
     types.removeLast();
     current--;
     if (previous > 0) {
       previous--;
     }
+  }
+
+  int findEnumerator(String key, bool readOnly) {
+    return _find(enumerators, key, readOnly);
   }
 
   BinaryType findTag(String key, bool readOnly) {
@@ -457,7 +528,7 @@ class _Scope {
     return _find(types, key, readOnly);
   }
 
-  BinaryType _find(List<Map<String, BinaryType>> scopes, String key, bool readOnly) {
+  dynamic _find(List<Map<String, dynamic>> scopes, String key, bool readOnly) {
     var type = scopes[current][key];
     if (type != null || !readOnly) {
       return type;

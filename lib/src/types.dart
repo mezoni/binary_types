@@ -4,8 +4,9 @@ part of binary_types;
  * Binary types.
  */
 class BinaryTypes {
-
   DataModel _dataModel;
+
+  Map<String, int> _enumerators = new Map<String, int>();
 
   Map<String, BinaryType> _tags = new Map<String, BinaryType>();
 
@@ -36,8 +37,9 @@ class BinaryTypes {
         BinaryTypeError.differentDataModel();
       }
 
-      _types.addAll(types._types);
+      _enumerators.addAll(types._enumerators);
       _tags.addAll(types._tags);
+      _types.addAll(types._types);
     } else {
       _init();
     }
@@ -134,7 +136,8 @@ class BinaryTypes {
     _cloneBasicInt(IntType.createInt(true, _dataModel), variants);
     variants = _reproduce2([["long"], ["long", "int"], ["long", "int", "signed"], ["long", "signed"]]);
     _cloneBasicInt(IntType.createLong(true, _dataModel), variants);
-    variants = _reproduce2([["long long"], ["long long", "int"], ["long long", "int", "signed"], ["long long", "signed"]]);
+    variants =
+        _reproduce2([["long long"], ["long long", "int"], ["long long", "int", "signed"], ["long long", "signed"]]);
     _cloneBasicInt(IntType.createLongLong(true, _dataModel), variants);
 
     // Unsigned integers
@@ -171,9 +174,6 @@ class BinaryTypes {
 
     // Void
     _types["void"] = new VoidType(_dataModel);
-
-    // Variable arguments
-    _types["..."] = new VaListType(_dataModel);
   }
 
   List<List> _rerpoduce(List list, List<List> result) {

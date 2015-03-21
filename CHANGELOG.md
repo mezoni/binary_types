@@ -1,3 +1,12 @@
+## 0.0.32
+
+- Added initial support for `sizeof()`. From now result of `sizeof()` are an expression
+- Added initial support of expresssion in array dimensions and in the enumerators
+- Added support for obtaining the declared enumerators through the `BinaryTypeHelper.enumerators`
+- Breaking changes. Class `FunctionType` was changed because class `VaListType` was removed
+- Breaking changes. Removed class `VaListType` and their kind `BinaryKinds.VA_LIST`
+- Made adaptations to the new version of package `binary_declarations`
+
 ## 0.0.30
 
 - Added check on `null pointer` in `BinaryTypeHelper.readString()` 

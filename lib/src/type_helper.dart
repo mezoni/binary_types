@@ -7,6 +7,8 @@ class BinaryTypeHelper {
 
   DataModel _dataModel;
 
+  Map<String, int> _enumerators;
+
   BinaryTypeHelper(this.types) {
     if (types == null) {
       throw new ArgumentError.notNull("types");
@@ -14,12 +16,18 @@ class BinaryTypeHelper {
 
     _char = types["char"];
     _dataModel = types["int"].dataModel;
+    _enumerators = new UnmodifiableMapView<String, int>(types._enumerators);
   }
 
   /**
    * Data model of binary types.
    */
   DataModel get dataModel => _dataModel;
+
+  /**
+   * Returns the enumerators.
+   */
+  Map<String, int> get enumerators => _enumerators;
 
   /**
    * Allocates the memory for null-terminated string and returns the binary
@@ -56,7 +64,8 @@ class BinaryTypeHelper {
    *   [Map]<[String], [BinaryType]> variables
    *   Symbol table for the declared variables.
    */
-  Declarations declare(String source, {Map<String, String> environment, Map<String, FunctionType> functions, Map<String, BinaryType> variables}) {
+  Declarations declare(String source,
+      {Map<String, String> environment, Map<String, FunctionType> functions, Map<String, BinaryType> variables}) {
     var declaration = new _Declarations(types);
     return declaration.declare(source, environment: environment, functions: functions, variables: variables);
   }
@@ -65,7 +74,7 @@ class BinaryTypeHelper {
    * Reads the null-terminated string from memory.
    *
    * Parameters:
-   *   [BinaryData] data
+   *   [Reference] reference
    *   Reference to the null-terminated string.
    */
   String readString(BinaryData data) {
@@ -79,11 +88,7 @@ class BinaryTypeHelper {
     }
 
     if (type is! IntType) {
-      throw new ArgumentError("Character type '$type' should be an integer type");
-    }
-
-    if (data.isNullPtr) {
-      BinaryTypeError.nullPointerException(type);
+      throw new ArgumentError("Referenced type '$type' should be integer type");
     }
 
     var base = data.base;

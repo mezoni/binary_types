@@ -6,6 +6,7 @@ import 'dart:typed_data';
 
 import "package:binary_declarations/attribute_reader.dart";
 import "package:binary_declarations/binary_declarations.dart";
+import "package:binary_declarations/expression_evaluator.dart";
 import "package:unsafe_extension/unsafe_extension.dart";
 
 part 'src/arrays.dart';
@@ -27,6 +28,5 @@ part 'src/type.dart';
 part 'src/type_helper.dart';
 part 'src/types.dart';
 part 'src/utils.dart';
-part 'src/va_list.dart';
 part 'src/void.dart';
 part 'src/wrapper.dart';

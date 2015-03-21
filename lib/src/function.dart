@@ -9,15 +9,20 @@ class FunctionType extends BinaryType {
    */
   final BinaryType returnType;
 
+  /**
+   * Indicates when the function is VARIADIC function.
+   */
+  final bool variadic;
+
   int _arity = 0;
 
   String _identifier;
 
   List<BinaryType> _parameters;
 
-  bool _variadic = false;
-
-  FunctionType(String name, this.returnType, List<BinaryType> parameters, DataModel dataModel, {int align}) : super(dataModel, align: align) {
+  FunctionType(String name, this.returnType, List<BinaryType> parameters, this.variadic, DataModel dataModel,
+      {int align})
+      : super(dataModel, align: align) {
     if (name == null) {
       throw new ArgumentError.notNull("name");
     }
@@ -35,6 +40,7 @@ class FunctionType extends BinaryType {
     }
 
     var length = parameters.length;
+    _arity = length;
     _parameters = new List<BinaryType>(length);
     for (var i = 0; i < length; i++) {
       var parameter = parameters[i];
@@ -51,26 +57,12 @@ class FunctionType extends BinaryType {
       }
 
       _parameters[i] = parameter;
-      if (parameter is VaListType) {
-        if (i != length - 1) {
-          BinaryTypeError.variableParameterMustBeLastParameter(name);
-        }
-
-        _variadic = true;
-      } else {
-        if (parameter.size == 0) {
-          BinaryTypeError.incompleteFunctionParameterType(name, i, parameter);
-        }
-
-        if (_variadic) {
-          BinaryTypeError.wrongOrderOfVariadicFunctionParameters(name);
-        }
-
-        _arity++;
+      if (parameter.size == 0) {
+        BinaryTypeError.incompleteFunctionParameterType(name, i, parameter);
       }
     }
 
-    if (_variadic && _arity == 0) {
+    if (variadic && _arity == 0) {
       BinaryTypeError.variadicFunctionMustHaveAtLeastOneNamedParameter();
     }
 
@@ -105,13 +97,8 @@ class FunctionType extends BinaryType {
 
   int get size => 1;
 
-  /**
-   * Indicates when the function is VARIADIC function.
-   */
-  bool get variadic => _variadic;
-
   FunctionType _clone({int align}) {
-    return new FunctionType(name, returnType, _parameters, _dataModel, align: align);
+    return new FunctionType(name, returnType, _parameters, variadic, _dataModel, align: align);
   }
 
   bool _compatible(BinaryType other, bool strong) {

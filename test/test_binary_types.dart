@@ -2,7 +2,14 @@ import 'package:binary_types/binary_types.dart';
 import 'package:unittest/unittest.dart';
 
 var _header = '''
-int foo(int *) __attribute__((alias("baz")));
+enum EnumA {Enum_A};
+enum EnumB {Enum_B = Enum_A + 5 + sizeof(enum EnumA)};
+
+typedef int ia10[8 + 2];
+typedef int ia1[sizeof(int) >> 2];
+typedef int ia4[sizeof(ia1)];
+
+int foo(int *, ...) __attribute__((alias("baz")));
 int i, *ip;
 
 typedef enum levels { ONE, TWO, LAST = TWO } levels;
@@ -399,9 +406,9 @@ class Test {
     group("Function declarations.", () {
       test("Arity of declared functions.", () {
         // char* ()(char*)
-        var func_t = new FunctionType("foo", t['char*'], [t['char*']], helper.dataModel);
+        var func_t = new FunctionType("foo", t['char*'], [t['char*']], false, helper.dataModel);
         // char* ()(...)
-        var func_va_args_t = new FunctionType("baz", t['char*'], [t['int'], t['...']], helper.dataModel);
+        var func_va_args_t = new FunctionType("baz", t['char*'], [t['int']], true, helper.dataModel);
 
         Expect.equals(func_t.arity, 1, 'func_t.arity == 1');
         Expect.equals(func_va_args_t.arity, 1, 'func_va_args_t.arity == 1');
