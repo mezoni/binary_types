@@ -58,3 +58,4 @@
 0.0.32 Added initial support of expresssion in array dimensions and in the enumerators
 0.0.33 Fixed minor bug in the `BinaryType.formatName()` for function pointer
 0.0.34 Fixed bug with a single function parameter `void`
+0.0.35 Fixed bug with an unspecified return type of the function (now assumed "int" by default) 

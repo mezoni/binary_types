@@ -124,7 +124,14 @@ class _Declarations {
 
   void _declareFunction(FunctionDeclaration declaration) {
     var declarator = declaration.declarator;
-    var binaryType = _resolveType(declaration.type);
+    var type = declaration.type;
+    BinaryType binaryType;
+    if (type == null) {
+      binaryType = types["int"];
+    } else {
+      binaryType = _resolveType(declaration.type);
+    }
+
     binaryType = _resolveDeclarator(declarator, binaryType);
     var name = declarator.identifier.name;
     _functions[declarator.identifier.name] = binaryType;

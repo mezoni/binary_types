@@ -1,3 +1,7 @@
+## 0.0.35
+
+- Fixed bug with an unspecified return type of the function (now assumed "int" by default) 
+
 ## 0.0.34
 
 - Fixed bug with a single function parameter `void`

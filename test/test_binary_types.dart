@@ -2,6 +2,7 @@ import 'package:binary_types/binary_types.dart';
 import 'package:unittest/unittest.dart';
 
 var _header = '''
+bar();
 void test(void);
 int *baz(int **(*foo)()[10]);
 
