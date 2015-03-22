@@ -2,6 +2,7 @@ import 'package:binary_types/binary_types.dart';
 import 'package:unittest/unittest.dart';
 
 var _header = '''
+void test(void);
 int *baz(int **(*foo)()[10]);
 
 enum EnumA {Enum_A};
@@ -11,7 +12,7 @@ typedef int ia10[8 + 2];
 typedef int ia1[sizeof(int) >> 2];
 typedef int ia4[sizeof(ia1)];
 
-int *foo(int *, ...) __attribute__((alias("baz")));
+int *foo(int *, ...) __attribute__((alias(baz)));
 int i, *ip;
 
 typedef enum levels { ONE, TWO, LAST = TWO } levels;

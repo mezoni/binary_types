@@ -1,6 +1,10 @@
+## 0.0.34
+
+- Fixed bug with a single function parameter `void`
+
 ## 0.0.33
 
-- Fixed minor bug in the `Type.formatName()` for function pointer
+- Fixed minor bug in the `BinaryType.formatName()` for function pointer
 
 ## 0.0.32
 

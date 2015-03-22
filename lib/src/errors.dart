@@ -36,7 +36,7 @@ class BinaryTypeError implements Exception {
   }
 
   static void incompleteFunctionParameterType(String name, int index, BinaryType parameter) {
-    throw new BinaryTypeError("Illegal use of incomplete type '$parameter' as the parameter #'$index' of function '$name'");
+    throw new BinaryTypeError("Illegal use of incomplete type '$parameter' as the #$index parameter of function '$name'");
   }
 
   static void incompleteMemberType(StructType structureType, BinaryType memberType) {

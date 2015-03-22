@@ -126,7 +126,12 @@ class _Declarations {
     var declarator = declaration.declarator;
     var binaryType = _resolveType(declaration.type);
     binaryType = _resolveDeclarator(declarator, binaryType);
+    var name = declarator.identifier.name;
     _functions[declarator.identifier.name] = binaryType;
+  }
+
+  void _checkUniqueness(String name) {
+    if (false) {}
   }
 
   StructureMember _declareMember(ParameterDeclaration declaration) {
@@ -287,14 +292,28 @@ class _Declarations {
     if (declarator.isFunction) {
       var returnType = binaryType;
       var parameterTypes = <BinaryType>[];
+      var variadic = declarator.parameters.ellipsis != null;
       _scope.enter();
-      for (var declaration in declarator.parameters.elements) {
-        var parameterType = _declareParameter(declaration);
-        parameterTypes.add(parameterType);
+      var elements = declarator.parameters.elements;
+      var length = elements.length;
+      if (length > 0) {
+        var parameterType = _declareParameter(elements[0]);
+        if (length == 1) {
+          if (!variadic && parameterType.kind == BinaryKinds.VOID) {
+            // Nothing
+          } else {
+            parameterTypes.add(parameterType);
+          }
+        } else {
+          parameterTypes.add(parameterType);
+          for (var i = 1; i < length; i++) {
+            parameterType = _declareParameter(elements[i]);
+            parameterTypes.add(parameterType);
+          }
+        }
       }
 
       _scope.exit();
-      var variadic = declarator.parameters.ellipsis != null;
       binaryType = new FunctionType(declarator.identifier.name, returnType, parameterTypes, variadic, _dataModel);
       if (declarator.isFunctionPointer) {
         for (var pointer in declarator.functionPointers.elements) {
