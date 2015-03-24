@@ -31,10 +31,6 @@ class BinaryTypeError implements Exception {
     throw new BinaryTypeError("Flexible array member '$memberName' not at end of struct '$structureType'");
   }
 
-  static void functionReturingArray(String name, String returnType) {
-    throw new BinaryTypeError("Function '$name' declared as returning an array '$returnType'");
-  }
-
   static void illegalMemberName(BinaryType type, String name) {
     throw new BinaryTypeError("Illegal member name '$name' for the type '$type'");
   }
@@ -87,11 +83,11 @@ class BinaryTypeError implements Exception {
     throw new BinaryTypeError("String value is too large '$str'");
   }
 
-  // TODO: Remove
   static void typeElementNotFound(BinaryType type, String name) {
     throw new BinaryTypeError("Type element '$name' not found in the type '$type'");
   }
 
+  // TODO: Remove
   static void typeNotDefined(String name) {
     throw new BinaryTypeError("Type '$name' not defined");
   }
@@ -162,5 +158,9 @@ class BinaryTypeError implements Exception {
 
   static void wrongOrderOfVariadicFunctionParameters(String name) {
     throw new BinaryTypeError("Wrong order of parameters in the variadic function '$name'");
+  }
+
+  static void wrongReturnType(String name, String subject) {
+    throw new BinaryTypeError("Function '$name' declared as returning $subject'");
   }
 }

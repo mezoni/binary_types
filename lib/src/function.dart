@@ -39,8 +39,17 @@ class FunctionType extends BinaryType {
       BinaryTypeError.differentDataModel("return type '$returnType'");
     }
 
-    if (returnType.kind == BinaryKinds.ARRAY) {
-      BinaryTypeError.functionReturingArray(name, returnType.name);
+    switch (returnType.kind) {
+      case BinaryKinds.ARRAY:
+        BinaryTypeError.wrongReturnType(name, "an array '$returnType'");
+        break;
+      case BinaryKinds.FUNCTION:
+        BinaryTypeError.wrongReturnType(name, "a function '$returnType'");
+        break;
+    }
+
+    if (returnType.size == 0 && returnType.kind != BinaryKinds.VOID) {
+      BinaryTypeError.wrongReturnType(name, "an incomplete type '$returnType'");
     }
 
     var length = parameters.length;
