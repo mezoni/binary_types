@@ -1,6 +1,11 @@
+## 0.0.36
+
+- Added synonyn to `_Bool` into the `BinaryTypes` (`typedef _Bool bool`) 
+- Environment variables `__OS__` and `__BITNESS__` in `BinaryTypeHelper.declare()` only sets if they are not specified in provided environment. This allows declaring the platform independent binary types (eg. in generators)
+
 ## 0.0.35
 
-- Fixed bug with an unspecified return type of the function (now assumed "int" by default) 
+- Fixed bug with an unspecified return type of the function (now assumed "int" by default)
 
 ## 0.0.34
 

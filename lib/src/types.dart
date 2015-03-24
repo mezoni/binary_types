@@ -123,6 +123,7 @@ class BinaryTypes {
   void _init() {
     // _Bool
     _types["_Bool"] = new BoolType(_dataModel);
+    _types["bool"] = _types["_Bool"].clone("bool");
 
     // char
     _types["char"] = IntType.createChar(null, _dataModel);

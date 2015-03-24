@@ -4,7 +4,7 @@ import 'package:unittest/unittest.dart';
 var _header = '''
 bar();
 void test(void);
-int *baz(int **(*foo)()[10]);
+int *baz(int **(*foo)()[2+2]);
 
 enum EnumA {Enum_A};
 enum EnumB {Enum_B = Enum_A + 5 + sizeof(enum EnumA)};

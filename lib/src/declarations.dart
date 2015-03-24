@@ -41,9 +41,15 @@ class _Declarations {
       env.addAll(environment);
     }
 
-    var bitness = types["size_t"].size * 8;
-    env["__OS__"] = Platform.operatingSystem;
-    env["__BITNESS__"] = bitness.toString();
+    if (!env.containsKey("__OS__")) {
+      env["__OS__"] = Platform.operatingSystem;
+    }
+
+    if (!env.containsKey("__BITNESS__")) {
+      var bitness = types["size_t"].size * 8;
+      env["__BITNESS__"] = bitness.toString();
+    }
+
     var declarations = new Declarations(source, environment: env);
     Declaration declaration;
     try {
