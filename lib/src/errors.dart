@@ -31,6 +31,10 @@ class BinaryTypeError implements Exception {
     throw new BinaryTypeError("Flexible array member '$memberName' not at end of struct '$structureType'");
   }
 
+  static void functionReturingArray(String name, String returnType) {
+    throw new BinaryTypeError("Function '$name' declared as returning an array '$returnType'");
+  }
+
   static void illegalMemberName(BinaryType type, String name) {
     throw new BinaryTypeError("Illegal member name '$name' for the type '$type'");
   }

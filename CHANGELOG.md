@@ -1,3 +1,7 @@
+## 0.0.37
+
+- Fixed bug. Function declaration with a returning an array throws an exception
+
 ## 0.0.36
 
 - Added synonyn to `_Bool` into the `BinaryTypes` (`typedef _Bool bool`) 

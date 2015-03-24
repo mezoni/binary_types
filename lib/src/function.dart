@@ -39,6 +39,10 @@ class FunctionType extends BinaryType {
       BinaryTypeError.differentDataModel("return type '$returnType'");
     }
 
+    if (returnType.kind == BinaryKinds.ARRAY) {
+      BinaryTypeError.functionReturingArray(name, returnType.name);
+    }
+
     var length = parameters.length;
     _arity = length;
     _parameters = new List<BinaryType>(length);
