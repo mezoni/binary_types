@@ -74,12 +74,16 @@ class BinaryTypeHelper {
    * Reads the null-terminated string from memory.
    *
    * Parameters:
-   *   [Reference] reference
+   *   [Reference] data
    *   Reference to the null-terminated string.
    */
   String readString(BinaryData data) {
     if (data == null) {
-      throw new ArgumentError.notNull("reference");
+      throw new ArgumentError.notNull("data");
+    }
+
+    if (data.isNullPtr) {
+      throw new NullPointerException("$data");
     }
 
     var type = data.type;

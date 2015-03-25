@@ -85,5 +85,17 @@ class BinaryData {
     type._setElementValue(base, offset, index, value);
   }
 
-  String toString() => type.formatName(pointers: 1);
+  String toString() {
+    var address = base + offset;
+    if (address < 0) {
+      address = _Utils.toUnsigned(address, type.dataModel.sizeOfPointer << 3);
+    }
+
+    var sb = new StringBuffer();
+    sb.write(type.name);
+    sb.write(" (");
+    sb.write(address.toRadixString(16));
+    sb.write("h)");
+    return sb.toString();
+  }
 }

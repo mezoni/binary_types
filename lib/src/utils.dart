@@ -57,4 +57,23 @@ class _Utils {
 
     return "0x" + result;
   }
+
+  static int toUnsigned(int value, int bitness) {
+    var umax = (1 << bitness) - 1;
+    if (value >= 0) {
+      value &= umax;
+    } else {
+      var smax = umax ~/ 2;
+      var smin = -(smax + 1);
+      if (value >= smin) {
+        value = umax + value + 1;
+      } else {
+        value = -(value) & umax;
+        value = (umax - value + 1) & umax;
+        var x = value;
+      }
+    }
+
+    return value;
+  }
 }

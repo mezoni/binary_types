@@ -1,3 +1,7 @@
+## 0.0.39
+
+- Changes in `BinaryData.toString()`. Now the binary data is displayed as "type (address)" (eg. `char [6] (9484648h)`)
+
 ## 0.0.37
 
 - Fixed bug. Function declaration with a returning an array throws an exception

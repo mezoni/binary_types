@@ -3,7 +3,7 @@ binary_types
 
 Binary types are set of classes that allows access the binary data in "C" language way.
 
-Version: 0.0.38
+Version: 0.0.39
 
 [Donate to binary types for dart](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=binary.dart@gmail.com&item_name=binary.types.for.dart&currency_code=USD)
 

@@ -19,6 +19,7 @@ part 'src/errors.dart';
 part 'src/floating_points.dart';
 part 'src/function.dart';
 part 'src/integers.dart';
+part 'src/npe.dart';
 part 'src/object.dart';
 part 'src/physical_data.dart';
 part 'src/pointer.dart';
