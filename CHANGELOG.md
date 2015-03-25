@@ -1,3 +1,7 @@
+## 0.0.40
+
+- Unnecessary code from the constructor `ArrayType` moved to another location (`Type.formatName()`)
+
 ## 0.0.39
 
 - Changes in `BinaryData.toString()`. Now the binary data is displayed as "type (address)" (eg. `char [6] (9484648h)`)

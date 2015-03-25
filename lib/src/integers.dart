@@ -386,7 +386,6 @@ abstract class IntType extends BinaryType {
 
   bool _compatible(BinaryType other, bool strong) {
     if (other is IntType) {
-      var intType = other;
       var mask = strong ? BASIC_TYPE_ALL : BASIC_TYPE_ALL & ~(BASIC_TYPE_SIGNED_BY_MODEL | BASIC_TYPE_SIGNED);
       return (_basicType & mask == other._basicType & mask) && other.dataModel == dataModel;
     }

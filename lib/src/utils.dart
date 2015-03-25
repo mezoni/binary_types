@@ -70,7 +70,6 @@ class _Utils {
       } else {
         value = -(value) & umax;
         value = (umax - value + 1) & umax;
-        var x = value;
       }
     }
 

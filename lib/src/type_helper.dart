@@ -44,8 +44,7 @@ class BinaryTypeHelper {
 
     var characters = string.codeUnits;
     var length = characters.length;
-    var address = Unsafe.memoryAllocate(length + 1);
-    return _char.array(characters.length + 1).alloc(characters);
+    return _char.array(length + 1).alloc(characters);
   }
 
   /**
@@ -99,7 +98,6 @@ class BinaryTypeHelper {
     var offset = data.offset;
     var size = type.size;
     var characters = <int>[];
-    var index = 0;
     while (true) {
       var value = type.getValue(base, offset);
       if (value == 0) {

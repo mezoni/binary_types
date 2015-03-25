@@ -140,11 +140,11 @@ class _Declarations {
 
     binaryType = _resolveDeclarator(declarator, binaryType);
     var name = declarator.identifier.name;
-    _functions[declarator.identifier.name] = binaryType;
+    _functions[name] = binaryType;
   }
 
+  // TODO: Implement _checkUniqueness()
   void _checkUniqueness(String name) {
-    if (false) {}
   }
 
   StructureMember _declareMember(ParameterDeclaration declaration) {
@@ -296,7 +296,8 @@ class _Declarations {
     }
 
     if (declarator.isPointers) {
-      for (var pointer in declarator.pointers.elements) {
+      var length = declarator.pointers.elements.length;
+      while ((length--) > 0) {
         // TODO: Declaration specifiers
         binaryType = binaryType.ptr();
       }
@@ -329,7 +330,8 @@ class _Declarations {
       _scope.exit();
       binaryType = new FunctionType(declarator.identifier.name, returnType, parameterTypes, variadic, _dataModel);
       if (declarator.isFunctionPointer) {
-        for (var pointer in declarator.functionPointers.elements) {
+        var length = declarator.functionPointers.elements.length;
+        while ((length--) > 0) {
           binaryType = binaryType.ptr();
         }
       }

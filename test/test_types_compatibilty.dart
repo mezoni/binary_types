@@ -6,7 +6,6 @@ final _t = new BinaryTypes();
 void main() {
   // TODO: Test functions compatibilties
   // TODO: Test structures compatibilties
-  var x = _t["short"].compatible(_t["unsigned short"], true);
   group("Binary types compatibilties.", () {
     test("Arrays types.", () {
       _compare(_t["char"].array(1), _t["signed char"].array(1), false, true);

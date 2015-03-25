@@ -63,3 +63,4 @@
 0.0.36 Added synonyn to `_Bool` into the `BinaryTypes` (`typedef _Bool bool`) 
 0.0.37 Fixed bug. Function declaration with a returning an array throws an exception
 0.0.39 Changes in `BinaryData.toString()`. Now the binary data is displayed as "type (address)" (eg. `char [6] (9484648h)`)
+0.0.40 Unnecessary code from the constructor `ArrayType` moved to another location (`Type.formatName()`)

@@ -57,7 +57,6 @@ void main() {
         var structureType = _createStructureType(isStruct, null, null, t["int"].dataModel);
         var units = new StorageUnits(members, structureType, packed: false);
         var elements = units.elements;
-        var unitMembers = units.members;
         var size = elements.first.size;
         expect(size, t["long long"].size, reason: "Chosen not a largest in size finished zero-length bit-field");
       });

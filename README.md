@@ -3,20 +3,17 @@ binary_types
 
 Binary types are set of classes that allows access the binary data in "C" language way.
 
-Version: 0.0.39
+Version: 0.0.40
 
 [Donate to binary types for dart](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=binary.dart@gmail.com&item_name=binary.types.for.dart&currency_code=USD)
-
-Initial release. Use at your own risk!
 
 **Interrelated (binary) software**
 
 - [Binary declarations](https://pub.dartlang.org/packages/binary_declarations)
 - [Binary generator](https://pub.dartlang.org/packages/binary_generator)
 - [Binary interop](https://pub.dartlang.org/packages/binary_interop)
+- [Binary marshalling](https://pub.dartlang.org/packages/binary_marshalling)
 - [Binary types](https://pub.dartlang.org/packages/binary_types)
-
-**For proper work `binary_types` requires that the package `unsafe_extension` has been setup after it installation.**
 
 **Limitations**
 
@@ -26,6 +23,7 @@ Initial release. Use at your own risk!
 **Supported binary types**
 
 - Array type
+- Bool type
 - Double type
 - Enum type
 - Float type
@@ -37,7 +35,6 @@ Initial release. Use at your own risk!
 **Addidional types**
 
 - Function type
-- Va list type
 - Void type
 
 **Binary data**
@@ -55,6 +52,7 @@ Initial release. Use at your own risk!
 **Binary type helper**
 
 - String allocations
+- Header declarations
 - String reading
 
 **Small example**
