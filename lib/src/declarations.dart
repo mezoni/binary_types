@@ -50,6 +50,11 @@ class _Declarations {
       env["__BITNESS__"] = bitness.toString();
     }
 
+    if (!env.containsKey("__MODEL__")) {
+      var dataModelName = _getDataModelName();
+      env["__MODEL__"] = dataModelName;
+    }
+
     var declarations = new Declarations(source, environment: env);
     Declaration declaration;
     try {
@@ -106,6 +111,8 @@ class _Declarations {
     return result;
   }
 
+  void _checkUniqueness(String name) {}
+
   List<DeclarationSpecifiers> _combineMetadata(TypeQualifiers qualifiers, DeclarationSpecifiers specifiers) {
     var result = <DeclarationSpecifiers>[];
     if (qualifiers != null) {
@@ -128,6 +135,7 @@ class _Declarations {
     _resolveEnum(type);
   }
 
+  // TODO: Implement _checkUniqueness()
   void _declareFunction(FunctionDeclaration declaration) {
     var declarator = declaration.declarator;
     var type = declaration.type;
@@ -141,10 +149,6 @@ class _Declarations {
     binaryType = _resolveDeclarator(declarator, binaryType);
     var name = declarator.identifier.name;
     _functions[name] = binaryType;
-  }
-
-  // TODO: Implement _checkUniqueness()
-  void _checkUniqueness(String name) {
   }
 
   StructureMember _declareMember(ParameterDeclaration declaration) {
@@ -260,6 +264,31 @@ class _Declarations {
     var result =
         reader.getIntegerArgument("aligned", 0, new IntegerLiteral(text: "16", value: 16), maxLength: 1, minLength: 0);
     return result;
+  }
+
+  String _getDataModelName() {
+    var bits = <int>[];
+    bits.add(_dataModel.sizeOfChar * 8);
+    bits.add(_dataModel.sizeOfShort * 8);
+    bits.add(_dataModel.sizeOfInt * 8);
+    bits.add(_dataModel.sizeOfLong * 8);
+    bits.add(_dataModel.sizeOfPointer * 8);
+    bits.add(_dataModel.sizeOfLongLong * 8);
+    var model = bits.join("/");
+    switch (model) {
+      case "8/16/32/64/64/64":
+        return "LP64";
+      case "8/16/64/64/64/64":
+        return "ILP64";
+      case "8/16/32/32/64/64":
+        return "LLP64";
+      case "8/16/32/32/32/64":
+        return "ILP32";
+      case "8/16/16/32/32/64":
+        return "LP32";
+    }
+
+    return "";
   }
 
   List<DeclarationSpecifiers> _getDeclarationMetadata(Declaration declaration) {

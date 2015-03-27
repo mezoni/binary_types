@@ -1,3 +1,7 @@
+## 0.0.41
+
+- Added predefined environment variable `__MODEL__`. Possible values are `ILP32`` ILP64` `LLP64`` LP32` `LP64` and empty value (for the unknown data models) 
+
 ## 0.0.40
 
 - Unnecessary code from the constructor `ArrayType` moved to another location (`Type.formatName()`)
