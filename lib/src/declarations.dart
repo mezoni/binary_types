@@ -102,7 +102,7 @@ class _Declarations {
   }
 
   void _addPrototype(Prototype prototype) {
-    var name = prototype.type.name;
+    var name = prototype.type.identifier;
     var found = _prototypes[name];
     if (found == null) {
       _prototypes[name] = prototype;
