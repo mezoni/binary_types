@@ -11,7 +11,7 @@ class BinaryTypes {
   Map<String, int> _enumerators = new Map<String, int>();
 
   Map<String, dynamic> _environment = new Map<String, dynamic>();
-  
+
   Map<String, String> _headers = new Map<String, String>();
 
   Map<String, Prototype> _prototypes = <String, Prototype>{};
@@ -117,24 +117,40 @@ class BinaryTypes {
     return _cloneBasicInt(type, names, typedef);
   }
 
-  List<String> _reproduce2(List<List<String>> lists) {
-    var result = <String>[];
-    for (var list in lists) {
-      var elements = <List>[];
-      _rerpoduce(list, elements);
-      for (var element in elements) {
-        var name = element.join(" ");
-        result.add(name);
-      }
+  void _define(String name, dynamic value) {
+    var fragments = new UnmodifiableListView([value.toString()]);
+    var definition = new MacroDefinition(fragments: fragments, name: name);
+    _definitions[name] = definition;
+  }
+
+  String _getDataModelName() {
+    var bits = <int>[];
+    bits.add(_dataModel.sizeOfChar * 8);
+    bits.add(_dataModel.sizeOfShort * 8);
+    bits.add(_dataModel.sizeOfInt * 8);
+    bits.add(_dataModel.sizeOfLong * 8);
+    bits.add(_dataModel.sizeOfPointer * 8);
+    bits.add(_dataModel.sizeOfLongLong * 8);
+    var model = bits.join("/");
+    switch (model) {
+      case "8/16/32/64/64/64":
+        return "LP64";
+      case "8/16/64/64/64/64":
+        return "ILP64";
+      case "8/16/32/32/64/64":
+        return "LLP64";
+      case "8/16/32/32/32/64":
+        return "ILP32";
+      case "8/16/16/32/32/64":
+        return "LP32";
     }
 
-    return result;
+    return "";
   }
 
   void _init() {
     // _Bool
     _types["_Bool"] = new BoolType(_dataModel);
-    _types["bool"] = _types["_Bool"].clone("bool");
 
     // char
     _types["char"] = IntType.createChar(null, _dataModel);
@@ -186,6 +202,40 @@ class BinaryTypes {
 
     // Void
     _types["void"] = new VoidType(_dataModel);
+
+    // Definitions
+    if (_dataModel.isCharSigned) {
+      _define("__SCHAR_MIN__", -(1 << _dataModel.sizeOfChar * 8) ~/ 2);
+    } else {
+      _define("__SCHAR_MIN__", 0);
+    }
+
+    // For "limits.h"
+    _define("__CHAR_BIT__", _dataModel.sizeOfChar * 8);
+    _define("__SHRT_BIT__", _dataModel.sizeOfShort * 8);
+    _define("__INT_BIT__", _dataModel.sizeOfInt * 8);
+    _define("__LONG_BIT__", _dataModel.sizeOfLong * 8);
+    _define("__LLONG_BIT__", _dataModel.sizeOfLongLong * 8);
+
+    // Common information
+    _define("__ARCH__", SysInfo.processors.first.architecture);
+    _define("__BITNESS__", _dataModel.sizeOfPointer * 8);
+    _define("__MODEL__", _getDataModelName());
+    _define("__OS__", Platform.operatingSystem);
+  }
+
+  List<String> _reproduce2(List<List<String>> lists) {
+    var result = <String>[];
+    for (var list in lists) {
+      var elements = <List>[];
+      _rerpoduce(list, elements);
+      for (var element in elements) {
+        var name = element.join(" ");
+        result.add(name);
+      }
+    }
+
+    return result;
   }
 
   List<List> _rerpoduce(List list, List<List> result) {

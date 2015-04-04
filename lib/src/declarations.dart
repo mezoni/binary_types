@@ -29,25 +29,6 @@ class _Declarations {
       env.addAll(environment);
     }
 
-    if (!env.containsKey("__ARCH__")) {
-      var architecture = SysInfo.processors.first.architecture;
-      env["__ARCH__"] = architecture.toString();
-    }
-
-    if (!env.containsKey("__BITNESS__")) {
-      var bitness = types["size_t"].size * 8;
-      env["__BITNESS__"] = bitness.toString();
-    }
-
-    if (!env.containsKey("__MODEL__")) {
-      var dataModelName = _getDataModelName();
-      env["__MODEL__"] = dataModelName;
-    }
-
-    if (!env.containsKey("__OS__")) {
-      env["__OS__"] = Platform.operatingSystem;
-    }
-
     var definitions = types._definitions;
     var files = types._headers;
     var declarations = new Declarations(filename, files, definitions: definitions, environment: env);
@@ -340,31 +321,6 @@ class _Declarations {
     var result =
         reader.getIntegerArgument("aligned", 0, new IntegerLiteral(text: "16", value: 16), maxLength: 1, minLength: 0);
     return result;
-  }
-
-  String _getDataModelName() {
-    var bits = <int>[];
-    bits.add(_dataModel.sizeOfChar * 8);
-    bits.add(_dataModel.sizeOfShort * 8);
-    bits.add(_dataModel.sizeOfInt * 8);
-    bits.add(_dataModel.sizeOfLong * 8);
-    bits.add(_dataModel.sizeOfPointer * 8);
-    bits.add(_dataModel.sizeOfLongLong * 8);
-    var model = bits.join("/");
-    switch (model) {
-      case "8/16/32/64/64/64":
-        return "LP64";
-      case "8/16/64/64/64/64":
-        return "ILP64";
-      case "8/16/32/32/64/64":
-        return "LLP64";
-      case "8/16/32/32/32/64":
-        return "ILP32";
-      case "8/16/16/32/32/64":
-        return "LP32";
-    }
-
-    return "";
   }
 
   List<DeclarationSpecifiers> _getDeclarationMetadata(Declaration declaration) {
