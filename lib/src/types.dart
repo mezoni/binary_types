@@ -180,16 +180,6 @@ class BinaryTypes {
     variants = _reproduce2([["long long", "int", "unsigned"], ["long long", "unsigned"]]);
     _cloneBasicInt(IntType.createLongLong(false, _dataModel), variants);
 
-    // Fixed size integers
-    _cloneInt(1, true, const ["int8_t"], true);
-    _cloneInt(2, true, const ["int16_t"], true);
-    _cloneInt(4, true, const ["int32_t"], true);
-    _cloneInt(8, true, const ["int64_t"], true);
-    _cloneInt(1, false, const ["uint8_t"], true);
-    _cloneInt(2, false, const ["uint16_t"], true);
-    _cloneInt(4, false, const ["uint32_t"], true);
-    _cloneInt(8, false, const ["uint64_t"], true);
-
     // Pointer size
     _cloneInt(_dataModel.sizeOfPointer, true, const ["intptr_t"], true);
 
@@ -216,6 +206,17 @@ class BinaryTypes {
     _define("__INT_BIT__", _dataModel.sizeOfInt * 8);
     _define("__LONG_BIT__", _dataModel.sizeOfLong * 8);
     _define("__LLONG_BIT__", _dataModel.sizeOfLongLong * 8);
+    // For "stdint.h"
+    _define("__INT8__", IntType.create(1, true, _dataModel).name);
+    _define("__INT16__", IntType.create(2, true, _dataModel).name);
+    _define("__INT32__", IntType.create(4, true, _dataModel).name);
+    _define("__INT64__", IntType.create(8, true, _dataModel).name);
+    _define("__UINT8__", IntType.create(1, false, _dataModel).name);
+    _define("__UINT16__", IntType.create(2, false, _dataModel).name);
+    _define("__UINT32__", IntType.create(4, false, _dataModel).name);
+    _define("__UINT64__", IntType.create(8, false, _dataModel).name);
+    _define("__INTPTR__", IntType.create(_dataModel.sizeOfPointer, true, _dataModel).name);
+    _define("__UINTPTR__", IntType.create(_dataModel.sizeOfPointer, false, _dataModel).name);
 
     // Common information
     _define("__ARCH__", SysInfo.processors.first.architecture);

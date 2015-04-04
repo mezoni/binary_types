@@ -21,6 +21,15 @@ void main() {
 const Map HEADERS = const {"binary_types/test_binary_types/header.h": _header};
 
 const String _header = '''
+typedef __INT8__ int8_t;
+typedef __INT16__ int16_t;
+typedef __INT32__ int32_t;
+typedef __INT64__ int64_t;
+typedef __UINT8__ uint8_t;
+typedef __UINT16__ uint16_t;
+typedef __UINT32__ uint32_t;
+typedef __UINT64__ uint64_t;
+
 bar();
 void test(void);
 int *baz(int **(*foo)()[2+2]);
