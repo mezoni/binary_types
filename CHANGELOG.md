@@ -1,5 +1,6 @@
 ## 0.0.42
 
+- Added environment variable `__ARCH__` according to the `SysInfo.processors.first.architecture` from package `system_info`
 - Breaking changes. Declarations now based on the `header` files
 - Initial support of 'header' files
 - Made adaptations to the new version of package `binary_declarations`
