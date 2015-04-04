@@ -205,9 +205,9 @@ class BinaryTypes {
 
     // Definitions
     if (_dataModel.isCharSigned) {
-      _define("__SCHAR_MIN__", -(1 << _dataModel.sizeOfChar * 8) ~/ 2);
+      _define("__CHAR_MIN__", -(1 << _dataModel.sizeOfChar * 8) ~/ 2);
     } else {
-      _define("__SCHAR_MIN__", 0);
+      _define("__CHAR_MIN__", 0);
     }
 
     // For "limits.h"
