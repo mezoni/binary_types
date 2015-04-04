@@ -96,6 +96,11 @@ class FunctionType extends BinaryType {
     return null;
   }
 
+  /**
+   * Returns the identifier.
+   */
+  String get identifier => _identifier;
+
   BinaryKinds get kind => BinaryKinds.FUNCTION;
 
   String get name {
