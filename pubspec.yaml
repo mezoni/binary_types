@@ -8,6 +8,7 @@ dependencies:
     git: https://github.com/mezoni/binary_declarations
   macro_processor:
     git: https://github.com/mezoni/macro_processor
+  system_info: any
   unsafe_extension: any
 dev_dependencies:
   unittest: any

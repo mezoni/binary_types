@@ -29,8 +29,9 @@ class _Declarations {
       env.addAll(environment);
     }
 
-    if (!env.containsKey("__OS__")) {
-      env["__OS__"] = Platform.operatingSystem;
+    if (!env.containsKey("__ARCH__")) {
+      var architecture = SysInfo.processors.first.architecture;
+      env["__ARCH__"] = architecture.toString();
     }
 
     if (!env.containsKey("__BITNESS__")) {
@@ -41,6 +42,10 @@ class _Declarations {
     if (!env.containsKey("__MODEL__")) {
       var dataModelName = _getDataModelName();
       env["__MODEL__"] = dataModelName;
+    }
+
+    if (!env.containsKey("__OS__")) {
+      env["__OS__"] = Platform.operatingSystem;
     }
 
     var definitions = types._definitions;
