@@ -11,6 +11,10 @@ class BinaryTypeError implements Exception {
     throw new BinaryTypeError("Creation an array of the type '$type' is not allowed");
   }
 
+  static void conflictingPrototypes(String name) {
+    throw new BinaryTypeError("Conflicting prototypes for '$name'");
+  }
+
   static void declarationError(Declaration declaration, String message) {
     throw new BinaryTypeError("Declaration '$declaration' has error: $message");
   }
@@ -36,11 +40,13 @@ class BinaryTypeError implements Exception {
   }
 
   static void incompleteFunctionParameterType(String name, int index, BinaryType parameter) {
-    throw new BinaryTypeError("Illegal use of incomplete type '$parameter' as the #$index parameter of function '$name'");
+    throw new BinaryTypeError(
+        "Illegal use of incomplete type '$parameter' as the #$index parameter of function '$name'");
   }
 
   static void incompleteMemberType(StructType structureType, BinaryType memberType) {
-    throw new BinaryTypeError("Illegal use of incomplete type '$memberType' as the member of the type '$structureType'");
+    throw new BinaryTypeError(
+        "Illegal use of incomplete type '$memberType' as the member of the type '$structureType'");
   }
 
   static void indexOutOfArange(BinaryType type, int index, int range) {
@@ -109,7 +115,8 @@ class BinaryTypeError implements Exception {
   }
 
   static void unableGetOffsetOfBitFieldMember(StructureType structureType, String memberName) {
-    throw new BinaryTypeError("Unable to 'get offset' of the bit-field member '$memberName' for the type '$structureType'");
+    throw new BinaryTypeError(
+        "Unable to 'get offset' of the bit-field member '$memberName' for the type '$structureType'");
   }
 
   static void unableModifyTypeSynonym(BinaryType original, String synonym) {
@@ -141,11 +148,13 @@ class BinaryTypeError implements Exception {
   }
 
   static void valueLengthMustBeEqualArrayLength(ArrayType array, int length) {
-    throw new BinaryTypeError("Value length '$length' must be the same as the length '${array.length}' of the array '$array'");
+    throw new BinaryTypeError(
+        "Value length '$length' must be the same as the length '${array.length}' of the array '$array'");
   }
 
   static void valueLengthMustBeEqualNumberOfMembers(BinaryType type, int number, int length) {
-    throw new BinaryTypeError("Value length '$length' must be the same as the number of members '$number' of the type '$type'");
+    throw new BinaryTypeError(
+        "Value length '$length' must be the same as the number of members '$number' of the type '$type'");
   }
 
   static void variableParameterMustBeLastParameter(String name) {

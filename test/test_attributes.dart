@@ -1,125 +1,12 @@
 import 'package:binary_types/binary_types.dart';
 import 'package:unittest/unittest.dart';
 
-const String _temp = '''
-''';
-
-const String _header = '''
-// align 1
-typedef int __attribute__((aligned(1))) INT1 __attribute__((aligned(2)));
-
-// align 2
-typedef int __attribute__((aligned(2))) INT2 __attribute__((aligned(1)));
-
-// align 16
-typedef int INT16 __attribute__((aligned(16)));
-
-// align 1
-typedef float __attribute__((aligned(1))) FLOAT1 __attribute__((aligned(2)));
-
-// align 2
-typedef float __attribute__((aligned(2))) FLOAT2 __attribute__((aligned(1)));
-
-// align 16
-typedef float FLOAT16 __attribute__((aligned(16)));
-
-// align 16
-enum enum0 { A1 } __attribute__((aligned(16)));
-
-// align 16
-enum __attribute__((aligned(16))) enum1 { A2 };
-
-// align 32
-enum __attribute__((aligned(16))) enum2 { A3 } __attribute__((aligned(32)));
-
-// align 16
-typedef enum enum3 { A4 } __attribute__((aligned(16))) E0;
-
-// align 16
-typedef enum __attribute__((aligned(16))) enum4 { A5 } E1;
-
-// align 32
-typedef enum __attribute__((aligned(16))) enum5 { A6 } __attribute__((aligned(32))) E2;
-
-// align 64
-typedef enum enum6 { A7 } __attribute__((aligned(16))) E3 __attribute__((aligned(64)));
-
-// align 64
-typedef enum __attribute__((aligned(16))) enum7 { A8 } E4 __attribute__((aligned(64)));
-
-// align 64
-typedef enum __attribute__((aligned(16))) enum8 { A9 } __attribute__((aligned(32))) E5 __attribute__((aligned(64)));
-
-// align 16
-// size 16
-struct struct0 { int i; } __attribute__((aligned(16)));
-
-// align 16
-// size 16
-struct __attribute__((aligned(16))) struct1 { int i; };
-
-// align 32
-// size 32
-struct __attribute__((aligned(16))) struct2 { int i; } __attribute__((aligned(32)));
-
-// align 4
-// size 4
-struct struct_with_int { int i; } __attribute__((aligned(1)));
-
-// align 4
-// size 8
-struct struct_with_char_and_int { char c; int i; } __attribute__((aligned(1)));
-
-// align 1
-// size 5
-struct struct_with_char_and_INT1 { char c; INT1 i; } __attribute__((aligned(1)));
-
-struct s {
-    int i;
-};
-
-typedef struct s S; 
-
-struct s_with_i {
-    char  c;
-    int i __attribute__((aligned(1)));
-};
-
-struct s_with_I {
-    char  c;
-    INT1 i __attribute__((aligned(1)));
-};
-
-struct s_with_s {
-    char  c;
-    struct s s __attribute__((aligned(1)));
-};
-
-struct s_with_S {
-    char  c;
-    S s __attribute__((aligned(1)));
-};
-
-// sizeof (struct s_with_i): 8                                                                                                                                 
-// alignof(struct s_with_i): 4                                                                                                                                 
-// sizeof (struct s_with_I): 5                                                                                                                                 
-// alignof(struct s_with_I): 1                                                                                                                                 
-// sizeof (struct s_with_s): 8                                                                                                                                   
-// alignof(struct s_with_s): 4                                                                                                                                   
-// sizeof (struct s_with_S): 5                                                                                                                                   
-// alignof(struct s_with_S): 1
-
-''';
-
 void main() {
-  var t = new BinaryTypes();
-  var helper = new BinaryTypeHelper(t);
-  helper.declare(_temp);
-
   group("Attributes", () {
     var t = new BinaryTypes();
     var helper = new BinaryTypeHelper(t);
-    helper.declare(_header);
+    helper.addHeaders(HEADERS);
+    helper.declare(HEADERS.keys.first);
     test("Enums", () {
       var name = "enum enum0";
       var align = t[name].align;
@@ -249,3 +136,112 @@ void main() {
     });
   });
 }
+
+const Map HEADERS = const {"binary_types/test_attributes/header.h": _header};
+
+const String _header = '''
+// align 1
+typedef int __attribute__((aligned(1))) INT1 __attribute__((aligned(2)));
+
+// align 2
+typedef int __attribute__((aligned(2))) INT2 __attribute__((aligned(1)));
+
+// align 16
+typedef int INT16 __attribute__((aligned(16)));
+
+// align 1
+typedef float __attribute__((aligned(1))) FLOAT1 __attribute__((aligned(2)));
+
+// align 2
+typedef float __attribute__((aligned(2))) FLOAT2 __attribute__((aligned(1)));
+
+// align 16
+typedef float FLOAT16 __attribute__((aligned(16)));
+
+// align 16
+enum enum0 { A1 } __attribute__((aligned(16)));
+
+// align 16
+enum __attribute__((aligned(16))) enum1 { A2 };
+
+// align 32
+enum __attribute__((aligned(16))) enum2 { A3 } __attribute__((aligned(32)));
+
+// align 16
+typedef enum enum3 { A4 } __attribute__((aligned(16))) E0;
+
+// align 16
+typedef enum __attribute__((aligned(16))) enum4 { A5 } E1;
+
+// align 32
+typedef enum __attribute__((aligned(16))) enum5 { A6 } __attribute__((aligned(32))) E2;
+
+// align 64
+typedef enum enum6 { A7 } __attribute__((aligned(16))) E3 __attribute__((aligned(64)));
+
+// align 64
+typedef enum __attribute__((aligned(16))) enum7 { A8 } E4 __attribute__((aligned(64)));
+
+// align 64
+typedef enum __attribute__((aligned(16))) enum8 { A9 } __attribute__((aligned(32))) E5 __attribute__((aligned(64)));
+
+// align 16
+// size 16
+struct struct0 { int i; } __attribute__((aligned(16)));
+
+// align 16
+// size 16
+struct __attribute__((aligned(16))) struct1 { int i; };
+
+// align 32
+// size 32
+struct __attribute__((aligned(16))) struct2 { int i; } __attribute__((aligned(32)));
+
+// align 4
+// size 4
+struct struct_with_int { int i; } __attribute__((aligned(1)));
+
+// align 4
+// size 8
+struct struct_with_char_and_int { char c; int i; } __attribute__((aligned(1)));
+
+// align 1
+// size 5
+struct struct_with_char_and_INT1 { char c; INT1 i; } __attribute__((aligned(1)));
+
+struct s {
+    int i;
+};
+
+typedef struct s S; 
+
+struct s_with_i {
+    char  c;
+    int i __attribute__((aligned(1)));
+};
+
+struct s_with_I {
+    char  c;
+    INT1 i __attribute__((aligned(1)));
+};
+
+struct s_with_s {
+    char  c;
+    struct s s __attribute__((aligned(1)));
+};
+
+struct s_with_S {
+    char  c;
+    S s __attribute__((aligned(1)));
+};
+
+// sizeof (struct s_with_i): 8                                                                                                                                 
+// alignof(struct s_with_i): 4                                                                                                                                 
+// sizeof (struct s_with_I): 5                                                                                                                                 
+// alignof(struct s_with_I): 1                                                                                                                                 
+// sizeof (struct s_with_s): 8                                                                                                                                   
+// alignof(struct s_with_s): 4                                                                                                                                   
+// sizeof (struct s_with_S): 5                                                                                                                                   
+// alignof(struct s_with_S): 1
+
+''';

@@ -130,7 +130,6 @@ class StorageUnits {
           if (isStruct) {
             offset += sizeInBytes;
           }
-
         } else {
           var last = group.last;
           var type = last.type;
@@ -150,7 +149,6 @@ class StorageUnits {
           if (isStruct) {
             offset += type.size;
           }
-
         }
       } else {
         assert(group.length == 1);
@@ -175,7 +173,6 @@ class StorageUnits {
           if (isStruct) {
             offset += memberType.size;
           }
-
         } else {
           var align = _Utils.getMemberAlignment(member.type, member.align, packed);
           offset = _Utils.alignOffset(offset, align);
@@ -209,7 +206,6 @@ class StorageUnits {
 
             group.add(member);
           }
-
         } else {
           var totalBits = member.width;
           var unitSize = member.type.size;
@@ -286,12 +282,10 @@ class StorageUnits {
 
             result.add(largest);
           }
-
         } else {
           result.add(member);
           leading = false;
         }
-
       } else {
         result.add(member);
         leading = true;
@@ -317,7 +311,6 @@ class StorageUnits {
           if (i + 1 != length && isStruct) {
             BinaryTypeError.flexibleArrayMemberNotAtEndOfStruct(structureType, member.name);
           }
-
         } else {
           BinaryTypeError.incompleteMemberType(structureType, memberType);
         }

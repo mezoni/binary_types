@@ -83,7 +83,7 @@ class EnumType extends BinaryType {
           throw new ArgumentError("List of enumerators contains invalid elements.");
         }
 
-        if(values.containsKey(name)) {
+        if (values.containsKey(name)) {
           throw new ArgumentError("Duplicate enumerator: $name");
         }
 

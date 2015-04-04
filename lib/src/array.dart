@@ -132,15 +132,13 @@ class ArrayType extends BinaryType {
         BinaryTypeError.valueLengthExceedsArrayLength(this, value.length);
       }
 
-      for (var i = 0,
-          offs = offset; i < available; i++, offs += _typeSize) {
+      for (var i = 0, offs = offset; i < available; i++, offs += _typeSize) {
         type._setValue(base, offs, value[i]);
       }
 
       if (rest > 0) {
         Unsafe.memorySet(base, offset + _typeSize * available, 0, rest * _typeSize);
       }
-
     } else if (value == null) {
       Unsafe.memorySet(base, 0, 0, _typeSize * length);
     } else {

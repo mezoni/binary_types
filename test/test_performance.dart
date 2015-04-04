@@ -154,5 +154,8 @@ void testSpeed() {
     print('Binary: ${i1.type} writing $size times in ${sw.elapsedMilliseconds} ms');
   }
 
+  // Prevent to earlier freeing by the garbage collector
+  ia.keepAlive();
+  i1.keepAlive();
   print("Done.");
 }

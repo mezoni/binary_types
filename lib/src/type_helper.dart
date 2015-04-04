@@ -29,6 +29,65 @@ class BinaryTypeHelper {
    */
   Map<String, int> get enumerators => _enumerators;
 
+
+  /**
+   * Returns the function prototypes.
+   */
+  Map<String, Prototype> get prototypes => types._prototypes;
+
+  /**
+   * Adds the binary header to the list of available headers.
+   *
+   * Parameters:
+   *   [String] name
+   *   Header name.
+   *
+   *   [String] text
+   *   Header text.
+   */
+  void addHeader(String name, String text) {
+    if (name == null) {
+      throw new ArgumentError.notNull("name");
+    }
+
+    if (name.isEmpty) {
+      throw new ArgumentError("Header name cannot be empty");
+    }
+
+    if (text == null) {
+      throw new ArgumentError.notNull("text");
+    }
+
+    var headers = types._headers;
+    var found = headers[name];
+    if (found == null) {
+      headers[name] = text;
+    } else if (text != found) {
+      throw new ArgumentError("Header text '$name' does not match text of an existing header");
+    }
+  }
+
+  /**
+   * Adds the binary header to the list of available headers.
+   *
+   * Parameters:
+   *   [String] name
+   *   Header name.
+   *
+   *   [String] text
+   *   Header text.
+   */
+  void addHeaders(Map<String, String> headers) {
+    if (headers == null) {
+      throw new ArgumentError.notNull("headers");
+    }
+
+    for (var name in headers.keys) {
+      var text = headers[name];
+      addHeader(name, text);
+    }
+  }
+
   /**
    * Allocates the memory for null-terminated string and returns the binary
    * array object.
@@ -51,22 +110,15 @@ class BinaryTypeHelper {
    * Declares the types specified in textual format.
    *
    * Parameters:
-   *   [String] text
-   *   Declarations in textual format.
+   *   [String] filename
+   *   Name of the header file.
    *
    *   [Map]<[String], [String]> environment
    *   Environment values for preprocessing declarations.
-   *
-   *   [Map]<[String], [FunctionType]> functions
-   *   Symbol table for the declared functions.
-   *
-   *   [Map]<[String], [BinaryType]> variables
-   *   Symbol table for the declared variables.
    */
-  Declarations declare(String source,
-      {Map<String, String> environment, Map<String, FunctionType> functions, Map<String, BinaryType> variables}) {
+  Declarations declare(String filename, {Map<String, String> environment}) {
     var declaration = new _Declarations(types);
-    return declaration.declare(source, environment: environment, functions: functions, variables: variables);
+    return declaration.declare(filename, environment: environment);
   }
 
   /**

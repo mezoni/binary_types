@@ -1,7 +1,26 @@
 import 'package:binary_types/binary_types.dart';
 import 'package:unittest/unittest.dart';
 
-var _header = '''
+void main() {
+  var test = new Test();
+  test.testAlloc();
+  test.testArrays();
+  test.testBitFields();
+  test.testBools();
+  test.testCommon();
+  test.testCStrings();
+  test.testEnums();
+  test.testFloats();
+  test.testFunctions();
+  test.testIntegers();
+  test.testPointers();
+  test.testStructs();
+  print('Done');
+}
+
+const Map HEADERS = const {"binary_types/test_binary_types/header.h": _header};
+
+const String _header = '''
 bar();
 void test(void);
 int *baz(int **(*foo)()[2+2]);
@@ -104,23 +123,6 @@ typedef union union_with_bool {
 } union_with_bool_t;
 ''';
 
-void main() {
-  var test = new Test();
-  test.testAlloc();
-  test.testArrays();
-  test.testBitFields();
-  test.testBools();
-  test.testCommon();
-  test.testCStrings();
-  test.testEnums();
-  test.testFloats();
-  test.testFunctions();
-  test.testIntegers();
-  test.testPointers();
-  test.testStructs();
-  print('Done');
-}
-
 class Expect {
   static void equals(actual, expected, String reason) {
     expect(actual, expected, reason: reason);
@@ -139,7 +141,8 @@ class Test {
   Test() {
     t = new BinaryTypes();
     helper = new BinaryTypeHelper(t);
-    helper.declare(_header);
+    helper.addHeaders(HEADERS);
+    helper.declare(HEADERS.keys.first);
   }
 
   BinaryObject alloc(String type, [value]) => t[type].alloc(value);
@@ -193,28 +196,6 @@ class Test {
     group("Bit-fields.", () {
       test("Access data through the bit-fields.", () {
         // TODO: Implement bit-fields tests
-      });
-    });
-  }
-
-  void testCStrings() {
-    group("'C' string binary types.", () {
-      test("Access data through 'C' string binary types.", () {
-        var testString = "Hello";
-        var codeUnits = testString.codeUnits;
-        final ca = helper.allocString(testString);
-        var length = testString.length;
-        for (var i = 0; i < length; i++) {
-          // ca[i]
-          var c = ca[i].value;
-          Expect.isTrue(c == codeUnits[i], "ca[$i]");
-        }
-
-        Expect.isTrue(ca[length].value == 0, "*ca[length] == 0;");
-
-        //
-        var strFromMemory = helper.readString(ca);
-        Expect.isTrue(strFromMemory == testString, "testString == strFromMemory;");
       });
     });
   }
@@ -313,6 +294,28 @@ class Test {
         //Expect.equals(s1['ip'], ip, 's1.ip == ip');
         //Expect.equals(s1['vp'], ip, 's1.vp == ip');
         //Expect.equals(s1['ip'], int32, 's1.ip = int32');
+      });
+    });
+  }
+
+  void testCStrings() {
+    group("'C' string binary types.", () {
+      test("Access data through 'C' string binary types.", () {
+        var testString = "Hello";
+        var codeUnits = testString.codeUnits;
+        final ca = helper.allocString(testString);
+        var length = testString.length;
+        for (var i = 0; i < length; i++) {
+          // ca[i]
+          var c = ca[i].value;
+          Expect.isTrue(c == codeUnits[i], "ca[$i]");
+        }
+
+        Expect.isTrue(ca[length].value == 0, "*ca[length] == 0;");
+
+        //
+        var strFromMemory = helper.readString(ca);
+        Expect.isTrue(strFromMemory == testString, "testString == strFromMemory;");
       });
     });
   }

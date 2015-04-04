@@ -65,3 +65,7 @@
 0.0.39 Changes in `BinaryData.toString()`. Now the binary data is displayed as "type (address)" (eg. `char [6] (9484648h)`)
 0.0.40 Unnecessary code from the constructor `ArrayType` moved to another location (`Type.formatName()`)
 0.0.41 Added predefined environment variable `__MODEL__`. Possible values are `ILP32`` ILP64` `LLP64`` LP32` `LP64` and empty value (for the unknown data models) 
+0.0.42 Made adaptations to the new version of package `binary_declarations`
+0.0.42 Made adaptations to the new version of package `macro_processor`
+0.0.42 Initial support of 'header' files
+0.0.42 Breaking changes. Declarations now based on the `header` files

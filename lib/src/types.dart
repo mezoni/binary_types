@@ -6,7 +6,15 @@ part of binary_types;
 class BinaryTypes {
   DataModel _dataModel;
 
+  Map<String, MacroDefinition> _definitions = <String, MacroDefinition>{};
+
   Map<String, int> _enumerators = new Map<String, int>();
+
+  Map<String, dynamic> _environment = new Map<String, dynamic>();
+  
+  Map<String, String> _headers = new Map<String, String>();
+
+  Map<String, Prototype> _prototypes = <String, Prototype>{};
 
   Map<String, BinaryType> _tags = new Map<String, BinaryType>();
 
@@ -37,7 +45,10 @@ class BinaryTypes {
         BinaryTypeError.differentDataModel();
       }
 
+      _definitions.addAll(types._definitions);
       _enumerators.addAll(types._enumerators);
+      _environment.addAll(types._environment);
+      _headers.addAll(types._headers);
       _tags.addAll(types._tags);
       _types.addAll(types._types);
     } else {

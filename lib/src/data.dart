@@ -23,6 +23,14 @@ class BinaryData {
     return base + offset;
   }
 
+  bool get isNullPtr {
+    if (base != 0) {
+      return false;
+    }
+
+    return offset == 0;
+  }
+
   /**
    * Reads the data from the memory and returns the converted value.
    */
@@ -45,14 +53,6 @@ class BinaryData {
 
   BinaryData operator [](index) {
     return type._getElement(base, offset, index);
-  }
-
-  bool get isNullPtr {
-    if (base != 0) {
-      return false;
-    }
-
-    return offset == 0;
   }
 
   void operator []=(index, value) {

@@ -8,7 +8,8 @@ import 'package:unittest/unittest.dart';
 void main() {
   var t = new BinaryTypes();
   var helper = new BinaryTypeHelper(t);
-  helper.declare(_header);
+  helper.addHeaders(HEADERS);
+  helper.declare(HEADERS.keys.first);
   group("Struct packing and aligning.", () {
     test("Packing.", () {
       /*
@@ -201,6 +202,8 @@ void main() {
     });
   });
 }
+
+const Map HEADERS = const {"binary_types/test_packed_struct_align/header.h": _header};
 
 const String _header = '''
 // https://github.com/llvm-mirror/clang/blob/master/test/Sema/struct-packed-align.c

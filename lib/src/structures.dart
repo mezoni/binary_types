@@ -490,7 +490,7 @@ class UnionType extends StructureType {
   UnionType(String tag, DataModel dataModel, {int align}) : super("union", tag, dataModel, align: align);
 
   UnionType _clone({int align}) {
-     return new UnionType(tag, _dataModel, align: align);
+    return new UnionType(tag, _dataModel, align: align);
   }
 
   void _initialize(int base, int offset, value) {

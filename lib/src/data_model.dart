@@ -7,7 +7,7 @@ part of binary_types;
 class DataModel {
   static final DataModel current = new DataModel();
 
-  static Map<int, DataModel> _dataModels = <int, DataModel>{};
+  static Map<String, Object> _ids = <String, Object>{};
 
   /**
    * Alignment of data for the binary type "double".
@@ -89,7 +89,12 @@ class DataModel {
    */
   final int sizeOfPointer;
 
-  factory DataModel({int alignOfDouble: 8, int alignOfFloat: 4, int alignOfInt16: 2, int alignOfInt32: 4, int alignOfInt64: 8, int alignOfInt8: 1, int alignOfPointer, bool isCharSigned: true, int sizeOfChar: 1, int sizeOfDouble: 8, int sizeOfFloat: 4, int sizeOfInt: 4, int sizeOfLong, int sizeOfLongLong: 8, int sizeOfPointer, int sizeOfShort: 2}) {
+  Object _id;
+
+  factory DataModel({int alignOfDouble: 8, int alignOfFloat: 4, int alignOfInt16: 2, int alignOfInt32: 4,
+      int alignOfInt64: 8, int alignOfInt8: 1, int alignOfPointer, bool isCharSigned: true, int sizeOfChar: 1,
+      int sizeOfDouble: 8, int sizeOfFloat: 4, int sizeOfInt: 4, int sizeOfLong, int sizeOfLongLong: 8,
+      int sizeOfPointer, int sizeOfShort: 2}) {
     if (sizeOfPointer == null) {
       sizeOfPointer = Unsafe.sizeOfPointer;
     }
@@ -109,42 +114,80 @@ class DataModel {
         throw new UnsupportedError("Unsupported size of pointer: ${sizeOfPointer}");
     }
 
-    var key = 0;
-    var list = new List<int>(15);
-    list[0] = alignOfInt8;
-    list[1] = alignOfInt16;
-    list[2] = alignOfInt32;
-    list[3] = alignOfInt64;
-    list[4] = alignOfDouble;
-    list[5] = alignOfFloat;
-    list[6] = alignOfPointer;
-    list[7] = sizeOfChar;
-    list[8] = sizeOfShort;
-    list[9] = sizeOfInt;
-    list[10] = sizeOfLong;
-    list[11] = sizeOfLongLong;
-    list[12] = sizeOfDouble;
-    list[13] = sizeOfFloat;
-    list[14] = sizeOfPointer;
-    for (var i = 0; i < 15; i++) {
-      var value = list[i];
-      while (value != 0) {
-        key <<= 1;
-        key |= value & 1;
-        value >>= 1;
-      }
-    }
-
-    key <<= 1;
-    key |= isCharSigned ? 0 : 1;
-    var dataModel = _dataModels[key];
-    if (dataModel == null) {
-      dataModel = new DataModel._internal(alignOfDouble: alignOfDouble, alignOfFloat: alignOfFloat, alignOfInt16: alignOfInt16, alignOfInt32: alignOfInt32, alignOfInt64: alignOfInt64, alignOfInt8: alignOfInt8, alignOfPointer: alignOfPointer, isCharSigned: isCharSigned, sizeOfChar: sizeOfChar, sizeOfDouble: sizeOfDouble, sizeOfFloat: sizeOfFloat, sizeOfInt: sizeOfInt, sizeOfLong: sizeOfLong, sizeOfLongLong: sizeOfLongLong, sizeOfPointer: sizeOfPointer, sizeOfShort: sizeOfShort);
-      _dataModels[key] = dataModel;
-    }
-
+    var dataModel = new DataModel._internal(
+        alignOfDouble: alignOfDouble,
+        alignOfFloat: alignOfFloat,
+        alignOfInt16: alignOfInt16,
+        alignOfInt32: alignOfInt32,
+        alignOfInt64: alignOfInt64,
+        alignOfInt8: alignOfInt8,
+        alignOfPointer: alignOfPointer,
+        isCharSigned: isCharSigned,
+        sizeOfChar: sizeOfChar,
+        sizeOfDouble: sizeOfDouble,
+        sizeOfFloat: sizeOfFloat,
+        sizeOfInt: sizeOfInt,
+        sizeOfLong: sizeOfLong,
+        sizeOfLongLong: sizeOfLongLong,
+        sizeOfPointer: sizeOfPointer,
+        sizeOfShort: sizeOfShort);
     return dataModel;
   }
 
-  DataModel._internal({this.alignOfDouble, this.alignOfFloat, this.alignOfInt16, this.alignOfInt32, this.alignOfInt64, this.alignOfInt8, this.alignOfPointer, this.isCharSigned, this.sizeOfChar, this.sizeOfDouble, this.sizeOfFloat, this.sizeOfInt, this.sizeOfLong, this.sizeOfLongLong, this.sizeOfPointer, this.sizeOfShort});
+  DataModel._internal({this.alignOfDouble, this.alignOfFloat, this.alignOfInt16, this.alignOfInt32, this.alignOfInt64,
+      this.alignOfInt8, this.alignOfPointer, this.isCharSigned, this.sizeOfChar, this.sizeOfDouble, this.sizeOfFloat,
+      this.sizeOfInt, this.sizeOfLong, this.sizeOfLongLong, this.sizeOfPointer, this.sizeOfShort});
+
+  Object get id {
+    if (_id == null) {
+      var sb = new StringBuffer();
+      sb.write(alignOfDouble);
+      sb.write("|");
+      sb.write(alignOfFloat);
+      sb.write("|");
+      sb.write(alignOfInt16);
+      sb.write("|");
+      sb.write(alignOfInt32);
+      sb.write("|");
+      sb.write(alignOfInt64);
+      sb.write("|");
+      sb.write(alignOfInt8);
+      sb.write("|");
+      sb.write(alignOfPointer);
+      sb.write("|");
+      sb.write(isCharSigned);
+      sb.write("|");
+      sb.write(sizeOfChar);
+      sb.write("|");
+      sb.write(sizeOfDouble);
+      sb.write("|");
+      sb.write(sizeOfFloat);
+      sb.write("|");
+      sb.write(sizeOfInt);
+      sb.write("|");
+      sb.write(sizeOfLong);
+      sb.write("|");
+      sb.write(sizeOfLongLong);
+      sb.write("|");
+      sb.write(sizeOfPointer);
+      sb.write("|");
+      sb.write(sizeOfShort);
+      var key = sb.toString();
+      _id = _ids[key];
+      if (_id == null) {
+        _id = new Object();
+        _ids[key] = _id;
+      }
+    }
+    
+    return _id;
+  }
+
+  bool operator ==(other) {
+    if (other is DataModel) {
+      return id == other.id;
+    }
+
+    return false;
+  }
 }

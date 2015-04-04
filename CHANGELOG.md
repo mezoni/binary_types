@@ -1,3 +1,10 @@
+## 0.0.42
+
+- Breaking changes. Declarations now based on the `header` files
+- Initial support of 'header' files
+- Made adaptations to the new version of package `binary_declarations`
+- Made adaptations to the new version of package `macro_processor`
+
 ## 0.0.41
 
 - Added predefined environment variable `__MODEL__`. Possible values are `ILP32`` ILP64` `LLP64`` LP32` `LP64` and empty value (for the unknown data models) 

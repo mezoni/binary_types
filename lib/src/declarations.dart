@@ -5,11 +5,9 @@ class _Declarations {
 
   DataModel _dataModel;
 
-  Map<String, FunctionType> _functions;
+  Map<String, Prototype> _prototypes;
 
   _Scope _scope;
-
-  Map<String, BinaryType> _variables;
 
   _Declarations(this.types) {
     if (types == null) {
@@ -19,22 +17,12 @@ class _Declarations {
     _dataModel = types["int"].dataModel;
   }
 
-  Declarations declare(String source,
-      {Map<String, String> environment, Map<String, FunctionType> functions, Map<String, BinaryType> variables}) {
-    if (source == null) {
-      throw new ArgumentError.notNull("source");
+  Declarations declare(String filename, {Map<String, dynamic> environment}) {
+    if (filename == null) {
+      throw new ArgumentError.notNull("filename");
     }
 
-    if (functions == null) {
-      functions = <String, FunctionType>{};
-    }
-
-    if (variables == null) {
-      variables = <String, BinaryType>{};
-    }
-
-    _functions = functions;
-    _variables = variables;
+    _prototypes = types._prototypes;
     _scope = new _Scope(types);
     var env = <String, String>{};
     if (environment != null) {
@@ -55,7 +43,9 @@ class _Declarations {
       env["__MODEL__"] = dataModelName;
     }
 
-    var declarations = new Declarations(source, environment: env);
+    var definitions = types._definitions;
+    var files = types._headers;
+    var declarations = new Declarations(filename, files, definitions: definitions, environment: env);
     Declaration declaration;
     try {
       for (declaration in declarations) {
@@ -111,7 +101,47 @@ class _Declarations {
     return result;
   }
 
-  void _checkUniqueness(String name) {}
+  void _addPrototype(Prototype prototype) {
+    var name = prototype.type.name;
+    var found = _prototypes[name];
+    if (found == null) {
+      _prototypes[name] = prototype;
+      return;
+    }
+
+    var type1 = found.type;
+    var type2 = prototype.type;
+    if (type1.returnType.compatible(type1.returnType, true)) {
+      var arity = type1.arity;
+      if (arity = type2.arity) {
+        if (type1.variadic == type2.variadic) {
+          var compatible = true;
+          var parameters1 = type1.parameters;
+          var parameters2 = type2.parameters;
+          for (var i = 0; i < arity; i++) {
+            var parameter1 = parameters1[i];
+            var parameter2 = parameters2[i];
+            if (!parameter1.compatible(parameter2, true)) {
+              compatible = false;
+            }
+          }
+
+          if (compatible) {
+            _checkUniqueness(name);
+            _prototypes[name] = prototype;
+            return;
+          }
+        }
+      }
+    }
+
+    BinaryTypeError.conflictingPrototypes(name);
+  }
+
+  // TODO: _checkUniqueness()
+  void _checkUniqueness(String name) {
+    //
+  }
 
   List<DeclarationSpecifiers> _combineMetadata(TypeQualifiers qualifiers, DeclarationSpecifiers specifiers) {
     var result = <DeclarationSpecifiers>[];
@@ -130,12 +160,36 @@ class _Declarations {
     return result;
   }
 
+  // TODO: Implement _checkUniqueness()
   void _declareEnum(EnumDeclaration declaration) {
     var type = declaration.type;
     _resolveEnum(type);
   }
 
-  // TODO: Implement _checkUniqueness()
+  String _getAliasAttribute(List<DeclarationSpecifiers> specifiers) {
+    var aliases = [];
+    for (var specifier in specifiers) {
+      if (specifier != null) {
+        var reader = new AttributeReader([specifier]);
+        var alias = reader.getArgument("alias", 0, null, minLength: 1, maxLength: 1);
+        if (alias is Identifier) {
+          aliases.add(alias.name);
+        }
+      }
+    }
+
+    if (aliases.length > 1) {
+      throw new StateError("Multiple aliases are not allowed");
+    }
+
+    if (aliases.length == 0) {
+      return null;
+    }
+
+    return aliases.first;
+  }
+
+  // TODO: Implement "convention", "library" for prototypes
   void _declareFunction(FunctionDeclaration declaration) {
     var declarator = declaration.declarator;
     var type = declaration.type;
@@ -147,8 +201,24 @@ class _Declarations {
     }
 
     binaryType = _resolveDeclarator(declarator, binaryType);
-    var name = declarator.identifier.name;
-    _functions[name] = binaryType;
+    var parameters = <String>[];
+    for (var parameter in declaration.declarator.parameters.elements) {
+      String name;
+      if (parameter.declarator != null) {
+        var identifier = parameter.declarator.identifier;
+        if (identifier != null) {
+          name = identifier.name;
+        }
+      }
+
+      parameters.add(name);
+    }
+
+    var alias = _getAliasAttribute([declarator.metadata, declaration.metadata]);
+    parameters = new UnmodifiableListView<String>(parameters);
+    var prototype =
+        new Prototype(alias: alias, filename: declaration.filename, parameters: parameters, type: binaryType);
+    _addPrototype(prototype);
   }
 
   StructureMember _declareMember(ParameterDeclaration declaration) {
@@ -238,7 +308,8 @@ class _Declarations {
         BinaryTypeError.declarationError(declaration, "Unable to determine the size of the type '$binaryType'");
       }
 
-      _variables[declarator.identifier.name] = binaryType;
+      // TODO: Variables
+      //_variables[declarator.identifier.name] = binaryType;
     }
   }
 

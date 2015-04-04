@@ -286,7 +286,6 @@ abstract class BinaryType {
       if (identifier != null) {
         sb.write(identifier);
       }
-
     } else {
       switch (kind) {
         case BinaryKinds.ARRAY:
@@ -608,34 +607,26 @@ abstract class BinaryType {
   String toString() => name;
 
   dynamic _cast(value) {
-    BinaryTypeError.unablePerformingOperation(this, "cast", {
-      "value": value
-    });
+    BinaryTypeError.unablePerformingOperation(this, "cast", {"value": value});
     return null;
   }
 
   BinaryType _clone({int align});
 
   bool _compareContent(int base, int offset, value) {
-    BinaryTypeError.unablePerformingOperation(this, "compare content", {
-      "value": value
-    });
+    BinaryTypeError.unablePerformingOperation(this, "compare content", {"value": value});
     return null;
   }
 
   bool _compatible(BinaryType other, bool strong);
 
   BinaryData _getElement(int base, int offset, index) {
-    BinaryTypeError.unablePerformingOperation(this, "get element", {
-      "index": index
-    });
+    BinaryTypeError.unablePerformingOperation(this, "get element", {"index": index});
     return null;
   }
 
   dynamic _getElementValue(int base, int offset, index) {
-    BinaryTypeError.unablePerformingOperation(this, "get element value", {
-      "index": index
-    });
+    BinaryTypeError.unablePerformingOperation(this, "get element value", {"index": index});
     return null;
   }
 
@@ -650,42 +641,28 @@ abstract class BinaryType {
   }
 
   void _initialize(int base, int offset, value) {
-    BinaryTypeError.unablePerformingOperation(this, "initialize", {
-      "value": value
-    });
+    BinaryTypeError.unablePerformingOperation(this, "initialize", {"value": value});
   }
 
   int _offsetOf(String member) {
-    BinaryTypeError.unablePerformingOperation(this, "offset of", {
-      "member": member
-    });
+    BinaryTypeError.unablePerformingOperation(this, "offset of", {"member": member});
 
     return null;
   }
 
   void _setContent(int base, int offset, value) {
-    BinaryTypeError.unablePerformingOperation(this, "set content", {
-      "value": value
-    });
+    BinaryTypeError.unablePerformingOperation(this, "set content", {"value": value});
   }
 
   void _setElement(int base, int offset, index, value) {
-    BinaryTypeError.unablePerformingOperation(this, "set element", {
-      "index": index,
-      "value": value
-    });
+    BinaryTypeError.unablePerformingOperation(this, "set element", {"index": index, "value": value});
   }
 
   void _setElementValue(int base, int offset, index, value) {
-    BinaryTypeError.unablePerformingOperation(this, "set element value", {
-      "index": index,
-      "value": value
-    });
+    BinaryTypeError.unablePerformingOperation(this, "set element value", {"index": index, "value": value});
   }
 
   void _setValue(int base, int offset, value) {
-    BinaryTypeError.unablePerformingOperation(this, "set value", {
-      "value": value
-    });
+    BinaryTypeError.unablePerformingOperation(this, "set value", {"value": value});
   }
 }
