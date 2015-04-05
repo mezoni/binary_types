@@ -180,12 +180,6 @@ class BinaryTypes {
     variants = _reproduce2([["long long", "int", "unsigned"], ["long long", "unsigned"]]);
     _cloneBasicInt(IntType.createLongLong(false, _dataModel), variants);
 
-    // Pointer size
-    _cloneInt(_dataModel.sizeOfPointer, true, const ["intptr_t"], true);
-
-    // Array size
-    _cloneInt(_dataModel.sizeOfPointer, false, const ["size_t"], true);
-
     // Floating points
     _types["float"] = new FloatType(_dataModel);
     _types["double"] = new DoubleType(_dataModel);
