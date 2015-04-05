@@ -71,3 +71,4 @@
 0.0.42 Breaking changes. Declarations now based on the `header` files
 0.0.42 Added environment variable `__ARCH__` according to the `SysInfo.processors.first.architecture` from package `system_info`
 0.0.45 Fixed bugs
+0.0.46 Added possibility to retrieve the `macro definitions` from the `binary types` through the `type helper`. Can be useful in various kinds of the generators

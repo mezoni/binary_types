@@ -1,3 +1,7 @@
+## 0.0.46
+
+- Added possibility to retrieve the `macro definitions` from the `binary types` through the `type helper`. Can be useful in various kinds of the generators
+
 ## 0.0.45
 
 - Fixed bugs

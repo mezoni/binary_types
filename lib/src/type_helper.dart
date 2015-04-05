@@ -6,9 +6,9 @@ class BinaryTypeHelper {
   BinaryType _char;
 
   DataModel _dataModel;
-
+  
   Map<String, int> _enumerators;
-
+  
   BinaryTypeHelper(this.types) {
     if (types == null) {
       throw new ArgumentError.notNull("types");
@@ -23,6 +23,11 @@ class BinaryTypeHelper {
    * Data model of binary types.
    */
   DataModel get dataModel => _dataModel;
+
+  /**
+   * Returns the macro definitions.
+   */
+  Map<String, MacroDefinition> get definitions => new UnmodifiableMapView<String, MacroDefinition>(types._definitions);
 
   /**
    * Returns the enumerators.
