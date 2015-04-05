@@ -195,34 +195,34 @@ class BinaryTypes {
 
     // Definitions
     if (_dataModel.isCharSigned) {
-      _define("__CHAR_MIN__", -(1 << _dataModel.sizeOfChar * 8) ~/ 2);
+      _define("__CHAR_MIN", -(1 << _dataModel.sizeOfChar * 8) ~/ 2);
     } else {
-      _define("__CHAR_MIN__", 0);
+      _define("__CHAR_MIN", 0);
     }
 
     // For "limits.h"
-    _define("__CHAR_BIT__", _dataModel.sizeOfChar * 8);
-    _define("__SHORT_BIT__", _dataModel.sizeOfShort * 8);
-    _define("__INT_BIT__", _dataModel.sizeOfInt * 8);
-    _define("__LONG_BIT__", _dataModel.sizeOfLong * 8);
-    _define("__LONG_LONG_BIT__", _dataModel.sizeOfLongLong * 8);
-    _define("__PTR_BIT__", _dataModel.sizeOfPointer * 8);
+    _define("__CHAR_BIT", _dataModel.sizeOfChar * 8);
+    _define("__SHORT_BIT", _dataModel.sizeOfShort * 8);
+    _define("__INT_BIT", _dataModel.sizeOfInt * 8);
+    _define("__LONG_BIT", _dataModel.sizeOfLong * 8);
+    _define("__LLONG_BIT", _dataModel.sizeOfLongLong * 8);
+    _define("__PTR_BIT", _dataModel.sizeOfPointer * 8);
     // For "stdint.h"
-    _define("__INT8_TYPE__", IntType.create(1, true, _dataModel).name);
-    _define("__INT16_TYPE__", IntType.create(2, true, _dataModel).name);
-    _define("__INT32_TYPE__", IntType.create(4, true, _dataModel).name);
-    _define("__INT64_TYPE__", IntType.create(8, true, _dataModel).name);
-    _define("__UINT8_TYPE__", IntType.create(1, false, _dataModel).name);
-    _define("__UINT16_TYPE__", IntType.create(2, false, _dataModel).name);
-    _define("__UINT32_TYPE__", IntType.create(4, false, _dataModel).name);
-    _define("__UINT64_TYPE__", IntType.create(8, false, _dataModel).name);
-    _define("__INTPTR_TYPE__", IntType.create(_dataModel.sizeOfPointer, true, _dataModel).name);
-    _define("__UINTPTR_TYPE__", IntType.create(_dataModel.sizeOfPointer, false, _dataModel).name);
+    _define("__INT8_TYPE", IntType.create(1, true, _dataModel).name);
+    _define("__INT16_TYPE", IntType.create(2, true, _dataModel).name);
+    _define("__INT32_TYPE", IntType.create(4, true, _dataModel).name);
+    _define("__INT64_TYPE", IntType.create(8, true, _dataModel).name);
+    _define("__UINT8_TYPE", IntType.create(1, false, _dataModel).name);
+    _define("__UINT16_TYPE", IntType.create(2, false, _dataModel).name);
+    _define("__UINT32_TYPE", IntType.create(4, false, _dataModel).name);
+    _define("__UINT64_TYPE", IntType.create(8, false, _dataModel).name);
+    _define("__INTPTR_TYPE", IntType.create(_dataModel.sizeOfPointer, true, _dataModel).name);
+    _define("__UINTPTR_TYPE", IntType.create(_dataModel.sizeOfPointer, false, _dataModel).name);
 
     // Common information
-    _define("_ARCH_", SysInfo.processors.first.architecture);    
-    _define("_DATA_MODEL_", _getDataModelName());
-    _define("_OS_", Platform.operatingSystem);
+    _define("__ARCH", SysInfo.processors.first.architecture);
+    _define("__DATA_MODEL", _getDataModelName());
+    _define("__OS", Platform.operatingSystem);
   }
 
   List<String> _reproduce2(List<List<String>> lists) {
