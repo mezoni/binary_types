@@ -21,14 +21,14 @@ void main() {
 const Map HEADERS = const {"binary_types/test_binary_types/header.h": _header};
 
 const String _header = '''
-typedef __INT8__ int8_t;
-typedef __INT16__ int16_t;
-typedef __INT32__ int32_t;
-typedef __INT64__ int64_t;
-typedef __UINT8__ uint8_t;
-typedef __UINT16__ uint16_t;
-typedef __UINT32__ uint32_t;
-typedef __UINT64__ uint64_t;
+typedef __INT8_TYPE__ int8_t;
+typedef __INT16_TYPE__ int16_t;
+typedef __INT32_TYPE__ int32_t;
+typedef __INT64_TYPE__ int64_t;
+typedef __UINT8_TYPE__ uint8_t;
+typedef __UINT16_TYPE__ uint16_t;
+typedef __UINT32_TYPE__ uint32_t;
+typedef __UINT64_TYPE__ uint64_t;
 
 bar();
 void test(void);
