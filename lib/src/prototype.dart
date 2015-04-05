@@ -5,9 +5,7 @@ class Prototype {
 
   final String convention;
 
-  final String filename;
-
-  final String name;
+  final String filename;  
 
   final String library;
 
@@ -15,7 +13,7 @@ class Prototype {
 
   final FunctionType type;
 
-  Prototype({this.alias, this.convention, this.filename, this.library, this.name, this.parameters, this.type}) {
+  Prototype({this.alias, this.convention, this.filename, this.library, this.parameters, this.type}) {
     if (filename == null) {
       throw new ArgumentError.notNull("filename");
     }

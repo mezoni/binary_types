@@ -1,3 +1,7 @@
+## 0.0.45
+
+- Fixed bugs
+
 ## 0.0.42
 
 - Added environment variable `__ARCH__` according to the `SysInfo.processors.first.architecture` from package `system_info`

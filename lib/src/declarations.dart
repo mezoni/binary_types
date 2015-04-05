@@ -99,7 +99,7 @@ class _Declarations {
     var type2 = prototype.type;
     if (type1.returnType.compatible(type1.returnType, true)) {
       var arity = type1.arity;
-      if (arity = type2.arity) {
+      if (arity == type2.arity) {
         if (type1.variadic == type2.variadic) {
           var compatible = true;
           var parameters1 = type1.parameters;
@@ -179,7 +179,7 @@ class _Declarations {
   void _declareFunction(FunctionDeclaration declaration) {
     var declarator = declaration.declarator;
     var type = declaration.type;
-    BinaryType binaryType;
+    FunctionType binaryType;
     if (type == null) {
       binaryType = types["int"];
     } else {
@@ -202,8 +202,8 @@ class _Declarations {
 
     var alias = _getAliasAttribute([declarator.metadata, declaration.metadata]);
     parameters = new UnmodifiableListView<String>(parameters);
-    var prototype =
-        new Prototype(alias: alias, filename: declaration.filename, parameters: parameters, type: binaryType);
+    var filename = declaration.filename;
+    var prototype = new Prototype(alias: alias, filename: filename, parameters: parameters, type: binaryType);
     _addPrototype(prototype);
   }
 
