@@ -179,7 +179,7 @@ class _Declarations {
   void _declareFunction(FunctionDeclaration declaration) {
     var declarator = declaration.declarator;
     var type = declaration.type;
-    FunctionType binaryType;
+    BinaryType binaryType;
     if (type == null) {
       binaryType = types["int"];
     } else {
