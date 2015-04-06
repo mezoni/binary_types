@@ -1,5 +1,5 @@
 name: binary_types
-version: 0.0.47
+version: 0.0.48
 author: Andrew Mezoni <andrew.mezoni@gmail.com>
 description: Binary types are set of classes that allows access the binary data in "C" language way.
 homepage: https://github.com/mezoni/binary_types

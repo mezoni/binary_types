@@ -187,15 +187,19 @@ class BinaryTypes {
     // Void
     _types["void"] = new VoidType(_dataModel);
 
+    var sizeOfChar = _dataModel.sizeOfChar;
+
     // Definitions
     if (_dataModel.isCharSigned) {
-      _define("__CHAR_MIN", -(1 << _dataModel.sizeOfChar * 8) ~/ 2);
+      _define("__CHAR_MIN", -(1 << sizeOfChar * 8) ~/ 2);
+      _define("__CHAR_MAX", (1 << sizeOfChar * 8) ~/ 2 - 1);
     } else {
       _define("__CHAR_MIN", 0);
+      _define("__CHAR_MAX", (1 << sizeOfChar * 8) - 1);
     }
 
     // For "limits.h"
-    _define("__CHAR_BIT", _dataModel.sizeOfChar * 8);
+    _define("__CHAR_BIT", sizeOfChar * 8);
     _define("__SHORT_BIT", _dataModel.sizeOfShort * 8);
     _define("__INT_BIT", _dataModel.sizeOfInt * 8);
     _define("__LONG_BIT", _dataModel.sizeOfLong * 8);
