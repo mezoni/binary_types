@@ -348,6 +348,14 @@ abstract class BinaryType {
             sb.write(string);
           }
 
+          if(functionType.variadic) {
+            if (!parameters.isEmpty) {
+              sb.write(", ");
+            }
+
+            sb.write("...");
+          }
+
           sb.write(")");
           break;
         case BinaryKinds.POINTER:
