@@ -1,3 +1,7 @@
+## 0.0.49
+
+- Fixed bug in `_Declarations._declareFunction()` with assigning parameter name to prototype when "no parameters" defined (eg. `foo(void)`)
+
 ## 0.0.47
 
 - Fixed minor bug in `BinaryType.formatName()`

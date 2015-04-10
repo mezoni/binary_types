@@ -30,7 +30,7 @@ typedef __UINT16_TYPE uint16_t;
 typedef __UINT32_TYPE uint32_t;
 typedef __UINT64_TYPE uint64_t;
 
-bar();
+bar(void);
 bar();
 void test(void);
 int *baz(int **(*foo)()[2+2]);

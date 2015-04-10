@@ -73,3 +73,4 @@
 0.0.45 Fixed bugs
 0.0.46 Added possibility to retrieve the `macro definitions` from the `binary types` through the `type helper`. Can be useful in various kinds of the generators
 0.0.47 Fixed minor bug in `BinaryType.formatName()`
+0.0.49 Fixed bug in `_Declarations._declareFunction()` with assigning parameter name to prototype when "no parameters" defined (eg. `foo(void)`)

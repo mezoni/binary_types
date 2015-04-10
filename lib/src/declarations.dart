@@ -188,16 +188,23 @@ class _Declarations {
 
     binaryType = _resolveDeclarator(declarator, binaryType);
     var parameters = <String>[];
-    for (var parameter in declaration.declarator.parameters.elements) {
-      String name;
-      if (parameter.declarator != null) {
-        var identifier = parameter.declarator.identifier;
-        if (identifier != null) {
-          name = identifier.name;
+    if (binaryType is FunctionType) {
+      var arity = binaryType.arity;
+      var elements = declaration.declarator.parameters.elements;
+      for (var i = 0; i < arity; i++) {
+        String name;
+        var parameter = elements[i];
+        if (parameter.declarator != null) {
+          var identifier = parameter.declarator.identifier;
+          if (identifier != null) {
+            name = identifier.name;
+          }
         }
-      }
 
-      parameters.add(name);
+        parameters.add(name);
+      }
+    } else {
+      throw new StateError("Not a function type: ${binaryType.name}");
     }
 
     var alias = _getAliasAttribute([declarator.metadata, declaration.metadata]);
