@@ -72,19 +72,31 @@ class BinaryTypes {
       var c = charCodes[length - 1];
       // Pointers
       if (c == 42) {
-        var name = new String.fromCharCodes(charCodes.sublist(0, length - 1));
+        var position = length - 2;
+        c = charCodes[position];
+        while (c == 32) {
+          c = charCodes[--position];
+        }
+
+        var name = new String.fromCharCodes(charCodes.sublist(0, position + 1));
         return this[name].ptr();
       }
 
       // Arrays
       if (c == 93) {
         for (var i = length - 2; i > 0; i--) {
-          var c = charCodes[i];
+          c = charCodes[i];
           if (!(c >= 48 && c <= 57)) {
             if (i > 0 && c == 91) {
               var size = int.parse(new String.fromCharCodes(charCodes.sublist(i + 1, length - 1)), onError: (s) {});
               if (size != null && size >= 0) {
-                var name = new String.fromCharCodes(charCodes.sublist(0, i));
+                var position = i - 1;
+                c = charCodes[position];
+                while (c == 32) {
+                  c = charCodes[--position];
+                }
+
+                var name = new String.fromCharCodes(charCodes.sublist(0, position + 1));
                 return this[name].array(size);
               }
             }
