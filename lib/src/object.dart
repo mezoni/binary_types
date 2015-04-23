@@ -18,15 +18,8 @@ class BinaryObject extends BinaryData {
 
     return object;
   }
-  
-  BinaryObject._internal(BinaryType type, int base, int offset) : super._internal(type, base, offset);
 
-  /**
-   * Does not do anything. Can be used for preventing deallocation of binary data by the garbage collector.
-   */
-  void keepAlive() {
-    // Nothing, but still keep data alive.
-  }
+  BinaryObject._internal(BinaryType type, int base, int offset) : super._internal(type, base, offset);
 
   String toString() => super.toString();
 }

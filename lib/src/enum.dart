@@ -27,7 +27,7 @@ class EnumType extends BinaryType {
     return new UnmodifiableMapView<String, int>(original._enumerators);
   }
 
-  BinaryKinds get kind => BinaryKinds.ENUM;
+  BinaryKind get kind => BinaryKind.ENUM;
 
   String get name {
     if (_name == null) {

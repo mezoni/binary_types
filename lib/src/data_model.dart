@@ -138,6 +138,10 @@ class DataModel {
       this.alignOfInt8, this.alignOfPointer, this.isCharSigned, this.sizeOfChar, this.sizeOfDouble, this.sizeOfFloat,
       this.sizeOfInt, this.sizeOfLong, this.sizeOfLongLong, this.sizeOfPointer, this.sizeOfShort});
 
+  int get hashCode {
+    return id.hashCode;
+  }
+
   Object get id {
     if (_id == null) {
       var sb = new StringBuffer();
@@ -179,7 +183,7 @@ class DataModel {
         _ids[key] = _id;
       }
     }
-    
+
     return _id;
   }
 

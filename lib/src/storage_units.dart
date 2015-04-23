@@ -307,7 +307,7 @@ class StorageUnits {
 
       var memberType = member.type;
       if (memberType.size == 0) {
-        if (memberType.kind == BinaryKinds.ARRAY) {
+        if (memberType.kind == BinaryKind.ARRAY) {
           if (i + 1 != length && isStruct) {
             BinaryTypeError.flexibleArrayMemberNotAtEndOfStruct(structureType, member.name);
           }

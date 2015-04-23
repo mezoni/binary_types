@@ -1,3 +1,5 @@
+import "dart:convert";
+
 import 'package:binary_types/binary_types.dart';
 import 'package:unittest/unittest.dart';
 
@@ -321,11 +323,17 @@ class Test {
           Expect.isTrue(c == codeUnits[i], "ca[$i]");
         }
 
-        Expect.isTrue(ca[length].value == 0, "*ca[length] == 0;");
+        Expect.isTrue(ca[length].value == 0, "*ca[length] == 0");
 
         //
         var strFromMemory = helper.readString(ca);
-        Expect.isTrue(strFromMemory == testString, "testString == strFromMemory;");
+        Expect.isTrue(strFromMemory == testString, "testString == strFromMemory");
+
+        var wstr = "Hello, Андрей!";
+        var utf8 = new Utf8Codec();
+        var wca = helper.allocString(wstr, encoding: utf8);
+        var res = helper.readString(wca, encoding: utf8);
+        Expect.isTrue(res == wstr, "$res == $wstr");
       });
     });
   }
@@ -344,22 +352,12 @@ class Test {
 
         // Color
         var enum_t = t["enum Color"];
-        var map = {
-          "RED": 0,
-          "GREEN": 1,
-          "BLUE": 2
-        };
+        var map = {"RED": 0, "GREEN": 1, "BLUE": 2};
         testEnum(enum_t, map);
 
         // enum _ABC
         enum_t = t["enum _ENUM_ABC"];
-        map = {
-          "A": 0,
-          "B": 1,
-          "C": 0,
-          "D": 1,
-          "E": 2
-        };
+        map = {"A": 0, "B": 1, "C": 0, "D": 1, "E": 2};
         testEnum(enum_t, map);
 
         // ABC
@@ -634,9 +632,7 @@ class Test {
         Expect.isTrue(struct1_t != struct2_t, '${struct1_t} != ${struct2_t}');
 
         // RECT rect1 = {.b = {5, 6}};
-        final rect1 = t['RECT'].alloc({
-          'b': [5, 6]
-        });
+        final rect1 = t['RECT'].alloc({'b': [5, 6]});
 
         Expect.isTrue(rect1['a']['x'].value == 0, '"rect1.b.x.value == 0');
         Expect.isTrue(rect1['b']['y'].value == 6, '"rect1.b.y.value == 6');
@@ -653,15 +649,8 @@ class Test {
         //    .ip = &.i;
         //    .ia = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}},
         //    .pt = {.x = 1, .y = 2}};
-        final struct6 = t['struct6_t'].alloc({
-          'i': 12345,
-          'ip': i,
-          'ia': [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
-          'pt': {
-            'x': 1,
-            'y': 2
-          }
-        });
+        final struct6 =
+            t['struct6_t'].alloc({'i': 12345, 'ip': i, 'ia': [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], 'pt': {'x': 1, 'y': 2}});
 
         Expect.equals(12345, struct6['i'].value, 'struct6.i == 12345');
         Expect.equals(55555, struct6['ip'][0].value, '*struct6.ip == 55555');
@@ -677,16 +666,7 @@ class Test {
         Expect.equals(2, map_struct6['pt']['y'], 'struct6.pt.y == 2');
 
         // RECT rect2 = {.a = {.x = 1, .y = 2}, .b = {.x = 3, .y = 4}};
-        final rect2 = t['RECT'].alloc({
-          'a': {
-            'x': 1,
-            'y': 2
-          },
-          'b': {
-            'x': 3,
-            'y': 4
-          }
-        });
+        final rect2 = t['RECT'].alloc({'a': {'x': 1, 'y': 2}, 'b': {'x': 3, 'y': 4}});
         // rect2.a = rect2.b;
         rect2['a'] = rect2['b'];
         Expect.equals(3, rect2['a']['x'].value, 'rect.a.x == 3');

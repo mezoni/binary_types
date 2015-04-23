@@ -56,7 +56,7 @@ abstract class BinaryType {
   /**
    * Returns the kind of binary type.
    */
-  BinaryKinds get kind;
+  BinaryKind get kind;
 
   /**
    * Returns the name of binary type.
@@ -288,13 +288,13 @@ abstract class BinaryType {
       }
     } else {
       switch (kind) {
-        case BinaryKinds.ARRAY:
+        case BinaryKind.ARRAY:
           ArrayType arrayType = this;
           var targetType = arrayType._targetType;
           var type = arrayType.type;
           if (pointers == 0) {
             sb.write(targetType);
-            if (targetType.kind != BinaryKinds.POINTER) {
+            if (targetType.kind != BinaryKind.POINTER) {
               sb.write(" ");
             }
 
@@ -327,7 +327,7 @@ abstract class BinaryType {
           }
 
           break;
-        case BinaryKinds.FUNCTION:
+        case BinaryKind.FUNCTION:
           FunctionType functionType = this;
           sb.write(functionType.returnType);
           sb.write(" ");
@@ -348,7 +348,7 @@ abstract class BinaryType {
             sb.write(string);
           }
 
-          if(functionType.variadic) {
+          if (functionType.variadic) {
             if (!parameters.isEmpty) {
               sb.write(", ");
             }
@@ -358,7 +358,7 @@ abstract class BinaryType {
 
           sb.write(")");
           break;
-        case BinaryKinds.POINTER:
+        case BinaryKind.POINTER:
           PointerType pointerType = this;
           var targetType = pointerType._targetType;
           var string = targetType.formatName(identifier: identifier, pointers: pointers + pointerType.level + 1);

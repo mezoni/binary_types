@@ -40,15 +40,17 @@ class FunctionType extends BinaryType {
     }
 
     switch (returnType.kind) {
-      case BinaryKinds.ARRAY:
+      case BinaryKind.ARRAY:
         BinaryTypeError.wrongReturnType(name, "an array '$returnType'");
         break;
-      case BinaryKinds.FUNCTION:
+      case BinaryKind.FUNCTION:
         BinaryTypeError.wrongReturnType(name, "a function '$returnType'");
+        break;
+      default:
         break;
     }
 
-    if (returnType.size == 0 && returnType.kind != BinaryKinds.VOID) {
+    if (returnType.size == 0 && returnType.kind != BinaryKind.VOID) {
       BinaryTypeError.wrongReturnType(name, "an incomplete type '$returnType'");
     }
 
@@ -101,7 +103,7 @@ class FunctionType extends BinaryType {
    */
   String get identifier => _identifier;
 
-  BinaryKinds get kind => BinaryKinds.FUNCTION;
+  BinaryKind get kind => BinaryKind.FUNCTION;
 
   String get name {
     if (_name == null) {

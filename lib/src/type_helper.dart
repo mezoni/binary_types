@@ -6,9 +6,9 @@ class BinaryTypeHelper {
   BinaryType _char;
 
   DataModel _dataModel;
-  
+
   Map<String, int> _enumerators;
-  
+
   BinaryTypeHelper(this.types) {
     if (types == null) {
       throw new ArgumentError.notNull("types");
@@ -33,7 +33,6 @@ class BinaryTypeHelper {
    * Returns the enumerators.
    */
   Map<String, int> get enumerators => _enumerators;
-
 
   /**
    * Returns the function prototypes.
@@ -100,15 +99,28 @@ class BinaryTypeHelper {
    * Parameters:
    *   [String] string
    *   String to allocate.
+   *
+   *  [IntType] charType
+   *  Character type.
    */
-  BinaryObject allocString(String string) {
+  BinaryObject allocString(String string, {Encoding encoding, IntType type}) {
     if (string == null) {
       throw new ArgumentError.notNull("string");
     }
 
-    var characters = string.codeUnits;
+    if (type == null) {
+      type = _char;
+    }
+
+    List<int> characters;
+    if (encoding == null) {
+      characters = string.codeUnits;
+    } else {
+      characters = encoding.encode(string);
+    }
+
     var length = characters.length;
-    return _char.array(length + 1).alloc(characters);
+    return type.array(length + 1).alloc(characters);
   }
 
   /**
@@ -133,7 +145,7 @@ class BinaryTypeHelper {
    *   [Reference] data
    *   Reference to the null-terminated string.
    */
-  String readString(BinaryData data) {
+  String readString(BinaryData data, {Encoding encoding}) {
     if (data == null) {
       throw new ArgumentError.notNull("data");
     }
@@ -154,9 +166,26 @@ class BinaryTypeHelper {
     var base = data.base;
     var offset = data.offset;
     var size = type.size;
+    switch (size) {
+      case 1:
+        type = new Uint8Type(dataModel);
+        break;
+      case 2:
+        type = new Uint16Type(dataModel);
+        break;
+      case 4:
+        type = new Uint32Type(dataModel);
+        break;
+      case 8:
+        type = new Uint64Type(dataModel);
+        break;
+      default:
+        throw new ArgumentError("Unsupported integer type '$type'");
+    }
+
     var characters = <int>[];
     while (true) {
-      var value = type.getValue(base, offset);
+      int value = type.getValue(base, offset);
       if (value == 0) {
         break;
       }
@@ -165,6 +194,13 @@ class BinaryTypeHelper {
       offset += size;
     }
 
-    return new String.fromCharCodes(characters);
+    String result;
+    if (encoding == null) {
+      result = new String.fromCharCodes(characters);
+    } else {
+      result = encoding.decode(characters);
+    }
+
+    return result;
   }
 }

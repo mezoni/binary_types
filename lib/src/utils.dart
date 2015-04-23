@@ -1,5 +1,12 @@
 part of binary_types;
 
+/**
+ * Does not do anything. Can be used for preventing deallocation of instance by the garbage collector.
+ */
+void keepAlive(Object instance) {
+  identical(instance, instance);
+}
+
 class _Utils {
   static int alignOffset(int offset, int align) {
     var remainder = offset % align;

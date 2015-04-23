@@ -1,3 +1,11 @@
+## 0.0.50
+
+- Fixed bug in `BinaryTypeHelper.readString()` with the conversion of negaitive (signed) char data values 
+
+## 0.0.51
+
+- Breaking changes. Class `BinaryKinds` was replaced by enum `BinaryKind`
+
 ## 0.0.49
 
 - Fixed bug in `_Declarations._declareFunction()` with assigning parameter name to prototype when "no parameters" defined (eg. `foo(void)`)

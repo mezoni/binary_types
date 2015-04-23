@@ -381,7 +381,7 @@ class _Declarations {
       if (length > 0) {
         var parameterType = _declareParameter(elements[0]);
         if (length == 1) {
-          if (!variadic && parameterType.kind == BinaryKinds.VOID) {
+          if (!variadic && parameterType.kind == BinaryKind.VOID) {
             // Nothing
           } else {
             parameterTypes.add(parameterType);
@@ -447,15 +447,17 @@ class _Declarations {
     var completed = false;
     var compatible = false;
     switch (binaryType.kind) {
-      case BinaryKinds.ENUM:
+      case BinaryKind.ENUM:
         var enumType = binaryType as EnumType;
         completed = !enumType.enumerators.isEmpty;
         compatible = type.kind.name == "enum";
         break;
-      case BinaryKinds.STRUCT:
+      case BinaryKind.STRUCT:
         var structureType = binaryType as StructureType;
         completed = structureType.size != 0;
         compatible = type.kind.name == "struct" || type.kind.name == "union";
+        break;
+      default:
         break;
     }
 

@@ -5,7 +5,7 @@ class Prototype {
 
   final String convention;
 
-  final String filename;  
+  final String filename;
 
   final String library;
 

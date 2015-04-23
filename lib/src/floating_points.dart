@@ -14,7 +14,7 @@ class DoubleType extends FloatingPointType {
     }
   }
 
-  BinaryKinds get kind => BinaryKinds.DOUBLE;
+  BinaryKind get kind => BinaryKind.DOUBLE;
 
   String get name {
     if (_name == null) {
@@ -61,7 +61,7 @@ class FloatType extends FloatingPointType {
     }
   }
 
-  BinaryKinds get kind => BinaryKinds.FLOAT;
+  BinaryKind get kind => BinaryKind.FLOAT;
 
   String get name {
     if (_name == null) {

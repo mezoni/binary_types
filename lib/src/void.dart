@@ -13,7 +13,7 @@ class VoidType extends BinaryType {
     return null;
   }
 
-  BinaryKinds get kind => BinaryKinds.VOID;
+  BinaryKind get kind => BinaryKind.VOID;
 
   String get name {
     if (_name == null) {
@@ -30,6 +30,6 @@ class VoidType extends BinaryType {
   }
 
   bool _compatible(BinaryType other, bool strong) {
-    return other.kind == BinaryKinds.VOID && other.dataModel == dataModel;
+    return other.kind == BinaryKind.VOID && other.dataModel == dataModel;
   }
 }

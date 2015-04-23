@@ -41,7 +41,7 @@ class PointerType extends BinaryType {
     return new BinaryData._internal(type, 0, 0);
   }
 
-  BinaryKinds get kind => BinaryKinds.POINTER;
+  BinaryKind get kind => BinaryKind.POINTER;
 
   /**
    * Returns the level of this pointer in a chain of pointers.
@@ -164,7 +164,9 @@ class PointerType extends BinaryType {
         compatible = true;
       } else if (valueType is ArrayType && type._compatible(valueType.type, false)) {
         compatible = true;
-      } else if (type.kind == BinaryKinds.VOID) {
+      } else if (type.kind == BinaryKind.VOID) {
+        compatible = true;
+      } else if (valueType is PointerType && valueType.type.kind == BinaryKind.VOID) {
         compatible = true;
       }
     }
