@@ -4,6 +4,12 @@ part of binary_types;
  * Function binary type.
  */
 class FunctionType extends BinaryType {
+  static final Map<String, Object> _ids = <String, Object>{};
+
+  Object _id;
+
+  String _key;
+
   /**
    * Type of the return value.
    */
@@ -118,28 +124,54 @@ class FunctionType extends BinaryType {
   int get size => 1;
 
   FunctionType _clone({int align}) {
-    return new FunctionType(name, returnType, _parameters, variadic, _dataModel, align: align);
+    var clone = new FunctionType(name, returnType, _parameters, variadic, _dataModel, align: align);
+    clone._id = _getId();
+    clone._key = _getKey();
+    return clone;
   }
 
   bool _compatible(BinaryType other, bool strong) {
     if (other is FunctionType) {
-      if (returnType._compatible(other.returnType, strong)) {
-        if (arity == other.arity) {
-          if (variadic == other.variadic) {
-            var otherParameters = other.parameters;
-            var length = parameters.length;
-            for (var i = 0; i < length; i++) {
-              if (!parameters[i]._compatible(otherParameters[i], strong)) {
-                return false;
-              }
-            }
-
-            return other.dataModel == dataModel;
-          }
-        }
+      if (_getId() == other._getId()) {
+        return true;
       }
     }
 
     return false;
+  }
+
+  Object _getId() {
+    if (_id == null) {
+      var key = _getKey();
+      _id = _ids[key];
+      if (_id == null) {
+        _id = new Object();
+        _ids[key] = _id;
+      }
+    }
+
+    return _id;
+  }
+
+  String _getKey() {
+    if (_key == null) {
+      var sb = new StringBuffer();
+      sb.write(returnType._getKey());
+      sb.write("(");
+      var list = new List(_arity);
+      for (var i = 0; i < _arity; i++) {
+        list[i] = _parameters[i]._getKey();
+      }
+
+      sb.writeAll(list, " ");
+      if (variadic) {
+        sb.write(" ...");
+      }
+
+      sb.write(")");
+      _key = sb.toString();
+    }
+
+    return _key;
   }
 }

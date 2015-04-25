@@ -1,3 +1,7 @@
+## 0.0.52
+
+- Minor improvement in performance of the test on equality the binary type `FunctionType` 
+
 ## 0.0.50
 
 - Fixed bug in `BinaryTypeHelper.readString()` with the conversion of negaitive (signed) char data values 

@@ -23,7 +23,9 @@ class StructType extends StructureType {
   StructType(String tag, DataModel dataModel, {int align}) : super("struct", tag, dataModel, align: align);
 
   StructType _clone({int align}) {
-    return new StructType(tag, _dataModel, align: align);
+    var clone = new StructType(tag, _dataModel, align: align);
+    clone._key = _getKey();
+    return clone;
   }
 
   Map _getValue(int base, int offset) {
@@ -157,6 +159,10 @@ class StructureMember {
  * Structure binary type.
  */
 abstract class StructureType extends BinaryType {
+  static int _ids = 0;
+
+  String _key;
+
   /**
    * Tag.
    */
@@ -362,6 +368,20 @@ abstract class StructureType extends BinaryType {
     }
   }
 
+  String _getKey() {
+    if (_key == null) {
+      if (this is UnionType) {
+        _key = "union #${_ids++}";
+      } else {
+        _key = "struct #${_ids++}";
+      }
+
+      _ids &= 0x3fffffff;
+    }
+
+    return _key;
+  }
+
   dynamic _getMemberValue(StructureMember member, int base, int offset) {
     if (member.isBitFiled) {
       // TODO: throw new UnsupportedError("_getMemberValue() for bit-field");
@@ -490,7 +510,9 @@ class UnionType extends StructureType {
   UnionType(String tag, DataModel dataModel, {int align}) : super("union", tag, dataModel, align: align);
 
   UnionType _clone({int align}) {
-    return new UnionType(tag, _dataModel, align: align);
+    var clone = new UnionType(tag, _dataModel, align: align);
+    clone._key = _getKey();
+    return clone;
   }
 
   void _initialize(int base, int offset, value) {

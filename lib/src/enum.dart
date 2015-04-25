@@ -1,6 +1,10 @@
 part of binary_types;
 
 class EnumType extends BinaryType {
+  static int _ids = 0;
+
+  String _key;
+
   final String tag;
 
   int _defaultValue;
@@ -137,7 +141,9 @@ class EnumType extends BinaryType {
   dynamic _cast(value) => _type._cast(value);
 
   BinaryType _clone({int align}) {
-    return new EnumType(tag, dataModel, align: align);
+    var clone = new EnumType(tag, dataModel, align: align);
+    clone._key = _getKey();
+    return clone;
   }
 
   bool _compatible(BinaryType other, bool strong) {
@@ -146,6 +152,15 @@ class EnumType extends BinaryType {
     }
 
     return false;
+  }
+
+  String _getKey() {
+    if (_key == null) {
+      _key = "enum #${_ids++}";
+      _ids &= 0x3fffffff;
+    }
+
+    return _key;
   }
 
   int _getTypeElement(String name) {

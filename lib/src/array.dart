@@ -4,6 +4,8 @@ part of binary_types;
  * Array binary type.
  */
 class ArrayType extends BinaryType {
+  String _key;
+
   /**
    * Number of elements.
    */
@@ -77,7 +79,9 @@ class ArrayType extends BinaryType {
   int get size => _size;
 
   ArrayType _clone({int align}) {
-    return new ArrayType(type, length, _dataModel, align: align);
+    var clone = new ArrayType(type, length, _dataModel, align: align);
+    clone._key = _getKey();
+    return clone;
   }
 
   bool _compatible(BinaryType other, bool strong) {
@@ -113,6 +117,27 @@ class ArrayType extends BinaryType {
     } else {
       return super._getElementValue(base, offset, index);
     }
+  }
+
+  String _getKey() {
+    if (_key == null) {
+      var sb = new StringBuffer();
+      void dimensions(ArrayType type) {
+        sb.write("[");
+        sb.write(type.length);
+        sb.write("]");
+        var elementType = type.type;
+        if (elementType.kind == BinaryKind.ARRAY) {
+          dimensions(elementType);
+        }
+      }
+
+      sb.write(_targetType._getKey());
+      dimensions(this);
+      _key = sb.toString();
+    }
+
+    return _key;
   }
 
   List _getValue(int base, int offset) {

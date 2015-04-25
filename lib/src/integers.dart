@@ -58,6 +58,10 @@ class Int16Type extends IntType {
     }
   }
 
+  String _getKey() {
+    return "int16";
+  }
+
   int _getValue(int base, int offset) {
     return new _PhysicalData(base, 0).getInt16(offset);
   }
@@ -131,6 +135,10 @@ class Int32Type extends IntType {
     } else {
       return super._cast(value);
     }
+  }
+
+  String _getKey() {
+    return "int32";
   }
 
   int _getValue(int base, int offset) {
@@ -208,6 +216,10 @@ class Int64Type extends IntType {
     }
   }
 
+  String _getKey() {
+    return "int64";
+  }
+
   int _getValue(int base, int offset) {
     return new _PhysicalData(base, 0).getInt64(offset);
   }
@@ -281,6 +293,10 @@ class Int8Type extends IntType {
     } else {
       return super._cast(value);
     }
+  }
+
+  String _getKey() {
+    return "int8";
   }
 
   int _getValue(int base, int offset) {
@@ -647,6 +663,10 @@ class Uint16Type extends IntType {
     }
   }
 
+  String _getKey() {
+    return "uint16";
+  }
+
   int _getValue(int base, int offset) {
     return new _PhysicalData(base, 0).getUint16(offset);
   }
@@ -719,6 +739,10 @@ class Uint32Type extends IntType {
     } else {
       return super._cast(value);
     }
+  }
+
+  String _getKey() {
+    return "uint32";
   }
 
   int _getValue(int base, int offset) {
@@ -795,6 +819,10 @@ class Uint64Type extends IntType {
     }
   }
 
+  String _getKey() {
+    return "uint64";
+  }
+
   int _getValue(int base, int offset) {
     return new _PhysicalData(base, 0).getUint64(offset);
   }
@@ -867,6 +895,10 @@ class Uint8Type extends IntType {
     } else {
       return super._cast(value);
     }
+  }
+
+  String _getKey() {
+    return "uint8";
   }
 
   int _getValue(int base, int offset) {

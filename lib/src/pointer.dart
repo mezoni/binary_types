@@ -4,6 +4,8 @@ part of binary_types;
  * Pointer binary type.
  */
 class PointerType extends BinaryType {
+  String _key;
+
   int _level;
 
   BinaryType _targetType;
@@ -87,7 +89,9 @@ class PointerType extends BinaryType {
   }
 
   PointerType _clone({int align}) {
-    return new PointerType(type, _dataModel, align: align);
+    var clone = new PointerType(type, _dataModel, align: align);
+    clone._key = _getKey();
+    return clone;
   }
 
   bool _compatible(BinaryType other, bool strong) {
@@ -115,6 +119,20 @@ class PointerType extends BinaryType {
     } else {
       return super._getElement(base, offset, index);
     }
+  }
+
+  String _getKey() {
+    if (_key == null) {
+      var sb = new StringBuffer();
+      for (var i = 0; i <= _level; i++) {
+        sb.write("*");
+      }
+
+      sb.write(_targetType._getKey());
+      _key = sb.toString();
+    }
+
+    return _key;
   }
 
   BinaryData _getValue(int base, int offset) {

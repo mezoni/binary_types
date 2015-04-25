@@ -48,6 +48,10 @@ class BoolType extends BinaryType {
     return other is BoolType && other.dataModel == _dataModel;
   }
 
+  String _getKey() {
+    return "_Bool";
+  }
+
   bool _getValue(int base, int offset) {
     return new _PhysicalData(base, 0).getInt8(offset) != 0;
   }

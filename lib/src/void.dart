@@ -32,4 +32,8 @@ class VoidType extends BinaryType {
   bool _compatible(BinaryType other, bool strong) {
     return other.kind == BinaryKind.VOID && other.dataModel == dataModel;
   }
+
+  String _getKey() {
+    return "void";
+  }
 }

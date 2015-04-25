@@ -638,6 +638,8 @@ abstract class BinaryType {
     return null;
   }
 
+  String _getKey();
+
   dynamic _getTypeElement(String name) {
     BinaryTypeError.typeElementNotFound(this, name);
     return null;

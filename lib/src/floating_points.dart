@@ -30,6 +30,10 @@ class DoubleType extends FloatingPointType {
     return new DoubleType(_dataModel, align: align);
   }
 
+  String _getKey() {
+    return "double";
+  }
+
   double _getValue(int base, int offset) {
     return new _PhysicalData(base, 0).getFloat64(offset);
   }
@@ -41,53 +45,6 @@ class DoubleType extends FloatingPointType {
 
     if (value is double) {
       new _PhysicalData(base, 0).setFloat64(offset, value);
-    } else {
-      super._setValue(base, offset, value);
-    }
-  }
-}
-
-/**
- * Float binary type.
- */
-class FloatType extends FloatingPointType {
-  static const double _min = 1.40129846e-45;
-
-  static const double _max = 3.40282347e+38;
-
-  FloatType(DataModel dataModel, {int align}) : super(dataModel, align: align) {
-    if (align == null) {
-      _align = dataModel.alignOfFloat;
-    }
-  }
-
-  BinaryKind get kind => BinaryKind.FLOAT;
-
-  String get name {
-    if (_name == null) {
-      _name = "float";
-    }
-
-    return _name;
-  }
-
-  int get size => _dataModel.sizeOfFloat;
-
-  FloatType _clone({int align}) {
-    return new FloatType(_dataModel, align: align);
-  }
-
-  double _getValue(int base, int offset) {
-    return new _PhysicalData(base, 0).getFloat32(offset);
-  }
-
-  void _setValue(int base, int offset, value) {
-    if (value is int) {
-      value = value.toDouble();
-    }
-
-    if (value is double) {
-      new _PhysicalData(base, 0).setFloat32(offset, value);
     } else {
       super._setValue(base, offset, value);
     }
@@ -139,6 +96,57 @@ abstract class FloatingPointType extends BinaryType {
       _setValue(base, offset, value.value);
     } else {
       super._setContent(base, offset, value);
+    }
+  }
+}
+
+/**
+ * Float binary type.
+ */
+class FloatType extends FloatingPointType {
+  static const double _min = 1.40129846e-45;
+
+  static const double _max = 3.40282347e+38;
+
+  FloatType(DataModel dataModel, {int align}) : super(dataModel, align: align) {
+    if (align == null) {
+      _align = dataModel.alignOfFloat;
+    }
+  }
+
+  BinaryKind get kind => BinaryKind.FLOAT;
+
+  String get name {
+    if (_name == null) {
+      _name = "float";
+    }
+
+    return _name;
+  }
+
+  int get size => _dataModel.sizeOfFloat;
+
+  FloatType _clone({int align}) {
+    return new FloatType(_dataModel, align: align);
+  }
+
+  String _getKey() {
+    return "float";
+  }
+
+  double _getValue(int base, int offset) {
+    return new _PhysicalData(base, 0).getFloat32(offset);
+  }
+
+  void _setValue(int base, int offset, value) {
+    if (value is int) {
+      value = value.toDouble();
+    }
+
+    if (value is double) {
+      new _PhysicalData(base, 0).setFloat32(offset, value);
+    } else {
+      super._setValue(base, offset, value);
     }
   }
 }
