@@ -1,5 +1,5 @@
 import 'package:binary_types/binary_types.dart';
-import 'package:unittest/unittest.dart';
+import 'package:test/test.dart';
 
 /**
  * Based on the following source code.

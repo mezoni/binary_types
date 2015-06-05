@@ -1,6 +1,10 @@
+## 0.0.53
+
+- Made adaptations to the new version of package `test`
+
 ## 0.0.52
 
-- Minor improvement in performance of the test on equality the binary type `FunctionType` 
+- Minor improvement in performance of the test on equality the binary type `FunctionType`
 
 ## 0.0.50
 
