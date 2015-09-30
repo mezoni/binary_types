@@ -1,3 +1,7 @@
+## 0.0.54
+
+- Fixed bug in `EnumType`
+
 ## 0.0.53
 
 - Made adaptations to the new version of package `test`

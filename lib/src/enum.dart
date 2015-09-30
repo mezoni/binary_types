@@ -15,7 +15,9 @@ class EnumType extends BinaryType {
 
   BinaryType _type;
 
-  EnumType(this.tag, DataModel dataModel, {int align}) : super(dataModel, align: align);
+  EnumType(this.tag, DataModel dataModel, {int align}) : super(dataModel, align: align) {
+    _type = IntType.create(dataModel.sizeOfInt, true, dataModel, align: align);
+  }
 
   int get defaultValue {
     if (size == 0) {
