@@ -1,3 +1,7 @@
+## 0.0.55
+
+- Added support of variables
+
 ## 0.0.54
 
 - Fixed bug in `EnumType`
@@ -12,7 +16,7 @@
 
 ## 0.0.50
 
-- Fixed bug in `BinaryTypeHelper.readString()` with the conversion of negaitive (signed) char data values 
+- Fixed bug in `BinaryTypeHelper.readString()` with the conversion of negaitive (signed) char data values
 
 ## 0.0.51
 
@@ -44,7 +48,7 @@
 
 ## 0.0.41
 
-- Added predefined environment variable `__MODEL__`. Possible values are `ILP32`` ILP64` `LLP64`` LP32` `LP64` and empty value (for the unknown data models) 
+- Added predefined environment variable `__MODEL__`. Possible values are `ILP32`` ILP64` `LLP64`` LP32` `LP64` and empty value (for the unknown data models)
 
 ## 0.0.40
 
@@ -60,7 +64,7 @@
 
 ## 0.0.36
 
-- Added synonyn to `_Bool` into the `BinaryTypes` (`typedef _Bool bool`) 
+- Added synonyn to `_Bool` into the `BinaryTypes` (`typedef _Bool bool`)
 - Environment variables `__OS__` and `__BITNESS__` in `BinaryTypeHelper.declare()` only sets if they are not specified in provided environment. This allows declaring the platform independent binary types (eg. in generators)
 
 ## 0.0.35
@@ -86,7 +90,7 @@
 
 ## 0.0.30
 
-- Added check on `null pointer` in `BinaryTypeHelper.readString()` 
+- Added check on `null pointer` in `BinaryTypeHelper.readString()`
 - Added getter `BinaryData.isNullPtr`
 - Added getter `BinaryType.nullPtr`
 - Deprecated `BinaryType.nullObject()`
@@ -107,7 +111,7 @@
 
 - Completely reimplemented class `_Declarations`
 - Initial support of the `_Bool` binary type
-- Made adaptations to the new version of package `binary_declarations`    
+- Made adaptations to the new version of package `binary_declarations`
 - Reimplemented the `structural` and the `enumeration` classes to the full support of the declaring type synonyms in the `typedef` declarations
 
 ## 0.0.22
@@ -117,11 +121,11 @@
 ## 0.0.21
 
 - Added possibility to import previously declared types into the new binary types. This allows reuse already the declared binary types
-- Breaking changes. Class `BinaryTypes` was freed from the the members that represent primitive types. From now the class `BinaryTypes` is a lightweight class without any public members 
+- Breaking changes. Class `BinaryTypes` was freed from the the members that represent primitive types. From now the class `BinaryTypes` is a lightweight class without any public members
 
 ## 0.0.20
 
-- Function `BinaryTypeHelper.declare()` returns now the `Declarations`. This should prevent an unnecessary double parsing of the declarations in `binary_interop` 
+- Function `BinaryTypeHelper.declare()` returns now the `Declarations`. This should prevent an unnecessary double parsing of the declarations in `binary_interop`
 
 ## 0.0.19
 
@@ -142,7 +146,7 @@
 ## 0.0.16
 
 - Added more compatibility with C99 standard. Flexible arrays, declaration and behavior of the bit-fields, behavior of the packed structural types
-- Completely reimplemented the structural types. Introduced the concept of the `storage units` for compatibility of the `libffi` library   
+- Completely reimplemented the structural types. Introduced the concept of the `storage units` for compatibility of the `libffi` library
 - Initial support of `bit-fields`. Currently only declaration without an access/modification (will be added later)
 - Slightly reduced the dependence on `unsafe_extension` through the new concept of the `_PhysicalData`. `_PhysicalData` implements `ByteData` with unlimited length (for preventing the overhead on the data manipulation with a large data massives with the length greater than the size of `Smi`)
 
@@ -152,7 +156,7 @@
 
 ## 0.0.14
 
-- Better error messages in `BinaryTypes.declare()` about problems in binary declarations 
+- Better error messages in `BinaryTypes.declare()` about problems in binary declarations
 
 ## 0.0.12
 
@@ -190,9 +194,9 @@
 ## 0.0.5
 
 - Added field `BinaryData.base`
-- Added field `BinaryData.offset`  
+- Added field `BinaryData.offset`
 - Initial support of `binary declartions`. Declarations through the special header files from now supports the `typedef` types, `struct` and `union` declarations
-- Removed class `Reference` in favor of the "all-sufficient" implementation of the `Binary Data` 
+- Removed class `Reference` in favor of the "all-sufficient" implementation of the `Binary Data`
 - Removed getter `BinaryData.location`
 - Removed operator `BinaryData.operator~)`
 
@@ -204,7 +208,7 @@
 
 ## 0.0.3
 
-- Changes in the `PointerType.name`. Array types quoted for the better readability. Eg. `(char[10])*` means a pointer to `char[10]`. 
+- Changes in the `PointerType.name`. Array types quoted for the better readability. Eg. `(char[10])*` means a pointer to `char[10]`.
 
 ## 0.0.2
 

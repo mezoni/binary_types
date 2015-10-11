@@ -34,4 +34,5 @@ part 'src/type.dart';
 part 'src/type_helper.dart';
 part 'src/types.dart';
 part 'src/utils.dart';
+part 'src/variable.dart';
 part 'src/void.dart';

@@ -20,6 +20,8 @@ class BinaryTypes {
 
   Map<String, BinaryType> _types = new Map<String, BinaryType>();
 
+  Map<String, Variable> _variables = <String, Variable>{};
+
   /**
    * Creates new types.
    *

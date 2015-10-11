@@ -15,6 +15,10 @@ class BinaryTypeError implements Exception {
     throw new BinaryTypeError("Conflicting prototypes for '$name'");
   }
 
+  static void conflictingVariables(String name) {
+    throw new BinaryTypeError("Conflicting variables for '$name'");
+  }
+
   static void declarationError(Declaration declaration, String message) {
     throw new BinaryTypeError("Declaration '$declaration' has error: $message");
   }

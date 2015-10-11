@@ -7,6 +7,8 @@ class _Declarations {
 
   Map<String, Prototype> _prototypes;
 
+  Map<String, Variable> _variables;
+
   _Scope _scope;
 
   _Declarations(this.types) {
@@ -23,6 +25,7 @@ class _Declarations {
     }
 
     _prototypes = types._prototypes;
+    _variables = types._variables;
     _scope = new _Scope(types);
     var env = <String, String>{};
     if (environment != null) {
@@ -97,7 +100,7 @@ class _Declarations {
 
     var type1 = found.type;
     var type2 = prototype.type;
-    if (type1.returnType.compatible(type1.returnType, true)) {
+    if (type1.returnType.compatible(type2.returnType, true)) {
       var arity = type1.arity;
       if (arity == type2.arity) {
         if (type1.variadic == type2.variadic) {
@@ -122,6 +125,25 @@ class _Declarations {
     }
 
     BinaryTypeError.conflictingPrototypes(name);
+  }
+
+  void _addVariable(Variable variable) {
+    var name = variable.name;
+    var found = _variables[name];
+    if (found == null) {
+      _variables[name] = variable;
+      return;
+    }
+
+    var type1 = found.type;
+    var type2 = variable.type;
+    if (type1.compatible(type2, true)) {
+      _checkUniqueness(name);
+      _variables[name] = variable;
+      return;
+    }
+
+    BinaryTypeError.conflictingVariables(name);
   }
 
   // TODO: _checkUniqueness()
@@ -152,30 +174,6 @@ class _Declarations {
     _resolveEnum(type);
   }
 
-  String _getAliasAttribute(List<DeclarationSpecifiers> specifiers) {
-    var aliases = [];
-    for (var specifier in specifiers) {
-      if (specifier != null) {
-        var reader = new AttributeReader([specifier]);
-        var alias = reader.getArgument("alias", 0, null, minLength: 1, maxLength: 1);
-        if (alias is Identifier) {
-          aliases.add(alias.name);
-        }
-      }
-    }
-
-    if (aliases.length > 1) {
-      throw new StateError("Multiple aliases are not allowed");
-    }
-
-    if (aliases.length == 0) {
-      return null;
-    }
-
-    return aliases.first;
-  }
-
-  // TODO: Implement "convention", "library" for prototypes
   void _declareFunction(FunctionDeclaration declaration) {
     var declarator = declaration.declarator;
     var type = declaration.type;
@@ -214,6 +212,7 @@ class _Declarations {
     _addPrototype(prototype);
   }
 
+  // TODO: Implement "convention", "library" for prototypes
   StructureMember _declareMember(ParameterDeclaration declaration) {
     var declarator = declaration.declarator;
     String name;
@@ -301,8 +300,10 @@ class _Declarations {
         BinaryTypeError.declarationError(declaration, "Unable to determine the size of the type '$binaryType'");
       }
 
-      // TODO: Variables
-      //_variables[declarator.identifier.name] = binaryType;
+      var filename = declaration.filename;
+      var name = declarator.identifier.name;
+      var variable = new Variable(filename: filename, name: name, type: binaryType);
+      _addVariable(variable);
     }
   }
 
@@ -322,6 +323,29 @@ class _Declarations {
   dynamic _evaluateExpresssion(Expression expression, {Function identifier, Function sizeof}) {
     var evaluator = new ExpressionEvaluator();
     return evaluator.evaluate(expression, identifier: identifier, sizeof: sizeof);
+  }
+
+  String _getAliasAttribute(List<DeclarationSpecifiers> specifiers) {
+    var aliases = [];
+    for (var specifier in specifiers) {
+      if (specifier != null) {
+        var reader = new AttributeReader([specifier]);
+        var alias = reader.getArgument("alias", 0, null, minLength: 1, maxLength: 1);
+        if (alias is Identifier) {
+          aliases.add(alias.name);
+        }
+      }
+    }
+
+    if (aliases.length > 1) {
+      throw new StateError("Multiple aliases are not allowed");
+    }
+
+    if (aliases.length == 0) {
+      return null;
+    }
+
+    return aliases.first;
   }
 
   int _getAligned(AttributeReader reader) {

@@ -40,6 +40,11 @@ class BinaryTypeHelper {
   Map<String, Prototype> get prototypes => types._prototypes;
 
   /**
+   * Returns the variables.
+   */
+  Map<String, Variable> get variables => types._variables;
+
+  /**
    * Adds the binary header to the list of available headers.
    *
    * Parameters:
